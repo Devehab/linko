@@ -115,15 +115,39 @@ func TestExpandBase(t *testing.T) {
 }
 
 func TestValidateBase(t *testing.T) {
-	if err := validateBase("demo", "example.com"); err != nil {
-		t.Errorf("validateBase(demo) = %v", err)
+	// Anything that expands to a well-formed hostname inside the zone is
+	// accepted; case and surrounding whitespace are normalised, not rejected.
+	valid := []string{
+		"demo",
+		"demo.example.com",
+		"a.b",
+		"demo.other.com",
+		"DEMO",
+		"  demo.example.com  ",
 	}
-	if err := validateBase("demo.other.com", "example.com"); err != nil {
-		// "demo.other.com" is expanded to demo.other.com.example.com, which is valid.
-		t.Errorf("validateBase = %v", err)
+	for _, in := range valid {
+		if err := validateBase(in, "example.com"); err != nil {
+			t.Errorf("validateBase(%q) = %v, want nil", in, err)
+		}
 	}
-	if err := validateBase("DEMO", "example.com"); err == nil {
-		t.Error("validateBase accepted an uppercase label")
+
+	// Underscores, edge hyphens and empty labels are not valid DNS labels.
+	invalid := []string{
+		"demo_app",
+		"-demo",
+		"demo-",
+		"demo..example",
+	}
+	for _, in := range invalid {
+		if err := validateBase(in, "example.com"); err == nil {
+			t.Errorf("validateBase(%q) = nil, want an error", in)
+		}
+	}
+}
+
+func TestExpandBaseNormalisesCase(t *testing.T) {
+	if got := expandBase("DEMO", "example.com"); got != "demo.example.com" {
+		t.Fatalf("expandBase(DEMO) = %q, want it lowercased", got)
 	}
 }
 
