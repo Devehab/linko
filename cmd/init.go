@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -198,12 +199,15 @@ func runInit(ctx context.Context, opts *initOptions) error {
 
 	tunnel, err := client.FindTunnel(ctx, tunnelName)
 	if err != nil {
+		ui.Fail("Could not list the tunnels on this account")
+		explainTunnelFailure(err)
 		return err
 	}
 	if tunnel == nil {
 		tunnel, err = client.CreateTunnel(ctx, tunnelName)
 		if err != nil {
 			ui.Fail("Could not create the tunnel")
+			explainTunnelFailure(err)
 			return err
 		}
 		ui.Success("Tunnel created (%s)", tunnel.Name)
@@ -287,6 +291,23 @@ func explainZoneFailure(ctx context.Context, client *cloudflare.Client, wanted s
 	if z, ok := cloudflare.ZoneNameFor(wanted, zones); ok {
 		ui.Info("%q sits inside the zone %q — pass --domain %s instead.", wanted, z.Name, z.Name)
 	}
+}
+
+// explainTunnelFailure covers the other half of the permission story: a token
+// scoped only to DNS gets through zone lookup and then fails here, again with
+// a bare "Authentication error (code 10000)".
+func explainTunnelFailure(err error) {
+	var apiErr *cloudflare.Error
+	if !errors.As(err, &apiErr) || !apiErr.IsAuth() {
+		return
+	}
+	ui.Blank()
+	ui.Info("This token can reach your DNS but not Zero Trust tunnels.")
+	ui.Info("linko needs BOTH permissions on the SAME token:")
+	ui.Info("  Zone    → DNS               → Edit")
+	ui.Info("  Account → Cloudflare Tunnel → Edit")
+	ui.Info("Edit it at https://dash.cloudflare.com/profile/api-tokens.")
+	ui.Blank()
 }
 
 // resolveToken picks the Cloudflare API token from, in order: the --token
