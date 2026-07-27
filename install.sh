@@ -45,15 +45,52 @@ detect_platform() {
   echo "${os}_${arch}"
 }
 
+on_path() {
+  case ":${PATH}:" in
+    *":$1:"*) return 0 ;;
+    *)        return 1 ;;
+  esac
+}
+
+# Prefer a directory that is ALREADY on the user's PATH, so `linko` works the
+# moment this script finishes. Only fall back to ~/.local/bin — which is often
+# not on PATH — when nothing better is writable, and patch the shell profile
+# in that case.
 choose_install_dir() {
+  local d
   if [ -n "${LINKO_INSTALL:-}" ]; then
-    echo "$LINKO_INSTALL"
-  elif [ -w /usr/local/bin ] 2>/dev/null; then
-    echo /usr/local/bin
-  elif [ "$(id -u)" = "0" ]; then
-    echo /usr/local/bin
-  else
-    echo "$HOME/.local/bin"
+    echo "$LINKO_INSTALL"; return
+  fi
+  for d in /opt/homebrew/bin /usr/local/bin "$HOME/.local/bin" "$HOME/bin"; do
+    if on_path "$d" && [ -d "$d" ] && [ -w "$d" ]; then echo "$d"; return; fi
+  done
+  for d in /opt/homebrew/bin /usr/local/bin; do
+    if [ -d "$d" ] && [ -w "$d" ]; then echo "$d"; return; fi
+  done
+  echo "$HOME/.local/bin"
+}
+
+# Append the PATH line to whichever shell profiles exist, once.
+add_to_profiles() {
+  local dir="$1" line rc touched=0
+  line="export PATH=\"${dir}:\$PATH\""
+
+  for rc in "$HOME/.zshrc" "$HOME/.bashrc" "$HOME/.bash_profile" "$HOME/.profile"; do
+    [ -f "$rc" ] || continue
+    touched=1
+    grep -qF "$dir" "$rc" 2>/dev/null && continue
+    printf '\n# added by the linko installer\n%s\n' "$line" >> "$rc"
+    dim "added ${dir} to $(basename "$rc")"
+  done
+
+  if [ "$touched" = "0" ]; then
+    rc="$HOME/.profile"
+    case "${SHELL:-}" in
+      */zsh)  rc="$HOME/.zshrc" ;;
+      */bash) rc="$HOME/.bashrc" ;;
+    esac
+    printf '# added by the linko installer\n%s\n' "$line" >> "$rc"
+    dim "created $(basename "$rc") with ${dir} on PATH"
   fi
 }
 
@@ -103,16 +140,17 @@ main() {
 
   green "✓ ${BINARY} installed to ${dest}/${BINARY}"
 
-  if ! command -v "$BINARY" >/dev/null 2>&1; then
-    echo
-    red "! ${dest} is not on your PATH"
-    echo "  Add this to your shell profile:"
-    echo "    export PATH=\"${dest}:\$PATH\""
-  fi
-
   echo
-  echo "Next step:"
-  echo "  linko init"
+  if on_path "$dest"; then
+    echo "Next step:"
+    echo "  linko init"
+  else
+    add_to_profiles "$dest"
+    echo
+    echo "Next steps:"
+    echo "  exec \$SHELL       # reload your shell once"
+    echo "  linko init"
+  fi
 }
 
 main "$@"
