@@ -6,8 +6,14 @@
 /dist/
 /linko
 /linko.exe
+clean-test-result.log
 coverage.out
 e2e-result.log
+r1.html
+r2.html
 remote.html
+run-clean-test.command
 run-e2e-now.command
+run1.log
+run2.log
 tunnel.log

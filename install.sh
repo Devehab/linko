@@ -20,6 +20,12 @@ dim()   { printf '\033[2m%s\033[0m\n' "$*"; }
 
 die() { red "error: $*" >&2; exit 1; }
 
+# TMP must be global: the EXIT trap fires after main() returns, so a variable
+# scoped to main() would be unset by then and `set -u` would abort.
+TMP=""
+cleanup() { [ -n "${TMP:-}" ] && rm -rf "$TMP"; return 0; }
+trap cleanup EXIT
+
 detect_platform() {
   local os arch
   os="$(uname -s | tr '[:upper:]' '[:lower:]')"
@@ -67,7 +73,7 @@ main() {
   command -v curl >/dev/null 2>&1 || die "curl is required"
   command -v tar  >/dev/null 2>&1 || die "tar is required"
 
-  local platform version tag archive url tmp dest
+  local platform version tag archive url dest
   platform="$(detect_platform)"
   tag="$(resolve_version)"
   version="${tag#v}"
@@ -77,23 +83,22 @@ main() {
 
   dim "Installing ${BINARY} ${tag} (${platform})"
 
-  tmp="$(mktemp -d)"
-  trap 'rm -rf "$tmp"' EXIT
+  TMP="$(mktemp -d)"
 
-  curl -fsSL "$url" -o "$tmp/$archive" \
+  curl -fsSL "$url" -o "$TMP/$archive" \
     || die "download failed: $url"
-  tar -xzf "$tmp/$archive" -C "$tmp"
-  [ -f "$tmp/$BINARY" ] || die "the archive does not contain a ${BINARY} binary"
-  chmod +x "$tmp/$BINARY"
+  tar -xzf "$TMP/$archive" -C "$TMP"
+  [ -f "$TMP/$BINARY" ] || die "the archive does not contain a ${BINARY} binary"
+  chmod +x "$TMP/$BINARY"
 
   dest="$(choose_install_dir)"
   mkdir -p "$dest"
 
   if [ -w "$dest" ]; then
-    mv "$tmp/$BINARY" "$dest/$BINARY"
+    mv "$TMP/$BINARY" "$dest/$BINARY"
   else
     dim "elevating with sudo to write to $dest"
-    sudo mv "$tmp/$BINARY" "$dest/$BINARY"
+    sudo mv "$TMP/$BINARY" "$dest/$BINARY"
   fi
 
   green "✓ ${BINARY} installed to ${dest}/${BINARY}"
