@@ -263,7 +263,7 @@ func runInit(ctx context.Context, opts *initOptions) error {
 	ui.Line("  %s   publish localhost:3000 on a random subdomain", ui.Cyan("linko 3000"))
 	ui.Line("  %s   publish it on crm.%s", ui.Cyan("linko 3000 -n crm"), cfg.BaseDomain)
 	ui.Blank()
-	ui.Line("  %s %s", ui.Dim("Guide:"), ui.Cyan(DocsURL))
+	ui.Line("  %s %s", ui.Dim("Guide:"), ui.Link(DocsURL, ui.Cyan(DocsURL)))
 	ui.Line("  %s", ui.Dim("or run: linko docs"))
 	ui.Blank()
 	return nil

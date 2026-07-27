@@ -48,9 +48,11 @@ func runList(ctx context.Context, remote bool) error {
 		}
 		rows := make([][]string, 0, len(rules))
 		for _, r := range rules {
-			rows = append(rows, []string{"https://" + r.Hostname, "->", r.Service})
+			url := "https://" + r.Hostname
+			rows = append(rows, []string{ui.Link(url, url), "->", r.Service})
 		}
 		ui.Table(os.Stdout, []string{"URL", "", "TARGET"}, rows)
+		printClickHint()
 		return nil
 	}
 
@@ -66,9 +68,10 @@ func runList(ctx context.Context, remote bool) error {
 		if r.Ephemeral {
 			kind = "temporary"
 		}
+		url := "https://" + r.Hostname
 		rows = append(rows, []string{
 			r.Name,
-			"https://" + r.Hostname,
+			ui.Link(url, url),
 			"->",
 			r.Service,
 			kind,
@@ -77,7 +80,16 @@ func runList(ctx context.Context, remote bool) error {
 	ui.Table(os.Stdout, []string{"NAME", "URL", "", "TARGET", "KIND"}, rows)
 	ui.Blank()
 	ui.Info("%d route(s) · tunnel %s · %s", len(routes), cfg.TunnelName, config.Path())
+	printClickHint()
 	return nil
+}
+
+// printClickHint tells the user how to follow the URLs just printed, when the
+// terminal makes that non-obvious.
+func printClickHint() {
+	if hint := ui.ClickHint(); hint != "" {
+		ui.Info("%s", hint)
+	}
 }
 
 // routeNames is used for shell completion of `linko remove`.

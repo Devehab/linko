@@ -21,6 +21,107 @@ func TestColourCanBeDisabled(t *testing.T) {
 	}
 }
 
+func TestLinkWrapsInOSC8WhenSupported(t *testing.T) {
+	oldColor, oldLinks := useColor, hyperlinkCapable
+	defer func() { useColor, hyperlinkCapable = oldColor, oldLinks }()
+
+	url := "https://ali.example.com"
+
+	useColor, hyperlinkCapable = true, true
+	got := Link(url, url)
+	if !strings.HasPrefix(got, "\x1b]8;;"+url+"\x1b\\") {
+		t.Fatalf("Link() did not open an OSC 8 sequence: %q", got)
+	}
+	if !strings.HasSuffix(got, "\x1b]8;;\x1b\\") {
+		t.Fatalf("Link() did not close the OSC 8 sequence: %q", got)
+	}
+	if !strings.Contains(got, url) {
+		t.Fatal("the URL must stay visible in the label")
+	}
+}
+
+func TestLinkIsPlainWhenUnsupported(t *testing.T) {
+	oldColor, oldLinks := useColor, hyperlinkCapable
+	defer func() { useColor, hyperlinkCapable = oldColor, oldLinks }()
+
+	url := "https://ali.example.com"
+
+	// Terminal cannot follow OSC 8 — emit nothing it would render as garbage.
+	useColor, hyperlinkCapable = true, false
+	if got := Link(url, url); got != url {
+		t.Fatalf("Link() = %q on a terminal without OSC 8, want the bare text", got)
+	}
+
+	// Piped output or --no-color: never emit escapes.
+	useColor, hyperlinkCapable = false, true
+	if got := Link(url, url); got != url {
+		t.Fatalf("Link() = %q with colour off, want the bare text", got)
+	}
+}
+
+func TestDetectHyperlinks(t *testing.T) {
+	t.Setenv("VTE_VERSION", "")
+	for _, env := range []string{"KITTY_WINDOW_ID", "WT_SESSION", "KONSOLE_VERSION",
+		"ALACRITTY_WINDOW_ID", "DOMTERM", "CONTOUR_PROFILE"} {
+		t.Setenv(env, "")
+	}
+
+	t.Setenv("TERM_PROGRAM", "iTerm.app")
+	if !detectHyperlinks() {
+		t.Error("iTerm2 supports OSC 8")
+	}
+
+	t.Setenv("TERM_PROGRAM", "vscode")
+	if !detectHyperlinks() {
+		t.Error("the VS Code terminal supports OSC 8")
+	}
+
+	// Terminal.app linkifies bare URLs itself, but ignores OSC 8 — emitting it
+	// there would only add invisible noise.
+	t.Setenv("TERM_PROGRAM", "Apple_Terminal")
+	if detectHyperlinks() {
+		t.Error("Terminal.app does not support OSC 8")
+	}
+	if !AppleTerminal() {
+		t.Error("AppleTerminal() should detect Terminal.app")
+	}
+
+	t.Setenv("TERM_PROGRAM", "")
+	if detectHyperlinks() {
+		t.Error("an unknown terminal must not be assumed to support OSC 8")
+	}
+
+	t.Setenv("KITTY_WINDOW_ID", "1")
+	if !detectHyperlinks() {
+		t.Error("kitty supports OSC 8")
+	}
+	t.Setenv("KITTY_WINDOW_ID", "")
+
+	t.Setenv("VTE_VERSION", "6003")
+	if !detectHyperlinks() {
+		t.Error("VTE 0.60 supports OSC 8")
+	}
+	t.Setenv("VTE_VERSION", "4800")
+	if detectHyperlinks() {
+		t.Error("VTE older than 0.50 does not support OSC 8")
+	}
+}
+
+func TestClickHint(t *testing.T) {
+	oldColor, oldLinks := useColor, hyperlinkCapable
+	defer func() { useColor, hyperlinkCapable = oldColor, oldLinks }()
+
+	useColor, hyperlinkCapable = true, true
+	if ClickHint() == "" {
+		t.Error("a hint is useful even when links are clickable")
+	}
+
+	useColor = false
+	if ClickHint() != "" {
+		t.Error("no hint when output is not a terminal")
+	}
+}
+
 func TestTableAligns(t *testing.T) {
 	old := useColor
 	defer SetColor(old)

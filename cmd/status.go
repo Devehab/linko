@@ -68,7 +68,8 @@ func runStatus(ctx context.Context) error {
 			if cfg.FindRouteByHostname(r.Hostname) != nil {
 				mark = ui.Green("·")
 			}
-			ui.Line("  %s https://%s %s %s", mark, r.Hostname, ui.Dim("->"), r.Service)
+			url := "https://" + r.Hostname
+			ui.Line("  %s %s %s %s", mark, ui.Link(url, url), ui.Dim("->"), r.Service)
 		}
 	}
 

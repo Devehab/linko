@@ -45,7 +45,7 @@ func newDocsCmd() *cobra.Command {
 func printTokenSteps() {
 	ui.Line("  %s", ui.Bold("Create a Cloudflare API token"))
 	ui.Blank()
-	ui.Line("  1. %s", ui.Cyan(TokenURL))
+	ui.Line("  1. %s", ui.Link(TokenURL, ui.Cyan(TokenURL)))
 	ui.Line("     Create Token → Create Custom Token")
 	ui.Blank()
 	ui.Line("  2. Add %s permission rows (+ Add more):", ui.Bold("both"))
@@ -55,7 +55,7 @@ func printTokenSteps() {
 	ui.Line("  3. Zone Resources → Include → Specific zone → your domain")
 	ui.Line("     %s", ui.Dim("leave this empty and the token sees no domains at all"))
 	ui.Blank()
-	ui.Line("  %s %s", ui.Dim("Full guide:"), ui.Cyan(DocsURL))
+	ui.Line("  %s %s", ui.Dim("Full guide:"), ui.Link(DocsURL, ui.Cyan(DocsURL)))
 	ui.Blank()
 }
 
@@ -86,7 +86,7 @@ func printGuide() {
 	ui.Line("  %s", ui.Bold("Stuck?"))
 	ui.Blank()
 	ui.Line("    linko doctor               %s", ui.Dim("says exactly which step fails"))
-	ui.Line("    %s", ui.Cyan(DocsURL))
+	ui.Line("    %s", ui.Link(DocsURL, ui.Cyan(DocsURL)))
 	ui.Blank()
 	ui.Line("  %s", ui.Dim("Open it in a browser:  linko docs --open"))
 	ui.Blank()

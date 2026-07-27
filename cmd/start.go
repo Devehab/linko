@@ -27,6 +27,7 @@ type startOptions struct {
 	replace  bool
 	yes      bool
 	verbose  bool
+	open     bool
 	logLevel string
 }
 
@@ -59,6 +60,7 @@ The tunnel stays up until you press Ctrl+C.`,
 	f.BoolVar(&opts.replace, "replace", false, "replace the hostname if it already points somewhere else")
 	f.BoolVarP(&opts.yes, "yes", "y", false, "do not ask questions")
 	f.BoolVarP(&opts.verbose, "verbose", "v", false, "stream cloudflared logs")
+	f.BoolVarP(&opts.open, "open", "o", false, "open the public URL in your browser once connected")
 	f.StringVar(&opts.logLevel, "loglevel", "info", "cloudflared log level: debug, info, warn, error, fatal")
 
 	return cmd
@@ -185,6 +187,11 @@ func runTunnel(ctx context.Context, mgr *cloudflared.Manager, binary string, cfg
 
 	watcher := newLogWatcher(opts.verbose, func() {
 		printBanner(route, cfg)
+		if opts.open {
+			if err := openBrowser("https://" + route.Hostname); err != nil {
+				ui.Warn("could not open a browser: %v", err)
+			}
+		}
 	})
 
 	var wg sync.WaitGroup
@@ -213,16 +220,23 @@ func runTunnel(ctx context.Context, mgr *cloudflared.Manager, binary string, cfg
 }
 
 func printBanner(route config.Route, cfg *config.Config) {
+	url := "https://" + route.Hostname
+
 	ui.Blank()
 	ui.Success("Tunnel connected")
 	ui.Blank()
-	ui.Line("  %s  %s", ui.Dim("Public URL"), ui.Bold(ui.Cyan("https://"+route.Hostname)))
+	ui.Line("  %s  %s", ui.Dim("Public URL"), ui.Link(url, ui.Bold(ui.Cyan(url))))
 	ui.Line("  %s     %s", ui.Dim("Forwards"), route.Service)
 	ui.Line("  %s       %s", ui.Dim("Tunnel"), cfg.TunnelName)
 	if route.Ephemeral {
 		ui.Line("  %s    %s", ui.Dim("Lifetime"), "removed when you quit (use --keep to persist)")
 	}
 	ui.Blank()
+	if hint := ui.ClickHint(); hint != "" {
+		ui.Line("  %s", ui.Dim(hint+" · or start with --open next time"))
+	} else {
+		ui.Line("  %s", ui.Dim("start with --open to launch the browser automatically"))
+	}
 	ui.Line("  %s", ui.Dim("Press Ctrl+C to stop"))
 	ui.Blank()
 }

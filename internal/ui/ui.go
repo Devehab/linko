@@ -33,6 +33,69 @@ func detectColor() bool {
 // SetColor forces colour output on or off (used by tests and --no-color).
 func SetColor(on bool) { useColor = on }
 
+// hyperlinkCapable reports whether this terminal understands OSC 8, the escape
+// sequence that turns text into a clickable link.
+var hyperlinkCapable = detectHyperlinks()
+
+func detectHyperlinks() bool {
+	switch os.Getenv("TERM_PROGRAM") {
+	case "iTerm.app", "WezTerm", "vscode", "Hyper", "ghostty", "Tabby", "rio", "warp":
+		return true
+	case "Apple_Terminal":
+		// Terminal.app ignores OSC 8, but it linkifies bare URLs on its own —
+		// the user just has to hold Command. AppleTerminal() drives that hint.
+		return false
+	}
+	for _, env := range []string{
+		"KITTY_WINDOW_ID",     // kitty
+		"WT_SESSION",          // Windows Terminal
+		"KONSOLE_VERSION",     // Konsole
+		"ALACRITTY_WINDOW_ID", // Alacritty
+		"DOMTERM",             // DomTerm
+		"CONTOUR_PROFILE",     // Contour
+	} {
+		if os.Getenv(env) != "" {
+			return true
+		}
+	}
+	// GNOME Terminal and friends, via VTE 0.50+.
+	if v := os.Getenv("VTE_VERSION"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n >= 5000 {
+			return true
+		}
+	}
+	return false
+}
+
+// AppleTerminal reports whether we are running inside macOS Terminal.app,
+// which needs a Command-click rather than a plain click.
+func AppleTerminal() bool { return os.Getenv("TERM_PROGRAM") == "Apple_Terminal" }
+
+// Link renders text as a clickable hyperlink when the terminal supports it,
+// and returns text unchanged everywhere else. The URL always stays visible in
+// the label, so nothing is lost on terminals that cannot follow it.
+func Link(url, text string) string {
+	if !useColor || !hyperlinkCapable {
+		return text
+	}
+	return "\x1b]8;;" + url + "\x1b\\" + text + "\x1b]8;;\x1b\\"
+}
+
+// ClickHint explains how to follow a link in the current terminal, or returns
+// an empty string when there is nothing useful to say.
+func ClickHint() string {
+	switch {
+	case !useColor:
+		return ""
+	case hyperlinkCapable:
+		return "click the URL to open it"
+	case AppleTerminal():
+		return "⌘-click the URL to open it"
+	default:
+		return ""
+	}
+}
+
 func paint(code, s string) string {
 	if !useColor {
 		return s
