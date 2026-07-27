@@ -1,0 +1,89 @@
+name: E2E (real Cloudflare)
+
+# Drives the complete linko lifecycle against a real Cloudflare account,
+# using a throwaway origin served on the runner itself:
+#
+#   init -> start -> fetch the public URL -> verify the body -> remove
+#
+# Requires two repository secrets (Settings -> Secrets and variables -> Actions):
+#   CF_API_TOKEN   Cloudflare API token (Zone:DNS:Edit + Account:Tunnel:Edit)
+#   E2E_DOMAIN     zone apex, e.g. techkahwa.net
+#   E2E_BASE       base subdomain, e.g. linko.techkahwa.net
+#
+# Never run this from a fork: it would expose the secrets.
+
+on:
+  workflow_dispatch:
+    inputs:
+      keep:
+        description: 'Leave the hostname published afterwards'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          cache: true
+
+      - name: Build linko
+        run: |
+          go mod tidy
+          go build -trimpath -o linko .
+          ./linko --version
+
+      - name: Serve a known origin on :3000
+        run: |
+          mkdir -p /tmp/origin
+          echo "linko-e2e-${GITHUB_RUN_ID}-${GITHUB_SHA}" > /tmp/origin/index.html
+          cd /tmp/origin && nohup python3 -m http.server 3000 >/tmp/origin.log 2>&1 &
+          for _ in $(seq 1 20); do
+            curl -fsS http://localhost:3000/ >/dev/null 2>&1 && break
+            sleep 0.5
+          done
+          curl -fsS http://localhost:3000/
+
+      - name: Run the end-to-end cycle
+        id: e2e
+        env:
+          LINKO_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          E2E_DOMAIN: ${{ secrets.E2E_DOMAIN }}
+          E2E_BASE: ${{ secrets.E2E_BASE }}
+          E2E_NAME: ci-e2e
+          E2E_PORT: '3000'
+          E2E_KEEP: ${{ inputs.keep && '1' || '0' }}
+        run: |
+          set +e
+          ./scripts/e2e-test.sh 2>&1 | tee /tmp/e2e.txt
+          echo "status=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+
+      - name: Publish the e2e log to the ci-report branch
+        if: always()
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          rm -rf /tmp/pub && mkdir -p /tmp/pub
+          cp /tmp/e2e.txt /tmp/pub/e2e-report.txt 2>/dev/null || echo "no output" > /tmp/pub/e2e-report.txt
+          cd /tmp/pub
+          git init -q -b ci-report
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add origin "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git fetch -q origin ci-report 2>/dev/null && git reset -q --soft FETCH_HEAD || true
+          git add -A
+          git commit -q -m "e2e report for ${GITHUB_SHA}"
+          git push -q --force origin ci-report
+          echo "published"
+
+      - name: Fail the job if the e2e cycle failed
+        if: steps.e2e.outputs.status != '0'
+        run: exit 1

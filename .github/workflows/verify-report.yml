@@ -1,0 +1,93 @@
+name: Verify report
+
+# Builds, vets and tests the project, then publishes the raw output to the
+# `ci-report` branch as a plain text file. That makes the full compiler and
+# test output readable with `git fetch` alone, without the Actions API.
+#
+# Read it with:
+#   git fetch origin ci-report && git show origin/ci-report:report.txt
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          cache: true
+
+      - name: Run the full verification and capture every byte
+        id: run
+        run: |
+          set +e
+          exec 3>&1
+          {
+            echo "commit:  ${GITHUB_SHA}"
+            echo "ref:     ${GITHUB_REF}"
+            echo "runner:  $(uname -srm)"
+            echo "go:      $(go version)"
+            echo "date:    $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+
+            echo
+            echo "=================== go mod tidy ==================="
+            go mod tidy 2>&1; echo "[exit $?]"
+
+            echo
+            echo "=================== gofmt -s -l . ================="
+            out=$(gofmt -s -l . 2>&1)
+            if [ -n "$out" ]; then echo "$out"; echo "[needs formatting]"; else echo "(clean)"; fi
+
+            echo
+            echo "=================== go build ./... ================"
+            go build ./... 2>&1; echo "[exit $?]"
+
+            echo
+            echo "=================== go vet ./... =================="
+            go vet ./... 2>&1; echo "[exit $?]"
+
+            echo
+            echo "=================== go test ./... ================="
+            go test ./... -count=1 -v 2>&1 | tail -400
+            echo "[exit ${PIPESTATUS[0]}]"
+
+            echo
+            echo "=================== go test (summary) ============="
+            go test ./... -count=1 2>&1; echo "[exit $?]"
+
+            echo
+            echo "=================== cross compile ================="
+            for t in darwin/amd64 darwin/arm64 linux/amd64 linux/arm64 windows/amd64; do
+              GOOS=${t%/*} GOARCH=${t#*/} go build -trimpath -o /dev/null . 2>&1 \
+                && echo "ok   $t" || echo "FAIL $t"
+            done
+          } > report.txt 2>&1
+          cat report.txt
+
+      - name: Publish the report to the ci-report branch
+        if: always()
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          mkdir -p /tmp/pub
+          cp report.txt /tmp/pub/
+          [ -f go.sum ] && cp go.sum /tmp/pub/go.sum || true
+          cd /tmp/pub
+          git init -q -b ci-report
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "verify report for ${GITHUB_SHA}"
+          git push -q --force \
+            "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" ci-report
+          echo "published to the ci-report branch"
