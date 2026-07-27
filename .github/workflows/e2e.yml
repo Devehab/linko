@@ -13,6 +13,10 @@ name: E2E (real Cloudflare)
 # Never run this from a fork: it would expose the secrets.
 
 on:
+  # Pushing anything to the run-e2e branch starts a run. Useful when the
+  # Actions API is not reachable and only git is available.
+  push:
+    branches: [run-e2e]
   workflow_dispatch:
     inputs:
       keep:
@@ -33,6 +37,23 @@ jobs:
         with:
           go-version: '1.22'
           cache: true
+
+      - name: Check the secrets are present
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          E2E_DOMAIN: ${{ secrets.E2E_DOMAIN }}
+          E2E_BASE: ${{ secrets.E2E_BASE }}
+        run: |
+          missing=""
+          [ -z "$CF_API_TOKEN" ] && missing="$missing CF_API_TOKEN"
+          [ -z "$E2E_DOMAIN" ]   && missing="$missing E2E_DOMAIN"
+          [ -z "$E2E_BASE" ]     && missing="$missing E2E_BASE"
+          if [ -n "$missing" ]; then
+            echo "Missing repository secret(s):$missing"
+            echo "Add them under Settings -> Secrets and variables -> Actions."
+            exit 1
+          fi
+          echo "all three secrets are set"
 
       - name: Build linko
         run: |
