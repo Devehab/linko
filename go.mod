@@ -1,4 +1,4 @@
-module github.com/ibtkrgo/linko
+module github.com/Devehab/linko
 
 go 1.22
 

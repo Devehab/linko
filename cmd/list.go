@@ -7,9 +7,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/ibtkrgo/linko/cloudflare"
-	"github.com/ibtkrgo/linko/config"
-	"github.com/ibtkrgo/linko/internal/ui"
+	"github.com/Devehab/linko/cloudflare"
+	"github.com/Devehab/linko/config"
+	"github.com/Devehab/linko/internal/ui"
 )
 
 func newListCmd() *cobra.Command {

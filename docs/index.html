@@ -255,7 +255,7 @@
 <h3>macOS و Linux — سكربت التثبيت</h3>
 <div class="code">
   <button class="copy">نسخ</button>
-  <pre><code>curl -fsSL https://raw.githubusercontent.com/ibtkrgo/linko/main/install.sh | bash</code></pre>
+  <pre><code>curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/install.sh | bash</code></pre>
 </div>
 <p>يكتشف السكربت نظامك ومعماريتك، وينزّل النسخة المناسبة إلى <code>/usr/local/bin</code>
    (أو <code>~/.local/bin</code> إن لم تكن لديك صلاحيات).</p>
@@ -264,19 +264,19 @@
 <div class="code">
   <button class="copy">نسخ</button>
   <pre><code>LINKO_INSTALL=<span class="kw">$HOME</span>/bin LINKO_VERSION=v0.1.0 \
-  bash -c <span class="kw">"$(curl -fsSL https://raw.githubusercontent.com/ibtkrgo/linko/main/install.sh)"</span></code></pre>
+  bash -c <span class="kw">"$(curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/install.sh)"</span></code></pre>
 </div>
 
 <h3>عبر Go</h3>
 <div class="code">
   <button class="copy">نسخ</button>
-  <pre><code>go install github.com/ibtkrgo/linko@latest</code></pre>
+  <pre><code>go install github.com/Devehab/linko@latest</code></pre>
 </div>
 
 <h3>البناء من المصدر</h3>
 <div class="code">
   <button class="copy">نسخ</button>
-  <pre><code>git clone https://github.com/ibtkrgo/linko.git
+  <pre><code>git clone https://github.com/Devehab/linko.git
 cd linko
 make deps     <span class="cmt"># تنزيل الاعتماديات وإنشاء go.sum</span>
 make verify   <span class="cmt"># gofmt + go vet + الاختبارات</span>

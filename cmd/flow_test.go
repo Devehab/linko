@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ibtkrgo/linko/cloudflare"
-	"github.com/ibtkrgo/linko/config"
+	"github.com/Devehab/linko/cloudflare"
+	"github.com/Devehab/linko/config"
 )
 
 // fakeAPI is a very small stand-in for the Cloudflare API: it keeps a tunnel

@@ -2,7 +2,7 @@
 // Cloudflare Tunnel.
 package main
 
-import "github.com/ibtkrgo/linko/cmd"
+import "github.com/Devehab/linko/cmd"
 
 // version is overridden at build time:
 //

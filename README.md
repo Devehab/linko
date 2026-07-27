@@ -40,24 +40,24 @@ one command in, one public URL out.
 **macOS / Linux**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ibtkrgo/linko/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/install.sh | bash
 ```
 
 **Go**
 
 ```bash
-go install github.com/ibtkrgo/linko@latest
+go install github.com/Devehab/linko@latest
 ```
 
 **From source**
 
 ```bash
-git clone https://github.com/ibtkrgo/linko.git
+git clone https://github.com/Devehab/linko.git
 cd linko
 make deps && make verify && make build
 ```
 
-**Windows** — download the `.zip` from [Releases](https://github.com/ibtkrgo/linko/releases)
+**Windows** — download the `.zip` from [Releases](https://github.com/Devehab/linko/releases)
 and put `linko.exe` somewhere on your `PATH`.
 
 ## Setup

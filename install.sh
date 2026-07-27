@@ -2,7 +2,7 @@
 #
 # linko installer
 #
-#   curl -fsSL https://raw.githubusercontent.com/ibtkrgo/linko/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/install.sh | bash
 #
 # Environment variables:
 #   LINKO_VERSION   version to install (default: latest)
@@ -10,7 +10,7 @@
 
 set -euo pipefail
 
-REPO="${LINKO_REPO:-ibtkrgo/linko}"
+REPO="${LINKO_REPO:-Devehab/linko}"
 VERSION="${LINKO_VERSION:-latest}"
 BINARY="linko"
 

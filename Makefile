@@ -36,6 +36,11 @@ cover:
 	go test ./... -coverprofile=coverage.out -covermode=atomic
 	go tool cover -func=coverage.out | tail -n 20
 
+## e2e: full end-to-end test against a real Cloudflare account
+.PHONY: e2e
+e2e:
+	./scripts/e2e-test.sh
+
 ## verify: fmt check + vet + tests (run this before committing)
 .PHONY: verify
 verify: fmt-check vet test
