@@ -13,6 +13,7 @@ set -euo pipefail
 REPO="${LINKO_REPO:-Devehab/linko}"
 VERSION="${LINKO_VERSION:-latest}"
 BINARY="linko"
+DOCS_URL="https://github.com/${REPO}/blob/main/GUIDE.md"
 
 red()   { printf '\033[31m%s\033[0m\n' "$*"; }
 green() { printf '\033[32m%s\033[0m\n' "$*"; }
@@ -31,18 +32,73 @@ detect_platform() {
   os="$(uname -s | tr '[:upper:]' '[:lower:]')"
   arch="$(uname -m)"
 
+  # Return non-zero rather than dying: the caller falls back to building from
+  # source, which covers platforms we do not ship binaries for.
   case "$os" in
     linux|darwin) ;;
-    *) die "unsupported operating system: $os (Windows users: download the .zip from https://github.com/$REPO/releases)" ;;
+    *) return 1 ;;
   esac
 
   case "$arch" in
     x86_64|amd64) arch="amd64" ;;
     arm64|aarch64) arch="arm64" ;;
-    *) die "unsupported architecture: $arch" ;;
+    *) return 1 ;;
   esac
 
   echo "${os}_${arch}"
+}
+
+# How to install Go on this machine, in the user's own package manager.
+go_install_hint() {
+  case "$(uname -s)" in
+    Darwin)
+      echo "    brew install go"
+      echo "    # no Homebrew? download the .pkg from https://go.dev/dl/"
+      ;;
+    Linux)
+      echo "    sudo apt install golang-go      # Debian / Ubuntu"
+      echo "    sudo dnf install golang         # Fedora"
+      echo "    sudo pacman -S go               # Arch"
+      echo "    # or download the tarball from https://go.dev/dl/"
+      ;;
+    *)
+      echo "    https://go.dev/dl/"
+      ;;
+  esac
+}
+
+find_go() {
+  command -v go >/dev/null 2>&1 && return 0
+  # The official macOS/Linux packages install here without touching PATH.
+  local c
+  for c in /usr/local/go/bin /opt/homebrew/bin "$HOME/go/bin"; do
+    if [ -x "$c/go" ]; then
+      PATH="$c:$PATH"; export PATH
+      dim "found go in $c (not on your PATH)"
+      return 0
+    fi
+  done
+  return 1
+}
+
+build_from_source() {
+  local dest="$1" ref="$VERSION"
+  [ "$ref" = "latest" ] && ref="latest"
+
+  if ! find_go; then
+    echo
+    red "! There is no prebuilt binary for $(uname -s)/$(uname -m),"
+    red "  and building from source needs Go, which is not installed."
+    echo
+    echo "  Install Go, then run this installer again:"
+    go_install_hint
+    echo
+    exit 1
+  fi
+
+  dim "building from source with $(go version | awk '{print $3}')"
+  GOBIN="$dest" go install "github.com/${REPO}@${ref}" \
+    || die "build from source failed"
 }
 
 on_path() {
@@ -111,32 +167,43 @@ main() {
   command -v tar  >/dev/null 2>&1 || die "tar is required"
 
   local platform version tag archive url dest
-  platform="$(detect_platform)"
-  tag="$(resolve_version)"
-  version="${tag#v}"
-
-  archive="${BINARY}_${version}_${platform}.tar.gz"
-  url="https://github.com/${REPO}/releases/download/${tag}/${archive}"
-
-  dim "Installing ${BINARY} ${tag} (${platform})"
-
-  TMP="$(mktemp -d)"
-
-  curl -fsSL "$url" -o "$TMP/$archive" \
-    || die "download failed: $url"
-  tar -xzf "$TMP/$archive" -C "$TMP"
-  [ -f "$TMP/$BINARY" ] || die "the archive does not contain a ${BINARY} binary"
-  chmod +x "$TMP/$BINARY"
-
   dest="$(choose_install_dir)"
   mkdir -p "$dest"
 
-  if [ -w "$dest" ]; then
-    mv "$TMP/$BINARY" "$dest/$BINARY"
+  platform="$(detect_platform)" || platform=""
+
+  if [ -z "$platform" ]; then
+    dim "no prebuilt binary for $(uname -s)/$(uname -m)"
+    build_from_source "$dest"
   else
-    dim "elevating with sudo to write to $dest"
-    sudo mv "$TMP/$BINARY" "$dest/$BINARY"
+    tag="$(resolve_version)"
+    version="${tag#v}"
+    archive="${BINARY}_${version}_${platform}.tar.gz"
+    url="https://github.com/${REPO}/releases/download/${tag}/${archive}"
+
+    dim "Installing ${BINARY} ${tag} (${platform})"
+
+    TMP="$(mktemp -d)"
+
+    if curl -fsSL "$url" -o "$TMP/$archive"; then
+      tar -xzf "$TMP/$archive" -C "$TMP" \
+        || die "could not unpack $archive"
+      [ -f "$TMP/$BINARY" ] || die "the archive does not contain a ${BINARY} binary"
+      chmod +x "$TMP/$BINARY"
+
+      if [ -w "$dest" ]; then
+        mv "$TMP/$BINARY" "$dest/$BINARY"
+      else
+        dim "elevating with sudo to write to $dest"
+        sudo mv "$TMP/$BINARY" "$dest/$BINARY"
+      fi
+    else
+      dim "no release archive at $url — building from source instead"
+      build_from_source "$dest"
+    fi
   fi
+
+  [ -x "$dest/$BINARY" ] || die "installation failed: $dest/$BINARY is missing"
 
   green "✓ ${BINARY} installed to ${dest}/${BINARY}"
 
@@ -151,6 +218,16 @@ main() {
     echo "  exec \$SHELL       # reload your shell once"
     echo "  linko init"
   fi
+
+  echo
+  echo "Before that you need a Cloudflare API token with BOTH permissions:"
+  echo "  Zone     ->  DNS                ->  Edit"
+  echo "  Account  ->  Cloudflare Tunnel  ->  Edit"
+  echo "  Create it at https://dash.cloudflare.com/profile/api-tokens"
+  echo
+  echo "Full guide (install, token, commands, troubleshooting):"
+  green "  ${DOCS_URL}"
+  echo "  or run:  linko docs"
 }
 
 main "$@"

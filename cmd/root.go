@@ -53,6 +53,7 @@ using your own Cloudflare account and domain.
 		newRemoveCmd(),
 		newStatusCmd(),
 		newDoctorCmd(),
+		newDocsCmd(),
 	)
 	return root
 }

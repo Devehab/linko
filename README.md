@@ -2,6 +2,8 @@
 
 > Turn any local port into a public HTTPS URL — on your own domain, through Cloudflare Tunnel.
 
+**📖 [الدليل الكامل بالعربية — التثبيت، التوكن، الأوامر، حل المشاكل](GUIDE.md)**
+
 ```console
 $ linko 3000
 
@@ -62,14 +64,19 @@ and put `linko.exe` somewhere on your `PATH`.
 
 ## Setup
 
-Create a Cloudflare API token at
+Create **one** Cloudflare API token at
 [dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens)
-with exactly two permissions:
+carrying **both** permissions — not one token each:
 
 | Type    | Resource          | Permission |
 | ------- | ----------------- | ---------- |
-| Zone    | DNS               | Edit       |
-| Account | Cloudflare Tunnel | Edit       |
+| Zone    | DNS               | **Edit**   |
+| Account | Cloudflare Tunnel | **Edit**   |
+
+Set **Zone Resources** to `Include → Specific zone → your domain`. Leaving it empty
+produces a token that authenticates but sees no domains at all.
+
+Not sure? `linko docs` prints these steps in your terminal.
 
 Then run the wizard:
 
@@ -117,6 +124,7 @@ Target formats: `3000`, `:3000`, `localhost:3000`, `127.0.0.1:8080`,
 | `linko status`         | Tunnel state and active connections     |
 | `linko remove <name>`  | Delete a hostname (`--all`, `--yes`)    |
 | `linko doctor`         | Diagnose the setup, exit 1 on failure   |
+| `linko docs`           | Setup guide in the terminal (`--open`)  |
 
 ### Environment variables
 

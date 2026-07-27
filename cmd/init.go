@@ -88,8 +88,8 @@ func runInit(ctx context.Context, opts *initOptions) error {
 		if opts.yes {
 			return fmt.Errorf("no API token: pass --token or set %s", config.EnvToken)
 		}
-		ui.Info("Create a token at https://dash.cloudflare.com/profile/api-tokens")
-		ui.Info("Required permissions: Zone → DNS → Edit, and Account → Cloudflare Tunnel → Edit")
+		ui.Blank()
+		printTokenSteps()
 		var err error
 		token, err = p.AskSecret("Cloudflare API token:")
 		if err != nil {
@@ -262,6 +262,9 @@ func runInit(ctx context.Context, opts *initOptions) error {
 	ui.Line("%s", ui.Bold("You're ready."))
 	ui.Line("  %s   publish localhost:3000 on a random subdomain", ui.Cyan("linko 3000"))
 	ui.Line("  %s   publish it on crm.%s", ui.Cyan("linko 3000 -n crm"), cfg.BaseDomain)
+	ui.Blank()
+	ui.Line("  %s %s", ui.Dim("Guide:"), ui.Cyan(DocsURL))
+	ui.Line("  %s", ui.Dim("or run: linko docs"))
 	ui.Blank()
 	return nil
 }
