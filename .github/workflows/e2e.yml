@@ -44,16 +44,24 @@ jobs:
           E2E_DOMAIN: ${{ secrets.E2E_DOMAIN }}
           E2E_BASE: ${{ secrets.E2E_BASE }}
         run: |
-          missing=""
-          [ -z "$CF_API_TOKEN" ] && missing="$missing CF_API_TOKEN"
-          [ -z "$E2E_DOMAIN" ]   && missing="$missing E2E_DOMAIN"
-          [ -z "$E2E_BASE" ]     && missing="$missing E2E_BASE"
-          if [ -n "$missing" ]; then
-            echo "Missing repository secret(s):$missing"
-            echo "Add them under Settings -> Secrets and variables -> Actions."
+          # Everything this job prints must survive into the published report,
+          # so start the report file here rather than in the e2e step.
+          {
+            echo "run:    ${GITHUB_RUN_ID}"
+            echo "commit: ${GITHUB_SHA}"
+            echo "date:   $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+            echo
+            echo "=================== secrets ==================="
+            [ -n "$CF_API_TOKEN" ] && echo "CF_API_TOKEN  set (${#CF_API_TOKEN} chars)" || echo "CF_API_TOKEN  MISSING"
+            [ -n "$E2E_DOMAIN" ]   && echo "E2E_DOMAIN    ${E2E_DOMAIN}"                || echo "E2E_DOMAIN    MISSING"
+            [ -n "$E2E_BASE" ]     && echo "E2E_BASE      ${E2E_BASE}"                  || echo "E2E_BASE      MISSING"
+          } | tee /tmp/e2e.txt
+
+          if [ -z "$CF_API_TOKEN" ] || [ -z "$E2E_DOMAIN" ] || [ -z "$E2E_BASE" ]; then
+            echo "" | tee -a /tmp/e2e.txt
+            echo "Add the missing secrets under Settings -> Secrets and variables -> Actions." | tee -a /tmp/e2e.txt
             exit 1
           fi
-          echo "all three secrets are set"
 
       - name: Build linko
         run: |
@@ -83,7 +91,7 @@ jobs:
           E2E_KEEP: ${{ inputs.keep && '1' || '0' }}
         run: |
           set +e
-          ./scripts/e2e-test.sh 2>&1 | tee /tmp/e2e.txt
+          ./scripts/e2e-test.sh 2>&1 | tee -a /tmp/e2e.txt
           echo "status=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
 
       - name: Publish the e2e log to the ci-report branch
@@ -92,17 +100,20 @@ jobs:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
-          rm -rf /tmp/pub && mkdir -p /tmp/pub
-          cp /tmp/e2e.txt /tmp/pub/e2e-report.txt 2>/dev/null || echo "no output" > /tmp/pub/e2e-report.txt
+          rm -rf /tmp/pub
+          # Start from the existing branch so the verify report is not lost.
+          git clone -q --depth 1 --branch ci-report \
+            "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/pub 2>/dev/null || {
+              mkdir -p /tmp/pub && cd /tmp/pub && git init -q -b ci-report
+              git remote add origin "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+            }
           cd /tmp/pub
-          git init -q -b ci-report
+          cp /tmp/e2e.txt e2e-report.txt 2>/dev/null || echo "the job produced no output at all" > e2e-report.txt
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git remote add origin "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git fetch -q origin ci-report 2>/dev/null && git reset -q --soft FETCH_HEAD || true
           git add -A
-          git commit -q -m "e2e report for ${GITHUB_SHA}"
-          git push -q --force origin ci-report
+          git commit -q -m "e2e report for ${GITHUB_SHA}" || echo "nothing changed"
+          git push -q --force origin HEAD:ci-report
           echo "published"
 
       - name: Fail the job if the e2e cycle failed
