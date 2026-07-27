@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/Devehab/linko/config"
+	"github.com/Devehab/linko/internal/naming"
 )
 
 func names(t *testing.T) map[string]bool {
@@ -26,7 +27,8 @@ func equal(a, b []string) bool {
 
 func TestCommandTreeHasEveryCommand(t *testing.T) {
 	known := names(t)
-	for _, want := range []string{"init", "start", "list", "remove", "status", "doctor"} {
+	for _, want := range []string{"init", "start", "list", "remove", "status", "doctor",
+		"docs", "stop", "ps", "service"} {
 		if !known[want] {
 			t.Errorf("command %q is missing from the tree", want)
 		}
@@ -170,6 +172,100 @@ func TestResolveTokenPrefersFlagThenEnvThenConfig(t *testing.T) {
 	}
 	if got := resolveToken("", nil); got != "" {
 		t.Errorf("with nothing available, resolveToken = %q, want an empty string", got)
+	}
+}
+
+func TestResolveLabelReusesThePortsExistingURL(t *testing.T) {
+	cfg := &config.Config{BaseDomain: "example.com"}
+	cfg.UpsertRoute(config.Route{
+		Name:     "x92ka",
+		Hostname: "x92ka.example.com",
+		Service:  "http://localhost:3000",
+		Port:     3000,
+	})
+
+	// The whole point: Ctrl+C then `linko 3000` again must hand back the same
+	// name rather than minting another random one.
+	label, reused, err := resolveLabel(cfg, &startOptions{}, "http://localhost:3000")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reused || label != "x92ka" {
+		t.Fatalf("resolveLabel = (%q, reused=%v), want the existing name", label, reused)
+	}
+}
+
+func TestResolveLabelExplicitNameWins(t *testing.T) {
+	cfg := &config.Config{BaseDomain: "example.com"}
+	cfg.UpsertRoute(config.Route{Name: "x92ka", Service: "http://localhost:3000"})
+
+	label, reused, err := resolveLabel(cfg, &startOptions{name: "  CRM  "}, "http://localhost:3000")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if label != "crm" {
+		t.Fatalf("resolveLabel = %q, want the normalised flag value", label)
+	}
+	if reused {
+		t.Error("an explicit --name is not a reuse")
+	}
+}
+
+func TestResolveLabelNewMintsAFreshOne(t *testing.T) {
+	cfg := &config.Config{BaseDomain: "example.com"}
+	cfg.UpsertRoute(config.Route{Name: "x92ka", Service: "http://localhost:3000"})
+
+	label, reused, err := resolveLabel(cfg, &startOptions{fresh: true}, "http://localhost:3000")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if reused || label == "x92ka" {
+		t.Fatalf("resolveLabel = (%q, reused=%v), want a brand new label", label, reused)
+	}
+	if err := naming.ValidateLabel(label); err != nil {
+		t.Fatalf("the generated label is invalid: %v", err)
+	}
+}
+
+func TestResolveLabelTempIsAlwaysNew(t *testing.T) {
+	cfg := &config.Config{BaseDomain: "example.com"}
+	cfg.UpsertRoute(config.Route{Name: "x92ka", Service: "http://localhost:3000"})
+
+	label, reused, err := resolveLabel(cfg, &startOptions{temp: true}, "http://localhost:3000")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if reused || label == "x92ka" {
+		t.Fatalf("resolveLabel = (%q, reused=%v), want a throwaway label", label, reused)
+	}
+}
+
+func TestResolveLabelUnknownPortGetsARandomName(t *testing.T) {
+	cfg := &config.Config{BaseDomain: "example.com"}
+	cfg.UpsertRoute(config.Route{Name: "x92ka", Service: "http://localhost:3000"})
+
+	label, reused, err := resolveLabel(cfg, &startOptions{}, "http://localhost:8080")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if reused {
+		t.Error("port 8080 has no URL yet, so nothing can be reused")
+	}
+	if err := naming.ValidateLabel(label); err != nil {
+		t.Fatalf("the generated label is invalid: %v", err)
+	}
+}
+
+func TestFindRouteByService(t *testing.T) {
+	cfg := &config.Config{BaseDomain: "example.com"}
+	cfg.UpsertRoute(config.Route{Name: "web", Hostname: "web.example.com", Service: "http://localhost:3000"})
+	cfg.UpsertRoute(config.Route{Name: "api", Hostname: "api.example.com", Service: "http://localhost:8080"})
+
+	if r := cfg.FindRouteByService("http://localhost:8080"); r == nil || r.Name != "api" {
+		t.Fatalf("FindRouteByService returned %+v", r)
+	}
+	if r := cfg.FindRouteByService("http://localhost:9999"); r != nil {
+		t.Fatalf("FindRouteByService = %+v for an unpublished port, want nil", r)
 	}
 }
 

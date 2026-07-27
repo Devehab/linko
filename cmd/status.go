@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -70,6 +71,18 @@ func runStatus(ctx context.Context) error {
 			}
 			url := "https://" + r.Hostname
 			ui.Line("  %s %s %s %s", mark, ui.Link(url, url), ui.Dim("->"), r.Service)
+		}
+	}
+
+	if running := runningTunnels(cfg); len(running) > 0 {
+		ui.Header("Running in the background")
+		for _, bg := range running {
+			host := bg.Hostname
+			if host == "" {
+				host = bg.Name
+			}
+			ui.Line("  %s %s %s", ui.Green("·"), ui.Link("https://"+host, "https://"+host),
+				ui.Dim(fmt.Sprintf("pid %d · linko stop %s", bg.PID, bg.Name)))
 		}
 	}
 

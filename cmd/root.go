@@ -54,6 +54,9 @@ using your own Cloudflare account and domain.
 		newStatusCmd(),
 		newDoctorCmd(),
 		newDocsCmd(),
+		newStopCmd(),
+		newPsCmd(),
+		newServiceCmd(),
 	)
 	return root
 }

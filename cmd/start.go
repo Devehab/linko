@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"strings"
 	"sync"
@@ -23,7 +24,10 @@ import (
 
 type startOptions struct {
 	name     string
+	fresh    bool
+	temp     bool
 	keep     bool
+	detach   bool
 	replace  bool
 	yes      bool
 	verbose  bool
@@ -40,12 +44,19 @@ func newStartCmd() *cobra.Command {
 		Short:   "Publish a local service on a public HTTPS URL",
 		Long: `start publishes a locally running service through your Cloudflare tunnel.
 
-  linko 3000                    random subdomain -> http://localhost:3000
-  linko start 3000              the same thing, written out
-  linko 3000 --name crm         crm.<base domain> -> http://localhost:3000
-  linko 8080 --name api --keep  keep the hostname after you quit
+  linko 3000              publish localhost:3000
+  linko 3000              run it again — you get the SAME URL back
+  linko 3000 --new        mint a fresh random URL for this port
+  linko 3000 --name crm   choose the name yourself
+  linko 3000 --temp       throw the URL away when you quit
+  linko 3000 -d           run in the background and return to your prompt
 
-The tunnel stays up until you press Ctrl+C.`,
+A port keeps its URL. Re-running the same command reuses the hostname it
+handed out before, so restarting your app does not churn DNS records or
+break a link you already shared.
+
+The tunnel stays up until you press Ctrl+C, or until 'linko stop' when
+started with -d.`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, cancel := signalContext(cmd.Context())
@@ -55,15 +66,45 @@ The tunnel stays up until you press Ctrl+C.`,
 	}
 
 	f := cmd.Flags()
-	f.StringVarP(&opts.name, "name", "n", "", "subdomain to use (default: random)")
-	f.BoolVar(&opts.keep, "keep", false, "keep the hostname after the tunnel stops")
+	f.StringVarP(&opts.name, "name", "n", "", "subdomain to use (default: reuse this port's URL)")
+	f.BoolVarP(&opts.fresh, "new", "r", false, "mint a new random subdomain, replacing this port's current one")
+	f.BoolVar(&opts.temp, "temp", false, "delete the hostname when the tunnel stops")
+	f.BoolVarP(&opts.detach, "detach", "d", false, "run in the background and return to the prompt")
+	f.BoolVar(&opts.keep, "keep", false, "")
 	f.BoolVar(&opts.replace, "replace", false, "replace the hostname if it already points somewhere else")
 	f.BoolVarP(&opts.yes, "yes", "y", false, "do not ask questions")
 	f.BoolVarP(&opts.verbose, "verbose", "v", false, "stream cloudflared logs")
-	f.BoolVarP(&opts.open, "open", "o", false, "open the public URL in your browser once connected")
+	f.BoolVarP(&opts.open, "open", "o", false, "open the public URL in your browser once it answers")
 	f.StringVar(&opts.logLevel, "loglevel", "info", "cloudflared log level: debug, info, warn, error, fatal")
 
+	// --keep was the old opt-in for persistence. Persistence is the default
+	// now, so it is a no-op kept only so existing commands keep working.
+	_ = f.MarkHidden("keep")
+
 	return cmd
+}
+
+// resolveLabel decides which subdomain this run should use.
+//
+//	--name crm  -> crm, always
+//	--new       -> a fresh random label for this port
+//	(nothing)   -> the label this port already owns, or a new random one
+//
+// Reusing by default is the whole point: `linko 3000` after a Ctrl+C must
+// hand back the same URL, not mint another one.
+func resolveLabel(cfg *config.Config, opts *startOptions, service string) (label string, reused bool, err error) {
+	if name := strings.ToLower(strings.TrimSpace(opts.name)); name != "" {
+		return name, false, nil
+	}
+
+	if !opts.fresh && !opts.temp {
+		if existing := cfg.FindRouteByService(service); existing != nil && existing.Name != "" {
+			return existing.Name, true, nil
+		}
+	}
+
+	label, err = naming.Random(naming.DefaultLength)
+	return label, false, err
 }
 
 func runStart(ctx context.Context, rawTarget string, opts *startOptions) error {
@@ -78,18 +119,28 @@ func runStart(ctx context.Context, rawTarget string, opts *startOptions) error {
 	}
 
 	// Pick the subdomain label.
-	label := strings.ToLower(strings.TrimSpace(opts.name))
-	ephemeral := label == ""
-	if ephemeral {
-		label, err = naming.Random(naming.DefaultLength)
-		if err != nil {
-			return err
-		}
+	label, reused, err := resolveLabel(cfg, opts, service)
+	if err != nil {
+		return err
 	}
 	if err := naming.ValidateLabel(label); err != nil {
 		return err
 	}
 	hostname := cfg.Hostname(label)
+	ephemeral := opts.temp
+
+	// If this port already had a different URL and the user asked for a new
+	// one, retire the old hostname instead of leaving it dangling.
+	var retire *config.Route
+	if opts.fresh {
+		if old := cfg.FindRouteByService(service); old != nil && !strings.EqualFold(old.Hostname, hostname) {
+			retire = old
+		}
+	}
+
+	if opts.detach {
+		return startDetached(rawTarget, label, hostname, opts)
+	}
 
 	// What is already published under this hostname?
 	tunnelCfg, err := client.GetTunnelConfig(ctx, cfg.TunnelID)
@@ -127,6 +178,8 @@ func runStart(ctx context.Context, rawTarget string, opts *startOptions) error {
 	}
 	if created {
 		ui.Success("DNS record created (%s)", hostname)
+	} else if reused {
+		ui.Success("Reusing %s", hostname)
 	}
 
 	// Ingress
@@ -141,7 +194,7 @@ func runStart(ctx context.Context, rawTarget string, opts *startOptions) error {
 		Hostname:  hostname,
 		Service:   service,
 		Port:      port,
-		Ephemeral: ephemeral && !opts.keep,
+		Ephemeral: ephemeral,
 	}
 	if rec != nil {
 		route.DNSRecordID = rec.ID
@@ -151,7 +204,18 @@ func runStart(ctx context.Context, rawTarget string, opts *startOptions) error {
 		ui.Warn("could not update %s: %v", config.Path(), err)
 	}
 
-	// Clean up the ephemeral hostname when we exit.
+	// --new replaces this port's old URL; drop it so it does not linger.
+	if retire != nil {
+		if rerr := removeRoute(ctx, client, cfg, *retire); rerr != nil {
+			ui.Warn("could not remove the previous URL %s: %v", retire.Hostname, rerr)
+		} else {
+			ui.Info("Replaced %s", retire.Hostname)
+			_ = cfg.Save()
+		}
+	}
+
+	// Only --temp hostnames disappear on exit. Everything else survives so the
+	// link you shared keeps working after a restart.
 	if route.Ephemeral {
 		defer cleanupRoute(client, cfg, route)
 	}
@@ -188,9 +252,7 @@ func runTunnel(ctx context.Context, mgr *cloudflared.Manager, binary string, cfg
 	watcher := newLogWatcher(opts.verbose, func() {
 		printBanner(route, cfg)
 		if opts.open {
-			if err := openBrowser("https://" + route.Hostname); err != nil {
-				ui.Warn("could not open a browser: %v", err)
-			}
+			openWhenLive(ctx, "https://"+route.Hostname)
 		}
 	})
 
@@ -294,6 +356,63 @@ func isConnectedLine(line string) bool {
 	return strings.Contains(l, "registered tunnel connection") ||
 		strings.Contains(l, "connection established") ||
 		strings.Contains(l, "connection registered")
+}
+
+// openWhenLive waits for the hostname to actually answer before handing it to
+// the browser.
+//
+// "Tunnel connected" only means cloudflared reached Cloudflare. A brand new
+// DNS record still needs a moment to become resolvable, so opening a browser
+// at that instant reliably lands on an error page and makes a working setup
+// look broken.
+func openWhenLive(ctx context.Context, url string) {
+	if !waitUntilLive(ctx, url, 90*time.Second) {
+		ui.Warn("%s is not answering yet — DNS can take a minute on a new hostname", url)
+		ui.Info("Opening it anyway; reload in a moment if it does not load.")
+	}
+	if err := openBrowser(url); err != nil {
+		ui.Warn("could not open a browser: %v", err)
+	}
+}
+
+// waitUntilLive polls a URL until the edge serves it, or the deadline passes.
+func waitUntilLive(ctx context.Context, url string, timeout time.Duration) bool {
+	client := &http.Client{
+		Timeout: 8 * time.Second,
+		CheckRedirect: func(*http.Request, []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+
+	deadline := time.Now().Add(timeout)
+	announced := false
+
+	for time.Now().Before(deadline) {
+		req, err := http.NewRequestWithContext(ctx, http.MethodHead, url, nil)
+		if err != nil {
+			return false
+		}
+		resp, err := client.Do(req)
+		if err == nil {
+			resp.Body.Close()
+			// Anything the edge answers means DNS and TLS are working; a 502
+			// from the origin is still a live hostname.
+			return true
+		}
+		if ctx.Err() != nil {
+			return false
+		}
+		if !announced {
+			ui.Info("Waiting for %s to come up …", url)
+			announced = true
+		}
+		select {
+		case <-ctx.Done():
+			return false
+		case <-time.After(2 * time.Second):
+		}
+	}
+	return false
 }
 
 // explainDNSFailure turns Cloudflare's opaque "Authentication error (code

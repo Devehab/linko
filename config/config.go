@@ -72,6 +72,18 @@ func Path() string { return filepath.Join(Dir(), fileName) }
 // BinDir is where linko keeps a private copy of cloudflared.
 func BinDir() string { return filepath.Join(Dir(), "bin") }
 
+// RunDir holds one pid file per background tunnel.
+func RunDir() string { return filepath.Join(Dir(), "run") }
+
+// LogDir holds one log file per background tunnel.
+func LogDir() string { return filepath.Join(Dir(), "logs") }
+
+// PIDFile is the pid file for a named background tunnel.
+func PIDFile(name string) string { return filepath.Join(RunDir(), name+".pid") }
+
+// LogFile is the log file for a named background tunnel.
+func LogFile(name string) string { return filepath.Join(LogDir(), name+".log") }
+
 // Exists reports whether a config file is present.
 func Exists() bool {
 	st, err := os.Stat(Path())
@@ -183,6 +195,18 @@ func (c *Config) FindRoute(name string) *Route {
 func (c *Config) FindRouteByHostname(hostname string) *Route {
 	for i := range c.Routes {
 		if strings.EqualFold(c.Routes[i].Hostname, hostname) {
+			return &c.Routes[i]
+		}
+	}
+	return nil
+}
+
+// FindRouteByService returns the route already published for a local service,
+// so that re-running `linko 3000` reuses the URL it handed out last time
+// instead of minting a new one on every restart.
+func (c *Config) FindRouteByService(service string) *Route {
+	for i := range c.Routes {
+		if strings.EqualFold(c.Routes[i].Service, service) {
 			return &c.Routes[i]
 		}
 	}
