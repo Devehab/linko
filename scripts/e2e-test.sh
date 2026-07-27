@@ -67,9 +67,33 @@ trap cleanup EXIT
 
 step "0 · Preflight"
 
-command -v go   >/dev/null 2>&1 || { bad "go is not installed"; exit 1; }
 command -v curl >/dev/null 2>&1 || { bad "curl is not installed"; exit 1; }
-ok "go $(go version | awk '{print $3}')"
+
+# Go is often installed but missing from PATH (the official pkg installs to
+# /usr/local/go/bin and does not touch your shell profile).
+if ! command -v go >/dev/null 2>&1; then
+  for candidate in /usr/local/go/bin /opt/homebrew/bin /usr/local/bin "$HOME/go/bin" "$HOME/sdk/go/bin"; do
+    if [ -x "${candidate}/go" ]; then
+      PATH="${candidate}:${PATH}"
+      export PATH
+      warn "found go in ${candidate} — it is not on your PATH"
+      dim  "  add this to ~/.zshrc:  export PATH=\"${candidate}:\$PATH\""
+      break
+    fi
+  done
+fi
+
+if ! command -v go >/dev/null 2>&1; then
+  bad "Go is not installed"
+  echo
+  echo "    Install it, then run this script again:"
+  echo
+  echo "      brew install go                 # if you use Homebrew"
+  echo "      # or download the pkg from https://go.dev/dl/"
+  echo
+  exit 1
+fi
+ok "go $(go version | awk '{print $3}') ($(command -v go))"
 
 if [ -z "${LINKO_API_TOKEN:-}" ]; then
   bad "LINKO_API_TOKEN is not set"
