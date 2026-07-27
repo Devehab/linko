@@ -1,0 +1,291 @@
+package cmd
+
+import (
+	"context"
+	"fmt"
+	"strings"
+	"time"
+
+	"github.com/spf13/cobra"
+
+	"github.com/ibtkrgo/linko/cloudflare"
+	"github.com/ibtkrgo/linko/config"
+	"github.com/ibtkrgo/linko/internal/cloudflared"
+	"github.com/ibtkrgo/linko/internal/naming"
+	"github.com/ibtkrgo/linko/internal/ui"
+)
+
+type initOptions struct {
+	token      string
+	domain     string
+	base       string
+	tunnelName string
+	force      bool
+	yes        bool
+	skipDL     bool
+}
+
+func newInitCmd() *cobra.Command {
+	opts := &initOptions{}
+
+	cmd := &cobra.Command{
+		Use:   "init",
+		Short: "One-time setup: connect your Cloudflare account and create the tunnel",
+		Long: `init walks through the one-time setup:
+
+  1. store a Cloudflare API token
+  2. find the DNS zone for your domain
+  3. create (or reuse) a Zero Trust tunnel
+  4. save everything to ` + config.Path(),
+		Args: cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, cancel := signalContext(cmd.Context())
+			defer cancel()
+			return runInit(ctx, opts)
+		},
+	}
+
+	f := cmd.Flags()
+	f.StringVar(&opts.token, "token", "", "Cloudflare API token (or set LINKO_API_TOKEN)")
+	f.StringVar(&opts.domain, "domain", "", "domain managed by Cloudflare, e.g. example.com")
+	f.StringVar(&opts.base, "base", "", "base subdomain for generated URLs, e.g. demo.example.com")
+	f.StringVar(&opts.tunnelName, "tunnel", "", "tunnel name (default <domain>-linko-tunnel)")
+	f.BoolVar(&opts.force, "force", false, "overwrite an existing configuration")
+	f.BoolVarP(&opts.yes, "yes", "y", false, "non-interactive: fail instead of prompting")
+	f.BoolVar(&opts.skipDL, "skip-download", false, "do not download cloudflared")
+
+	return cmd
+}
+
+func runInit(ctx context.Context, opts *initOptions) error {
+	p := ui.NewPrompter()
+
+	existing, _ := config.Load()
+	if config.Exists() && !opts.force {
+		ui.Warn("A configuration already exists at %s", config.Path())
+		if opts.yes {
+			return fmt.Errorf("refusing to overwrite an existing config (use --force)")
+		}
+		if !p.Confirm("Reconfigure linko?", false) {
+			ui.Info("Nothing changed.")
+			return nil
+		}
+	}
+
+	cfg := &config.Config{}
+	if existing != nil {
+		// Keep the routes we already published.
+		cfg.Routes = existing.Routes
+	}
+
+	ui.Header("Cloudflare credentials")
+
+	// 1. API token
+	token := strings.TrimSpace(opts.token)
+	if token == "" && existing != nil {
+		token = existing.APIToken
+	}
+	if token == "" {
+		if opts.yes {
+			return fmt.Errorf("--token is required in non-interactive mode")
+		}
+		ui.Info("Create a token at https://dash.cloudflare.com/profile/api-tokens")
+		ui.Info("Required permissions: Zone → DNS → Edit, and Account → Cloudflare Tunnel → Edit")
+		var err error
+		token, err = p.AskSecret("Cloudflare API token:")
+		if err != nil {
+			return err
+		}
+	}
+	if token == "" {
+		return fmt.Errorf("an API token is required")
+	}
+	cfg.APIToken = token
+
+	client := cloudflare.New(token)
+	if _, err := client.VerifyToken(ctx); err != nil {
+		ui.Fail("Cloudflare rejected the token")
+		return err
+	}
+	ui.Success("Cloudflare connected")
+
+	// 2. Domain / zone
+	ui.Header("Domain")
+	domain := strings.ToLower(strings.TrimSpace(opts.domain))
+	if domain == "" && existing != nil {
+		domain = existing.Domain
+	}
+	if domain == "" {
+		if opts.yes {
+			return fmt.Errorf("--domain is required in non-interactive mode")
+		}
+		zones, err := client.ListZones(ctx)
+		if err == nil && len(zones) > 0 {
+			names := make([]string, 0, len(zones))
+			for _, z := range zones {
+				names = append(names, z.Name)
+			}
+			ui.Info("Zones on this account: %s", strings.Join(names, ", "))
+			domain = names[0]
+		}
+		domain, err = p.AskRequired("Domain:", domain, func(s string) error {
+			return naming.ValidateHostname(s)
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	zone, err := client.FindZone(ctx, domain)
+	if err != nil {
+		ui.Fail("DNS zone not found")
+		return err
+	}
+	cfg.Domain = zone.Name
+	cfg.ZoneID = zone.ID
+	cfg.AccountID = zone.Account.ID
+	cfg.AccountName = zone.Account.Name
+	client.ZoneID = zone.ID
+	client.AccountID = zone.Account.ID
+	ui.Success("DNS zone found (%s)", zone.Name)
+	if cfg.AccountID == "" {
+		accounts, aerr := client.ListAccounts(ctx)
+		if aerr != nil || len(accounts) == 0 {
+			return fmt.Errorf("could not determine the Cloudflare account id — make sure the token has Account → Cloudflare Tunnel → Edit")
+		}
+		cfg.AccountID = accounts[0].ID
+		cfg.AccountName = accounts[0].Name
+		client.AccountID = accounts[0].ID
+	}
+
+	// 3. Base subdomain
+	base := strings.ToLower(strings.TrimSpace(opts.base))
+	if base == "" && existing != nil && strings.HasSuffix(existing.BaseDomain, cfg.Domain) {
+		base = existing.BaseDomain
+	}
+	if base == "" {
+		base = "demo." + cfg.Domain
+		if !opts.yes {
+			base, err = p.AskRequired("Base subdomain:", base, func(s string) error {
+				return validateBase(s, cfg.Domain)
+			})
+			if err != nil {
+				return err
+			}
+		}
+	}
+	base = expandBase(base, cfg.Domain)
+	if err := validateBase(base, cfg.Domain); err != nil {
+		return err
+	}
+	cfg.BaseDomain = base
+	ui.Success("URLs will look like https://abc12.%s", base)
+
+	// 4. Tunnel
+	ui.Header("Tunnel")
+	tunnelName := strings.TrimSpace(opts.tunnelName)
+	if tunnelName == "" && existing != nil {
+		tunnelName = existing.TunnelName
+	}
+	if tunnelName == "" {
+		tunnelName = defaultTunnelName(cfg.Domain)
+		if !opts.yes {
+			tunnelName, err = p.AskRequired("Tunnel name:", tunnelName, nil)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	tunnel, err := client.FindTunnel(ctx, tunnelName)
+	if err != nil {
+		return err
+	}
+	if tunnel == nil {
+		tunnel, err = client.CreateTunnel(ctx, tunnelName)
+		if err != nil {
+			ui.Fail("Could not create the tunnel")
+			return err
+		}
+		ui.Success("Tunnel created (%s)", tunnel.Name)
+	} else {
+		ui.Success("Tunnel reused (%s)", tunnel.Name)
+	}
+	cfg.TunnelID = tunnel.ID
+	cfg.TunnelName = tunnel.Name
+
+	tunnelToken, err := client.TunnelToken(ctx, tunnel.ID)
+	if err != nil {
+		return fmt.Errorf("fetching the tunnel token: %w", err)
+	}
+	cfg.TunnelToken = tunnelToken
+
+	// Make sure the remote config has a valid catch-all rule.
+	tunnelCfg, err := client.GetTunnelConfig(ctx, tunnel.ID)
+	if err != nil {
+		return fmt.Errorf("reading the tunnel configuration: %w", err)
+	}
+	if err := client.PutTunnelConfig(ctx, tunnel.ID, tunnelCfg); err != nil {
+		return fmt.Errorf("initialising the tunnel configuration: %w", err)
+	}
+	ui.Success("Tunnel configuration ready")
+
+	// 5. Save
+	if err := cfg.Save(); err != nil {
+		return err
+	}
+	ui.Success("Configuration saved to %s", config.Path())
+
+	// 6. cloudflared
+	if !opts.skipDL {
+		mgr := cloudflared.New(config.BinDir())
+		if path, lerr := mgr.Locate(); lerr == nil {
+			ui.Success("cloudflared found (%s)", path)
+		} else {
+			dctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+			path, derr := mgr.Ensure(dctx, nil)
+			cancel()
+			if derr != nil {
+				ui.Warn("cloudflared could not be downloaded: %v", derr)
+				ui.Info("linko will try again the first time you run it.")
+			} else {
+				ui.Success("cloudflared installed (%s)", path)
+			}
+		}
+	}
+
+	ui.Blank()
+	ui.Line("%s", ui.Bold("You're ready."))
+	ui.Line("  %s   publish localhost:3000 on a random subdomain", ui.Cyan("linko 3000"))
+	ui.Line("  %s   publish it on crm.%s", ui.Cyan("linko 3000 -n crm"), cfg.BaseDomain)
+	ui.Blank()
+	return nil
+}
+
+// expandBase turns "demo" into "demo.example.com".
+func expandBase(base, domain string) string {
+	base = strings.ToLower(strings.Trim(strings.TrimSpace(base), "."))
+	if base == "" || base == "@" {
+		return domain
+	}
+	if base == domain || strings.HasSuffix(base, "."+domain) {
+		return base
+	}
+	return base + "." + domain
+}
+
+func validateBase(base, domain string) error {
+	base = expandBase(base, domain)
+	if base != domain && !strings.HasSuffix(base, "."+domain) {
+		return fmt.Errorf("%q must be inside %s", base, domain)
+	}
+	return naming.ValidateHostname(base)
+}
+
+func defaultTunnelName(domain string) string {
+	label := strings.SplitN(domain, ".", 2)[0]
+	if label == "" {
+		label = "linko"
+	}
+	return label + "-linko-tunnel"
+}
