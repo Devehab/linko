@@ -99,15 +99,31 @@ linko init --yes \
 ## Usage
 
 ```bash
-linko 3000                 # random subdomain, removed when you quit
-linko 3000 --name crm      # https://crm.demo.example.com, persistent
-linko 3000 --keep          # keep a random hostname too
-linko 8080 -n api          # a second project, same tunnel
+linko 3000                 # publish it — same URL every time you run this
+linko 3000 --new           # mint a fresh random URL, retiring the old one
+linko 3000 --name crm      # https://crm.example.com
+linko 3000 --temp          # throwaway URL, deleted when you quit
+linko 3000 --open          # open the browser once the URL answers
+linko 3000 -d              # run in the background, return to the prompt
 
+linko ps                   # what is running in the background
+linko stop crm             # stop it
 linko list                 # what is published
 linko status               # tunnel connection state
 linko remove crm           # delete a hostname (route + DNS record)
 linko doctor               # check the whole setup
+```
+
+**A port keeps its URL.** Re-running `linko 3000` after a Ctrl+C hands back the
+same hostname instead of minting another one, so a link you already shared keeps
+working and your DNS does not fill up with dead records.
+
+Want it to survive a reboot?
+
+```bash
+linko service install 3000 --name crm   # launchd on macOS, systemd on Linux
+linko service list
+linko service uninstall crm
 ```
 
 Target formats: `3000`, `:3000`, `localhost:3000`, `127.0.0.1:8080`,
@@ -125,6 +141,9 @@ Target formats: `3000`, `:3000`, `localhost:3000`, `127.0.0.1:8080`,
 | `linko remove <name>`  | Delete a hostname (`--all`, `--yes`)    |
 | `linko doctor`         | Diagnose the setup, exit 1 on failure   |
 | `linko docs`           | Setup guide in the terminal (`--open`)  |
+| `linko ps`             | Background tunnels that are running     |
+| `linko stop <name>`    | Stop a background tunnel (`--all`)      |
+| `linko service …`      | Start a tunnel at login (`install`)     |
 
 ### Environment variables
 
