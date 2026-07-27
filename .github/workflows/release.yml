@@ -32,6 +32,9 @@ jobs:
           echo "tag=$tag"           >> "$GITHUB_OUTPUT"
           echo "version=${tag#v}"   >> "$GITHUB_OUTPUT"
 
+      - name: Resolve dependencies
+        run: go mod tidy
+
       - name: Test
         run: go test ./... -count=1
 
