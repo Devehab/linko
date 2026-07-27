@@ -180,6 +180,7 @@ func runInit(ctx context.Context, opts *initOptions) error {
 	}
 	cfg.BaseDomain = base
 	ui.Success("URLs will look like https://abc12.%s", base)
+	warnCertificateDepth(base, cfg.Domain)
 
 	// 4. Tunnel
 	ui.Header("Tunnel")
@@ -291,6 +292,44 @@ func explainZoneFailure(ctx context.Context, client *cloudflare.Client, wanted s
 	if z, ok := cloudflare.ZoneNameFor(wanted, zones); ok {
 		ui.Info("%q sits inside the zone %q — pass --domain %s instead.", wanted, z.Name, z.Name)
 	}
+}
+
+// extraLabels counts how many labels base adds on top of the zone apex.
+//
+//	extraLabels("example.com", "example.com")      = 0
+//	extraLabels("demo.example.com", "example.com") = 1
+func extraLabels(base, domain string) int {
+	base = strings.ToLower(strings.Trim(strings.TrimSpace(base), "."))
+	domain = strings.ToLower(strings.Trim(strings.TrimSpace(domain), "."))
+	if base == "" || domain == "" || base == domain {
+		return 0
+	}
+	prefix := strings.TrimSuffix(base, "."+domain)
+	if prefix == base {
+		return 0 // not inside the zone at all
+	}
+	return strings.Count(prefix, ".") + 1
+}
+
+// warnCertificateDepth catches the failure that costs the most time to
+// diagnose. Cloudflare's free Universal SSL covers exactly example.com and
+// *.example.com — one level. A base of demo.example.com therefore produces
+// abc.demo.example.com, which no free certificate matches, and the browser
+// fails the handshake outright with ERR_SSL_VERSION_OR_CIPHER_MISMATCH. DNS
+// and the tunnel look perfectly healthy while this happens.
+func warnCertificateDepth(base, domain string) {
+	if extraLabels(base, domain) == 0 {
+		return
+	}
+	ui.Blank()
+	ui.Warn("Your URLs will be two labels deep: %s", ui.Bold("<name>."+base))
+	ui.Info("Cloudflare's free Universal SSL only covers %s and *.%s,", domain, domain)
+	ui.Info("so HTTPS will fail with a certificate error even though DNS and")
+	ui.Info("the tunnel are fine.")
+	ui.Info("Fix it either way:")
+	ui.Info("  · re-run with %s   (URLs become <name>.%s)", ui.Bold("--base "+domain), domain)
+	ui.Info("  · or enable Total TLS / Advanced Certificate Manager on %s", domain)
+	ui.Blank()
 }
 
 // explainTunnelFailure covers the other half of the permission story: a token

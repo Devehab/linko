@@ -173,6 +173,26 @@ func TestResolveTokenPrefersFlagThenEnvThenConfig(t *testing.T) {
 	}
 }
 
+func TestExtraLabels(t *testing.T) {
+	cases := []struct {
+		base, domain string
+		want         int
+	}{
+		{"example.com", "example.com", 0},
+		{"EXAMPLE.com", "example.com", 0},
+		{"demo.example.com", "example.com", 1},
+		{"linko.techkahwa.net", "techkahwa.net", 1},
+		{"a.b.example.com", "example.com", 2},
+		{"other.org", "example.com", 0},
+		{"", "example.com", 0},
+	}
+	for _, c := range cases {
+		if got := extraLabels(c.base, c.domain); got != c.want {
+			t.Errorf("extraLabels(%q, %q) = %d, want %d", c.base, c.domain, got, c.want)
+		}
+	}
+}
+
 func TestExpandBaseNormalisesCase(t *testing.T) {
 	if got := expandBase("DEMO", "example.com"); got != "demo.example.com" {
 		t.Fatalf("expandBase(DEMO) = %q, want it lowercased", got)
