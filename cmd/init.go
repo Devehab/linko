@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -80,14 +81,11 @@ func runInit(ctx context.Context, opts *initOptions) error {
 
 	ui.Header("Cloudflare credentials")
 
-	// 1. API token
-	token := strings.TrimSpace(opts.token)
-	if token == "" && existing != nil {
-		token = existing.APIToken
-	}
+	// 1. API token: --token, then $LINKO_API_TOKEN, then whatever is stored.
+	token := resolveToken(opts.token, existing)
 	if token == "" {
 		if opts.yes {
-			return fmt.Errorf("--token is required in non-interactive mode")
+			return fmt.Errorf("no API token: pass --token or set %s", config.EnvToken)
 		}
 		ui.Info("Create a token at https://dash.cloudflare.com/profile/api-tokens")
 		ui.Info("Required permissions: Zone → DNS → Edit, and Account → Cloudflare Tunnel → Edit")
@@ -139,6 +137,7 @@ func runInit(ctx context.Context, opts *initOptions) error {
 	zone, err := client.FindZone(ctx, domain)
 	if err != nil {
 		ui.Fail("DNS zone not found")
+		explainZoneFailure(ctx, client, domain)
 		return err
 	}
 	cfg.Domain = zone.Name
@@ -260,6 +259,53 @@ func runInit(ctx context.Context, opts *initOptions) error {
 	ui.Line("  %s   publish it on crm.%s", ui.Cyan("linko 3000 -n crm"), cfg.BaseDomain)
 	ui.Blank()
 	return nil
+}
+
+// explainZoneFailure turns "no zone named X" into something actionable by
+// showing what the token can actually see.
+func explainZoneFailure(ctx context.Context, client *cloudflare.Client, wanted string) {
+	zones, err := client.ListZones(ctx)
+	if err != nil {
+		ui.Info("This token cannot list zones at all (%v).", err)
+		ui.Info("It is missing the Zone permission. Edit the token and add:")
+		ui.Info("  Zone → DNS → Edit,  with Zone Resources including %s", wanted)
+		return
+	}
+	if len(zones) == 0 {
+		ui.Info("This token can authenticate but sees zero zones.")
+		ui.Info("Its Zone Resources are empty — edit the token and include %s.", wanted)
+		return
+	}
+
+	names := make([]string, 0, len(zones))
+	for _, z := range zones {
+		names = append(names, z.Name)
+	}
+	ui.Info("Zones this token can see: %s", strings.Join(names, ", "))
+
+	// A very common mistake: passing a subdomain where the zone apex is wanted.
+	if z, ok := cloudflare.ZoneNameFor(wanted, zones); ok {
+		ui.Info("%q sits inside the zone %q — pass --domain %s instead.", wanted, z.Name, z.Name)
+	}
+}
+
+// resolveToken picks the Cloudflare API token from, in order: the --token
+// flag, the LINKO_API_TOKEN environment variable, and the stored config.
+//
+// Reading the environment here matters: config.Load applies the same override,
+// but only when a config file already exists — so without this, `linko init
+// --yes` on a fresh machine would reject a perfectly good LINKO_API_TOKEN.
+func resolveToken(flagValue string, existing *config.Config) string {
+	if v := strings.TrimSpace(flagValue); v != "" {
+		return v
+	}
+	if v := strings.TrimSpace(os.Getenv(config.EnvToken)); v != "" {
+		return v
+	}
+	if existing != nil {
+		return strings.TrimSpace(existing.APIToken)
+	}
+	return ""
 }
 
 // expandBase turns "demo" into "demo.example.com".

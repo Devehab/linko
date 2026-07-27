@@ -3,6 +3,8 @@ package cmd
 import (
 	"strings"
 	"testing"
+
+	"github.com/Devehab/linko/config"
 )
 
 func names(t *testing.T) map[string]bool {
@@ -142,6 +144,32 @@ func TestValidateBase(t *testing.T) {
 		if err := validateBase(in, "example.com"); err == nil {
 			t.Errorf("validateBase(%q) = nil, want an error", in)
 		}
+	}
+}
+
+func TestResolveTokenPrefersFlagThenEnvThenConfig(t *testing.T) {
+	stored := &config.Config{APIToken: "from-config"}
+
+	t.Setenv(config.EnvToken, "from-env")
+	if got := resolveToken("from-flag", stored); got != "from-flag" {
+		t.Errorf("with a flag set, resolveToken = %q, want the flag", got)
+	}
+	if got := resolveToken("  ", stored); got != "from-env" {
+		t.Errorf("with a blank flag, resolveToken = %q, want the environment", got)
+	}
+
+	// The environment is what makes `linko init --yes` usable on a machine
+	// that has no config file yet.
+	if got := resolveToken("", nil); got != "from-env" {
+		t.Errorf("with no config at all, resolveToken = %q, want the environment", got)
+	}
+
+	t.Setenv(config.EnvToken, "")
+	if got := resolveToken("", stored); got != "from-config" {
+		t.Errorf("with no flag and no environment, resolveToken = %q, want the config", got)
+	}
+	if got := resolveToken("", nil); got != "" {
+		t.Errorf("with nothing available, resolveToken = %q, want an empty string", got)
 	}
 }
 

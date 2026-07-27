@@ -1,9 +1,13 @@
-/linko
-/linko.exe
-/dist/
-coverage.out
-*.test
 
+*.test
 .DS_Store
 .idea/
 .vscode/
+/dist/
+/linko
+/linko.exe
+coverage.out
+e2e-result.log
+remote.html
+run-e2e-now.command
+tunnel.log

@@ -3,6 +3,7 @@ package cmd
 import (
 	"bufio"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -119,6 +120,7 @@ func runStart(ctx context.Context, rawTarget string, opts *startOptions) error {
 	dnsTarget := cloudflare.TunnelCNAMETarget(cfg.TunnelID)
 	rec, created, err := client.EnsureCNAME(ctx, hostname, dnsTarget)
 	if err != nil {
+		explainDNSFailure(err, cfg.Domain)
 		return fmt.Errorf("setting up DNS for %s: %w", hostname, err)
 	}
 	if created {
@@ -278,6 +280,24 @@ func isConnectedLine(line string) bool {
 	return strings.Contains(l, "registered tunnel connection") ||
 		strings.Contains(l, "connection established") ||
 		strings.Contains(l, "connection registered")
+}
+
+// explainDNSFailure turns Cloudflare's opaque "Authentication error (code
+// 10000)" into the one thing the user actually has to change. Finding the zone
+// only needs Zone:Read, so a token can get all the way through `linko init`
+// and still be unable to write a record.
+func explainDNSFailure(err error, domain string) {
+	var apiErr *cloudflare.Error
+	if !errors.As(err, &apiErr) || !apiErr.IsAuth() {
+		return
+	}
+	ui.Blank()
+	ui.Fail("Cloudflare refused to create the DNS record.")
+	ui.Info("The token can read this zone but not change it.")
+	ui.Info("Open https://dash.cloudflare.com/profile/api-tokens, edit the token and set:")
+	ui.Info("  Zone → DNS → %s   (not Read)", ui.Bold("Edit"))
+	ui.Info("  Zone Resources → Include → Specific zone → %s", domain)
+	ui.Blank()
 }
 
 type conflictAction int
