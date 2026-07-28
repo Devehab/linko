@@ -1,8 +1,8 @@
 platform: windows-latest
-commit:   8b324ea06394c2fa89fef50af10cd1b248ac9517
+commit:   487c643222a15e7eb74a1d0981206094419c0c93
 runner:   MINGW64_NT-10.0-26100 3.6.9-b4195d69.x86_64 x86_64
 go:       go version go1.26.5 windows/amd64
-date:     2026-07-28 05:12:08 UTC
+date:     2026-07-28 05:23:25 UTC
 
 =================== go mod tidy ===================
 [exit 0]
@@ -44,8 +44,8 @@ date:     2026-07-28 05:12:08 UTC
 --- PASS: TestTunnelHelpers (0.00s)
 --- PASS: TestTunnelCNAMETarget (0.00s)
 PASS
-ok  	github.com/Devehab/linko/cloudflare	0.086s
---- PASS: TestRemoveRouteCleansUpEverything (0.01s)
+ok  	github.com/Devehab/linko/cloudflare	0.052s
+--- PASS: TestRemoveRouteCleansUpEverything (0.00s)
 --- PASS: TestRemoveRouteLooksUpMissingRecordID (0.00s)
 --- PASS: TestRemoveRouteSkipsForeignDNSRecords (0.00s)
 --- PASS: TestRemoveRouteIsIdempotent (0.00s)
@@ -70,7 +70,7 @@ ok  	github.com/Devehab/linko/cloudflare	0.086s
 --- PASS: TestFirstLine (0.00s)
 --- PASS: TestPlural (0.00s)
 PASS
-ok  	github.com/Devehab/linko/cmd	0.050s
+ok  	github.com/Devehab/linko/cmd	0.040s
 --- PASS: TestDirHonoursEnv (0.00s)
 --- PASS: TestLoadWithoutConfig (0.00s)
 --- PASS: TestSaveLoadRoundTrip (0.00s)
@@ -82,7 +82,7 @@ ok  	github.com/Devehab/linko/cmd	0.050s
 --- PASS: TestUpsertAndRemoveRoute (0.00s)
 --- PASS: TestValidate (0.00s)
 PASS
-ok  	github.com/Devehab/linko/config	0.049s
+ok  	github.com/Devehab/linko/config	0.038s
 --- PASS: TestAssetNameKnownPlatforms (0.00s)
 --- PASS: TestAssetNameUnsupportedPlatform (0.00s)
 --- PASS: TestCurrentPlatformIsSupported (0.00s)
@@ -97,20 +97,20 @@ ok  	github.com/Devehab/linko/config	0.049s
 --- PASS: TestCommandPassesTokenViaEnvironment (0.00s)
 --- PASS: TestCommandDefaultsLogLevel (0.00s)
 PASS
-ok  	github.com/Devehab/linko/internal/cloudflared	0.051s
+ok  	github.com/Devehab/linko/internal/cloudflared	0.042s
 --- PASS: TestRandomProducesValidLabels (0.00s)
 --- PASS: TestRandomDefaultsLength (0.00s)
 --- PASS: TestRandomExcludesConfusingCharacters (0.00s)
 --- PASS: TestValidateLabel (0.00s)
 --- PASS: TestValidateHostname (0.00s)
 PASS
-ok  	github.com/Devehab/linko/internal/naming	0.034s
+ok  	github.com/Devehab/linko/internal/naming	0.024s
 --- PASS: TestParseValid (0.00s)
 --- PASS: TestParseInvalid (0.00s)
 --- PASS: TestLooksRejectsSubcommands (0.00s)
 --- PASS: TestParseIPv6 (0.00s)
 PASS
-ok  	github.com/Devehab/linko/internal/target	0.053s
+ok  	github.com/Devehab/linko/internal/target	0.022s
 --- PASS: TestColourCanBeDisabled (0.00s)
 --- PASS: TestLinkWrapsInOSC8WhenSupported (0.00s)
 --- PASS: TestLinkIsPlainWhenUnsupported (0.00s)
@@ -144,16 +144,16 @@ Choose: ! enter a number between 1 and 2
 Choose: ! enter a number between 1 and 2
 --- PASS: TestChooseGivesUp (0.00s)
 PASS
-ok  	github.com/Devehab/linko/internal/ui	0.042s
+ok  	github.com/Devehab/linko/internal/ui	0.018s
 [exit 0]
 
 =================== go test (summary) =============
 ?   	github.com/Devehab/linko	[no test files]
-ok  	github.com/Devehab/linko/cloudflare	0.064s
-ok  	github.com/Devehab/linko/cmd	0.048s
-ok  	github.com/Devehab/linko/config	0.057s
-ok  	github.com/Devehab/linko/internal/cloudflared	0.048s
-ok  	github.com/Devehab/linko/internal/naming	0.038s
-ok  	github.com/Devehab/linko/internal/target	0.024s
-ok  	github.com/Devehab/linko/internal/ui	0.021s
+ok  	github.com/Devehab/linko/cloudflare	0.055s
+ok  	github.com/Devehab/linko/cmd	0.039s
+ok  	github.com/Devehab/linko/config	0.037s
+ok  	github.com/Devehab/linko/internal/cloudflared	0.046s
+ok  	github.com/Devehab/linko/internal/naming	0.036s
+ok  	github.com/Devehab/linko/internal/target	0.023s
+ok  	github.com/Devehab/linko/internal/ui	0.023s
 [exit 0]

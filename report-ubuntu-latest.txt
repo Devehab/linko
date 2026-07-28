@@ -1,8 +1,8 @@
 platform: ubuntu-latest
-commit:   8b324ea06394c2fa89fef50af10cd1b248ac9517
+commit:   487c643222a15e7eb74a1d0981206094419c0c93
 runner:   Linux 6.17.0-1020-azure x86_64
 go:       go version go1.26.5 linux/amd64
-date:     2026-07-28 05:11:51 UTC
+date:     2026-07-28 05:23:24 UTC
 
 =================== go mod tidy ===================
 [exit 0]
@@ -47,8 +47,8 @@ date:     2026-07-28 05:11:51 UTC
 --- PASS: TestTunnelHelpers (0.00s)
 --- PASS: TestTunnelCNAMETarget (0.00s)
 PASS
-ok  	github.com/Devehab/linko/cloudflare	0.022s
---- PASS: TestRemoveRouteCleansUpEverything (0.00s)
+ok  	github.com/Devehab/linko/cloudflare	0.019s
+--- PASS: TestRemoveRouteCleansUpEverything (0.01s)
 --- PASS: TestRemoveRouteLooksUpMissingRecordID (0.00s)
 --- PASS: TestRemoveRouteSkipsForeignDNSRecords (0.00s)
 --- PASS: TestRemoveRouteIsIdempotent (0.00s)
@@ -73,7 +73,7 @@ ok  	github.com/Devehab/linko/cloudflare	0.022s
 --- PASS: TestFirstLine (0.00s)
 --- PASS: TestPlural (0.00s)
 PASS
-ok  	github.com/Devehab/linko/cmd	0.010s
+ok  	github.com/Devehab/linko/cmd	0.019s
 --- PASS: TestDirHonoursEnv (0.00s)
 --- PASS: TestLoadWithoutConfig (0.00s)
 --- PASS: TestSaveLoadRoundTrip (0.00s)
@@ -84,7 +84,7 @@ ok  	github.com/Devehab/linko/cmd	0.010s
 --- PASS: TestUpsertAndRemoveRoute (0.00s)
 --- PASS: TestValidate (0.00s)
 PASS
-ok  	github.com/Devehab/linko/config	0.007s
+ok  	github.com/Devehab/linko/config	0.009s
 --- PASS: TestAssetNameKnownPlatforms (0.00s)
 --- PASS: TestAssetNameUnsupportedPlatform (0.00s)
 --- PASS: TestCurrentPlatformIsSupported (0.00s)
@@ -97,7 +97,7 @@ ok  	github.com/Devehab/linko/config	0.007s
 --- PASS: TestCommandPassesTokenViaEnvironment (0.00s)
 --- PASS: TestCommandDefaultsLogLevel (0.00s)
 PASS
-ok  	github.com/Devehab/linko/internal/cloudflared	0.011s
+ok  	github.com/Devehab/linko/internal/cloudflared	0.010s
 --- PASS: TestRandomProducesValidLabels (0.00s)
 --- PASS: TestRandomDefaultsLength (0.00s)
 --- PASS: TestRandomExcludesConfusingCharacters (0.00s)
@@ -144,29 +144,29 @@ Choose: ! enter a number between 1 and 2
 Choose: ! enter a number between 1 and 2
 --- PASS: TestChooseGivesUp (0.00s)
 PASS
-ok  	github.com/Devehab/linko/internal/ui	0.003s
+ok  	github.com/Devehab/linko/internal/ui	0.002s
 [exit 0]
 
 =================== go test (summary) =============
 ?   	github.com/Devehab/linko	[no test files]
-ok  	github.com/Devehab/linko/cloudflare	0.015s
-ok  	github.com/Devehab/linko/cmd	0.012s
-ok  	github.com/Devehab/linko/config	0.007s
-ok  	github.com/Devehab/linko/internal/cloudflared	0.008s
-ok  	github.com/Devehab/linko/internal/naming	0.004s
-ok  	github.com/Devehab/linko/internal/target	0.004s
+ok  	github.com/Devehab/linko/cloudflare	0.016s
+ok  	github.com/Devehab/linko/cmd	0.011s
+ok  	github.com/Devehab/linko/config	0.006s
+ok  	github.com/Devehab/linko/internal/cloudflared	0.011s
+ok  	github.com/Devehab/linko/internal/naming	0.009s
+ok  	github.com/Devehab/linko/internal/target	0.003s
 ok  	github.com/Devehab/linko/internal/ui	0.002s
 [exit 0]
 
 =================== go test -race =================
 ?   	github.com/Devehab/linko	[no test files]
-ok  	github.com/Devehab/linko/cloudflare	1.041s
-ok  	github.com/Devehab/linko/cmd	1.028s
-ok  	github.com/Devehab/linko/config	1.014s
+ok  	github.com/Devehab/linko/cloudflare	1.044s
+ok  	github.com/Devehab/linko/cmd	1.025s
+ok  	github.com/Devehab/linko/config	1.013s
 ok  	github.com/Devehab/linko/internal/cloudflared	1.019s
-ok  	github.com/Devehab/linko/internal/naming	1.013s
-ok  	github.com/Devehab/linko/internal/target	1.007s
-ok  	github.com/Devehab/linko/internal/ui	1.008s
+ok  	github.com/Devehab/linko/internal/naming	1.014s
+ok  	github.com/Devehab/linko/internal/target	1.008s
+ok  	github.com/Devehab/linko/internal/ui	1.009s
 [exit 0]
 
 =================== cross compile =================
