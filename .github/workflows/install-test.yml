@@ -19,18 +19,24 @@ on:
 permissions:
   contents: write
 
-env:
-  ONELINER: curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/install.sh | bash
+# Supersede an older run instead of queueing behind it.
+concurrency:
+  group: install-test
+  cancel-in-progress: true
 
 jobs:
   # ── real GitHub-hosted machines ───────────────────────────────────────────
+  #
+  # Only "-latest" labels. Pinned images such as macos-13 and ubuntu-22.04 get
+  # retired, and a job asking for a label that no longer exists waits in the
+  # queue forever rather than failing.
   hosts:
     name: ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, ubuntu-22.04, macos-latest, macos-13, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - name: Environment
         shell: bash
@@ -75,11 +81,11 @@ jobs:
           - debian:11
           - ubuntu:24.04
           - ubuntu:22.04
-          - alpine:3.20
-          - fedora:40
-          - rockylinux:9
+          - alpine:latest
+          - fedora:latest
+          - rockylinux/rockylinux:9
           - archlinux:latest
-          - opensuse/leap:15.6
+          - opensuse/leap:latest
     steps:
       - name: What does this image ship with?
         shell: sh
@@ -148,8 +154,9 @@ jobs:
             echo "linko runs, prints its version, shows help and docs, and points"
             echo "an unconfigured user at 'linko init'."
             echo
-            echo "hosts       (ubuntu 22/24, macos 13/14+, windows git-bash): ${HOSTS}"
-            echo "containers  (debian, ubuntu, alpine, fedora, rocky, arch, suse): ${CONTAINERS}"
+            echo "hosts       (ubuntu, macos, windows git-bash):                 ${HOSTS}"
+            echo "containers  (debian 11/12, ubuntu 22.04/24.04, alpine, fedora,"
+            echo "             rocky 9, arch, opensuse leap):                    ${CONTAINERS}"
             echo
             if [ "${HOSTS}" = "success" ] && [ "${CONTAINERS}" = "success" ]; then
               echo "RESULT: every platform installed and ran the binary."
