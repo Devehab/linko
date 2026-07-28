@@ -1,8 +1,8 @@
 platform: macos-latest
-commit:   53c563b381650bb068b925deb440a1622a8a995d
+commit:   8b324ea06394c2fa89fef50af10cd1b248ac9517
 runner:   Darwin 25.4.0 arm64
 go:       go version go1.26.5 darwin/arm64
-date:     2026-07-28 05:03:42 UTC
+date:     2026-07-28 05:12:01 UTC
 
 =================== go mod tidy ===================
 [exit 0]
@@ -81,7 +81,7 @@ ok  	github.com/Devehab/linko/cmd	0.015s
 --- PASS: TestUpsertAndRemoveRoute (0.00s)
 --- PASS: TestValidate (0.00s)
 PASS
-ok  	github.com/Devehab/linko/config	0.010s
+ok  	github.com/Devehab/linko/config	0.012s
 --- PASS: TestAssetNameKnownPlatforms (0.00s)
 --- PASS: TestAssetNameUnsupportedPlatform (0.00s)
 --- PASS: TestCurrentPlatformIsSupported (0.00s)
@@ -94,14 +94,14 @@ ok  	github.com/Devehab/linko/config	0.010s
 --- PASS: TestCommandPassesTokenViaEnvironment (0.00s)
 --- PASS: TestCommandDefaultsLogLevel (0.00s)
 PASS
-ok  	github.com/Devehab/linko/internal/cloudflared	0.017s
+ok  	github.com/Devehab/linko/internal/cloudflared	0.015s
 --- PASS: TestRandomProducesValidLabels (0.00s)
 --- PASS: TestRandomDefaultsLength (0.00s)
 --- PASS: TestRandomExcludesConfusingCharacters (0.00s)
 --- PASS: TestValidateLabel (0.00s)
 --- PASS: TestValidateHostname (0.00s)
 PASS
-ok  	github.com/Devehab/linko/internal/naming	0.008s
+ok  	github.com/Devehab/linko/internal/naming	0.009s
 --- PASS: TestParseValid (0.00s)
 --- PASS: TestParseInvalid (0.00s)
 --- PASS: TestLooksRejectsSubcommands (0.00s)
@@ -146,11 +146,11 @@ ok  	github.com/Devehab/linko/internal/ui	0.006s
 
 =================== go test (summary) =============
 ?   	github.com/Devehab/linko	[no test files]
-ok  	github.com/Devehab/linko/cloudflare	0.018s
+ok  	github.com/Devehab/linko/cloudflare	0.019s
 ok  	github.com/Devehab/linko/cmd	0.015s
 ok  	github.com/Devehab/linko/config	0.012s
-ok  	github.com/Devehab/linko/internal/cloudflared	0.031s
-ok  	github.com/Devehab/linko/internal/naming	0.010s
-ok  	github.com/Devehab/linko/internal/target	0.007s
+ok  	github.com/Devehab/linko/internal/cloudflared	0.014s
+ok  	github.com/Devehab/linko/internal/naming	0.007s
+ok  	github.com/Devehab/linko/internal/target	0.006s
 ok  	github.com/Devehab/linko/internal/ui	0.006s
 [exit 0]
