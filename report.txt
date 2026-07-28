@@ -1,0 +1,260 @@
+commit:  850eb7d238864ddd2dd9c452ccb4c7a320f71278
+ref:     refs/heads/main
+runner:  Linux 6.17.0-1020-azure x86_64
+go:      go version go1.22.12 linux/amd64
+date:    2026-07-28 04:35:39 UTC
+
+=================== go mod tidy ===================
+[exit 0]
+
+=================== gofmt -s -l . =================
+(clean)
+
+=================== go build ./... ================
+[exit 0]
+
+=================== go vet ./... ==================
+[exit 0]
+
+=================== go test ./... =================
+?   	github.com/Devehab/linko	[no test files]
+=== RUN   TestRequestHeaders
+--- PASS: TestRequestHeaders (0.01s)
+=== RUN   TestVerifyTokenFallsBackToZones
+--- PASS: TestVerifyTokenFallsBackToZones (0.00s)
+=== RUN   TestAPIErrorSurfacesMessages
+--- PASS: TestAPIErrorSurfacesMessages (0.00s)
+=== RUN   TestFindZone
+--- PASS: TestFindZone (0.00s)
+=== RUN   TestFindZoneNotFound
+--- PASS: TestFindZoneNotFound (0.00s)
+=== RUN   TestCreateTunnelSendsConfigSrc
+--- PASS: TestCreateTunnelSendsConfigSrc (0.00s)
+=== RUN   TestFindTunnelReturnsNilWhenMissing
+--- PASS: TestFindTunnelReturnsNilWhenMissing (0.00s)
+=== RUN   TestTunnelToken
+--- PASS: TestTunnelToken (0.00s)
+=== RUN   TestGetTunnelConfigHandlesNullConfig
+--- PASS: TestGetTunnelConfigHandlesNullConfig (0.00s)
+=== RUN   TestPutTunnelConfigNormalizesIngress
+--- PASS: TestPutTunnelConfigNormalizesIngress (0.00s)
+=== RUN   TestEnsureCNAMECreatesWhenMissing
+--- PASS: TestEnsureCNAMECreatesWhenMissing (0.00s)
+=== RUN   TestEnsureCNAMEIsIdempotent
+--- PASS: TestEnsureCNAMEIsIdempotent (0.00s)
+=== RUN   TestEnsureCNAMERefusesForeignRecords
+--- PASS: TestEnsureCNAMERefusesForeignRecords (0.00s)
+=== RUN   TestEnsureCNAMERepointsTunnelRecord
+--- PASS: TestEnsureCNAMERepointsTunnelRecord (0.00s)
+=== RUN   TestDeleteDNSRecordTolerates404
+--- PASS: TestDeleteDNSRecordTolerates404 (0.00s)
+=== RUN   TestMissingAccountIDIsAClearError
+--- PASS: TestMissingAccountIDIsAClearError (0.00s)
+=== RUN   TestZoneNameFor
+--- PASS: TestZoneNameFor (0.00s)
+=== RUN   TestNormalizeIngressAddsCatchAll
+--- PASS: TestNormalizeIngressAddsCatchAll (0.00s)
+=== RUN   TestNormalizeIngressKeepsOneCatchAllLast
+--- PASS: TestNormalizeIngressKeepsOneCatchAllLast (0.00s)
+=== RUN   TestNormalizeIngressFixesEmptyCatchAllService
+--- PASS: TestNormalizeIngressFixesEmptyCatchAllService (0.00s)
+=== RUN   TestNormalizeIngressKeepsPathOnlyRules
+--- PASS: TestNormalizeIngressKeepsPathOnlyRules (0.00s)
+=== RUN   TestUpsertIngressInsertsBeforeCatchAll
+--- PASS: TestUpsertIngressInsertsBeforeCatchAll (0.00s)
+=== RUN   TestUpsertIngressReplacesExisting
+--- PASS: TestUpsertIngressReplacesExisting (0.00s)
+=== RUN   TestRemoveIngress
+--- PASS: TestRemoveIngress (0.00s)
+=== RUN   TestFindIngressIgnoresCatchAll
+--- PASS: TestFindIngressIgnoresCatchAll (0.00s)
+=== RUN   TestHostnameRules
+--- PASS: TestHostnameRules (0.00s)
+=== RUN   TestTunnelHelpers
+--- PASS: TestTunnelHelpers (0.00s)
+=== RUN   TestTunnelCNAMETarget
+--- PASS: TestTunnelCNAMETarget (0.00s)
+PASS
+ok  	github.com/Devehab/linko/cloudflare	0.037s
+=== RUN   TestRemoveRouteCleansUpEverything
+--- PASS: TestRemoveRouteCleansUpEverything (0.00s)
+=== RUN   TestRemoveRouteLooksUpMissingRecordID
+--- PASS: TestRemoveRouteLooksUpMissingRecordID (0.00s)
+=== RUN   TestRemoveRouteSkipsForeignDNSRecords
+--- PASS: TestRemoveRouteSkipsForeignDNSRecords (0.00s)
+=== RUN   TestRemoveRouteIsIdempotent
+--- PASS: TestRemoveRouteIsIdempotent (0.00s)
+=== RUN   TestCommandTreeHasEveryCommand
+--- PASS: TestCommandTreeHasEveryCommand (0.00s)
+=== RUN   TestNormalizeArgsInsertsStart
+--- PASS: TestNormalizeArgsInsertsStart (0.00s)
+=== RUN   TestNormalizeArgsLeavesCommandsAlone
+--- PASS: TestNormalizeArgsLeavesCommandsAlone (0.00s)
+=== RUN   TestNormalizeArgsLeavesUnknownWordsAlone
+--- PASS: TestNormalizeArgsLeavesUnknownWordsAlone (0.00s)
+=== RUN   TestHelpMentionsThePortShortcut
+--- PASS: TestHelpMentionsThePortShortcut (0.00s)
+=== RUN   TestExpandBase
+--- PASS: TestExpandBase (0.00s)
+=== RUN   TestValidateBase
+--- PASS: TestValidateBase (0.00s)
+=== RUN   TestResolveTokenPrefersFlagThenEnvThenConfig
+--- PASS: TestResolveTokenPrefersFlagThenEnvThenConfig (0.00s)
+=== RUN   TestResolveLabelReusesThePortsExistingURL
+--- PASS: TestResolveLabelReusesThePortsExistingURL (0.00s)
+=== RUN   TestResolveLabelExplicitNameWins
+--- PASS: TestResolveLabelExplicitNameWins (0.00s)
+=== RUN   TestResolveLabelNewMintsAFreshOne
+--- PASS: TestResolveLabelNewMintsAFreshOne (0.00s)
+=== RUN   TestResolveLabelTempIsAlwaysNew
+--- PASS: TestResolveLabelTempIsAlwaysNew (0.00s)
+=== RUN   TestResolveLabelUnknownPortGetsARandomName
+--- PASS: TestResolveLabelUnknownPortGetsARandomName (0.00s)
+=== RUN   TestFindRouteByService
+--- PASS: TestFindRouteByService (0.00s)
+=== RUN   TestExtraLabels
+--- PASS: TestExtraLabels (0.00s)
+=== RUN   TestExpandBaseNormalisesCase
+--- PASS: TestExpandBaseNormalisesCase (0.00s)
+=== RUN   TestDefaultTunnelName
+--- PASS: TestDefaultTunnelName (0.00s)
+=== RUN   TestIsConnectedLine
+--- PASS: TestIsConnectedLine (0.00s)
+=== RUN   TestFirstLine
+--- PASS: TestFirstLine (0.00s)
+=== RUN   TestPlural
+--- PASS: TestPlural (0.00s)
+PASS
+ok  	github.com/Devehab/linko/cmd	0.011s
+=== RUN   TestDirHonoursEnv
+--- PASS: TestDirHonoursEnv (0.00s)
+=== RUN   TestLoadWithoutConfig
+--- PASS: TestLoadWithoutConfig (0.00s)
+=== RUN   TestSaveLoadRoundTrip
+--- PASS: TestSaveLoadRoundTrip (0.00s)
+=== RUN   TestSaveUsesRestrictivePermissions
+--- PASS: TestSaveUsesRestrictivePermissions (0.00s)
+=== RUN   TestEnvTokenOverridesStoredToken
+--- PASS: TestEnvTokenOverridesStoredToken (0.00s)
+=== RUN   TestLoadCorruptFile
+--- PASS: TestLoadCorruptFile (0.00s)
+=== RUN   TestHostname
+--- PASS: TestHostname (0.00s)
+=== RUN   TestUpsertAndRemoveRoute
+--- PASS: TestUpsertAndRemoveRoute (0.00s)
+=== RUN   TestValidate
+--- PASS: TestValidate (0.00s)
+PASS
+ok  	github.com/Devehab/linko/config	0.007s
+=== RUN   TestAssetNameKnownPlatforms
+--- PASS: TestAssetNameKnownPlatforms (0.00s)
+=== RUN   TestAssetNameUnsupportedPlatform
+--- PASS: TestAssetNameUnsupportedPlatform (0.00s)
+=== RUN   TestCurrentPlatformIsSupported
+--- PASS: TestCurrentPlatformIsSupported (0.00s)
+=== RUN   TestLocateFindsLocalCopyFirst
+--- PASS: TestLocateFindsLocalCopyFirst (0.00s)
+=== RUN   TestLocateIgnoresNonExecutableFile
+--- PASS: TestLocateIgnoresNonExecutableFile (0.00s)
+=== RUN   TestDownloadInstallsBinary
+--- PASS: TestDownloadInstallsBinary (0.00s)
+=== RUN   TestDownloadHTTPError
+--- PASS: TestDownloadHTTPError (0.00s)
+=== RUN   TestBinaryFromTarball
+--- PASS: TestBinaryFromTarball (0.00s)
+=== RUN   TestBinaryFromTarballMissingEntry
+--- PASS: TestBinaryFromTarballMissingEntry (0.00s)
+=== RUN   TestCommandPassesTokenViaEnvironment
+--- PASS: TestCommandPassesTokenViaEnvironment (0.00s)
+=== RUN   TestCommandDefaultsLogLevel
+--- PASS: TestCommandDefaultsLogLevel (0.00s)
+PASS
+ok  	github.com/Devehab/linko/internal/cloudflared	0.008s
+=== RUN   TestRandomProducesValidLabels
+--- PASS: TestRandomProducesValidLabels (0.00s)
+=== RUN   TestRandomDefaultsLength
+--- PASS: TestRandomDefaultsLength (0.00s)
+=== RUN   TestRandomExcludesConfusingCharacters
+--- PASS: TestRandomExcludesConfusingCharacters (0.00s)
+=== RUN   TestValidateLabel
+--- PASS: TestValidateLabel (0.00s)
+=== RUN   TestValidateHostname
+--- PASS: TestValidateHostname (0.00s)
+PASS
+ok  	github.com/Devehab/linko/internal/naming	0.010s
+=== RUN   TestParseValid
+--- PASS: TestParseValid (0.00s)
+=== RUN   TestParseInvalid
+--- PASS: TestParseInvalid (0.00s)
+=== RUN   TestLooksRejectsSubcommands
+--- PASS: TestLooksRejectsSubcommands (0.00s)
+=== RUN   TestParseIPv6
+--- PASS: TestParseIPv6 (0.00s)
+PASS
+ok  	github.com/Devehab/linko/internal/target	0.002s
+=== RUN   TestColourCanBeDisabled
+--- PASS: TestColourCanBeDisabled (0.00s)
+=== RUN   TestLinkWrapsInOSC8WhenSupported
+--- PASS: TestLinkWrapsInOSC8WhenSupported (0.00s)
+=== RUN   TestLinkIsPlainWhenUnsupported
+--- PASS: TestLinkIsPlainWhenUnsupported (0.00s)
+=== RUN   TestDetectHyperlinks
+--- PASS: TestDetectHyperlinks (0.00s)
+=== RUN   TestClickHint
+--- PASS: TestClickHint (0.00s)
+=== RUN   TestTableAligns
+--- PASS: TestTableAligns (0.00s)
+=== RUN   TestAskUsesDefaultOnEmptyInput
+Domain: [example.com] --- PASS: TestAskUsesDefaultOnEmptyInput (0.00s)
+=== RUN   TestAskTrimsInput
+Domain: [example.com] --- PASS: TestAskTrimsInput (0.00s)
+=== RUN   TestAskRequiredRetriesUntilValid
+Name: ! a value is required
+Name: ! not good
+Name: --- PASS: TestAskRequiredRetriesUntilValid (0.00s)
+=== RUN   TestConfirm
+Continue? [y/N] Continue? [y/N] Continue? [Y/n] Continue? [Y/n] Continue? [Y/n] Continue? [y/N] Continue? [Y/n] --- PASS: TestConfirm (0.00s)
+=== RUN   TestChoose
+Pick:
+  1. a
+  2. b
+  3. c
+Choose: --- PASS: TestChoose (0.00s)
+=== RUN   TestChooseRejectsOutOfRange
+Pick:
+  1. a
+  2. b
+Choose: ! enter a number between 1 and 2
+Choose: ! enter a number between 1 and 2
+Choose: --- PASS: TestChooseRejectsOutOfRange (0.00s)
+=== RUN   TestChooseGivesUp
+Pick:
+  1. a
+  2. b
+Choose: ! enter a number between 1 and 2
+Choose: ! enter a number between 1 and 2
+Choose: ! enter a number between 1 and 2
+Choose: ! enter a number between 1 and 2
+Choose: ! enter a number between 1 and 2
+--- PASS: TestChooseGivesUp (0.00s)
+PASS
+ok  	github.com/Devehab/linko/internal/ui	0.002s
+[exit 0]
+
+=================== go test (summary) =============
+?   	github.com/Devehab/linko	[no test files]
+ok  	github.com/Devehab/linko/cloudflare	0.012s
+ok  	github.com/Devehab/linko/cmd	0.013s
+ok  	github.com/Devehab/linko/config	0.006s
+ok  	github.com/Devehab/linko/internal/cloudflared	0.009s
+ok  	github.com/Devehab/linko/internal/naming	0.008s
+ok  	github.com/Devehab/linko/internal/target	0.003s
+ok  	github.com/Devehab/linko/internal/ui	0.002s
+[exit 0]
+
+=================== cross compile =================
+ok   darwin/amd64
+ok   darwin/arm64
+ok   linux/amd64
+ok   linux/arm64
+ok   windows/amd64
