@@ -29,12 +29,12 @@ func equal(a, b []string) bool {
 func TestCommandTreeHasEveryCommand(t *testing.T) {
 	known := names(t)
 	for _, want := range []string{"init", "start", "list", "remove", "status", "doctor",
-		"docs", "stop", "ps", "service"} {
+		"docs", "stop", "ps", "service", "domain", "token", "uninstall"} {
 		if !known[want] {
 			t.Errorf("command %q is missing from the tree", want)
 		}
 	}
-	for _, alias := range []string{"ls", "rm", "run"} {
+	for _, alias := range []string{"ls", "rm", "run", "purge"} {
 		if !known[alias] {
 			t.Errorf("alias %q is not registered", alias)
 		}

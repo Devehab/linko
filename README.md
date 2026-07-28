@@ -211,15 +211,20 @@ Not sure? `linko docs` prints these steps in your terminal.
 linko init
 ```
 
+Paste the token, then **pick a domain by number** — linko lists the ones your
+token can actually see, so there is nothing to type or misspell.
+
 ```console
 Cloudflare credentials
 Cloudflare API token: ················
 ✓ Cloudflare connected
 
 Domain
-Domain: [example.com]
-✓ DNS zone found (example.com)
-Base subdomain: [example.com]
+Which domain should linko use?
+  1. example.com
+  2. another.dev
+  3. staging.io  (pending)
+Choose: 1
 ✓ URLs will look like https://abc12.example.com
 
 Tunnel
@@ -231,10 +236,9 @@ Tunnel name: [example-linko-tunnel]
 You're ready.
 ```
 
-> [!IMPORTANT]
-> When asked for **Base subdomain**, answer with your bare domain
-> (`example.com`), not `demo.example.com`. See
-> [the one-level rule](#the-one-level-rule).
+The domain you pick **is** the base — there is no second question, and that is
+what keeps every URL one label deep, which is all a free Cloudflare certificate
+covers. See [the one-level rule](#the-one-level-rule).
 
 ### 3 · Publish something
 
@@ -280,8 +284,8 @@ everything to `~/.linko/config.json` with mode `0600`.
 | Flag | Effect |
 | --- | --- |
 | `--token <t>` | Cloudflare API token (or set `LINKO_API_TOKEN`) |
-| `--domain <d>` | Domain managed by Cloudflare, e.g. `example.com` |
-| `--base <b>` | Base subdomain for generated URLs |
+| `--domain <d>` | Skip the picker and use this domain |
+| `--base <b>` | Publish under a deeper subdomain — needs a paid certificate |
 | `--tunnel <n>` | Tunnel name (default `<domain>-linko-tunnel`) |
 | `--force` | Overwrite an existing configuration |
 | `-y`, `--yes` | Non-interactive: fail instead of prompting |
@@ -290,7 +294,7 @@ everything to `~/.linko/config.json` with mode `0600`.
 ```bash
 # fully non-interactive, for CI or a fresh machine
 export LINKO_API_TOKEN='cfut_…'
-linko init --yes --domain example.com --base example.com
+linko init --yes --domain example.com
 ```
 
 ### `linko <port>` · `linko start <port>`
@@ -420,6 +424,78 @@ $ linko doctor
 
 Everything looks good.
 ```
+
+### `linko domain`
+
+Change which of your domains linko publishes to, from the same numbered list.
+
+```console
+$ linko domain
+
+Currently publishing to example.com
+
+Which domain should linko publish to?
+  1. example.com  (current)
+  2. another.dev
+Choose: 2
+
+! You have 2 URLs on example.com:
+    https://web.example.com -> http://localhost:3000
+    https://api.example.com -> http://localhost:8080
+
+Delete them before switching? [Y/n] y
+✓ Removed web.example.com
+✓ Removed api.example.com
+
+✓ Now publishing to another.dev
+```
+
+| Flag | Effect |
+| --- | --- |
+| `--list` | Show the domains this token can see and exit |
+| `-y`, `--yes` | Switch without asking |
+
+`linko domain another.dev` switches straight to one. A domain in a different
+Cloudflare account is handled too — linko sets up a tunnel there.
+
+### `linko token`
+
+Replace the stored API token — after a rotation, an expiry, or a permission fix.
+
+```console
+$ linko token
+
+New Cloudflare API token: ················
+✓ Token updated and saved to ~/.linko/config.json
+
+✓ Can reach example.com
+✓ Can reach the tunnel example-linko-tunnel
+
+All good.
+```
+
+The new token is checked **before** it is saved, so a typo cannot lock you out
+of your own configuration. `--token cfut_…` for non-interactive use.
+
+### `linko uninstall`
+
+Remove linko from the machine, and its traces from Cloudflare, in order:
+
+1. stop tunnels running in the background
+2. remove the services that start them at login
+3. delete your published URLs and their DNS records
+4. delete the tunnel from your Cloudflare account
+5. delete `~/.linko` — config, logs, the `cloudflared` copy
+6. delete the `linko` binary itself
+
+| Flag | Effect |
+| --- | --- |
+| `-y`, `--yes` | Do not ask for confirmation |
+| `--keep-cloud` | Leave the URLs, DNS records and tunnel on Cloudflare |
+| `--keep-binary` | Leave the binary in place |
+
+Your Cloudflare account, your domain and your API token are never touched —
+revoke the token yourself if you no longer want it.
 
 ### `linko docs`
 
@@ -557,6 +633,8 @@ firewall or router change is ever needed.
 | `Could not create the tunnel` `code 10000` | Token covers DNS but not tunnels | Add `Account → Cloudflare Tunnel → Edit` to the **same** token. |
 | `ERR_SSL_VERSION_OR_CIPHER_MISMATCH` | Hostname is two levels deep | `linko init --force --base example.com`, or buy ACM. |
 | `no API token: pass --token or set LINKO_API_TOKEN` | `linko init --yes` with no token | `export LINKO_API_TOKEN='…'` or pass `--token`. |
+| Token expired or was rotated | The stored token no longer authenticates | `linko token` — the new one is checked before it is saved. |
+| You want to publish to a different domain | Your setup points at the old one | `linko domain` — pick the new one from the list. |
 | `command not found: linko` | Install directory is not on `PATH` | Reopen the terminal, or run `exec $SHELL`. |
 | `HTTP 502` · `Error 1033` | Tunnel is up but nothing is listening | Check `curl http://localhost:3000`. If your app binds the loopback only, use `linko 127.0.0.1:3000`. |
 

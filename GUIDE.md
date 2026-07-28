@@ -225,7 +225,8 @@ LINKO_VERSION=v0.2.3 LINKO_INSTALL="$HOME/bin" \
 linko init
 ```
 
-يسألك ثلاثة أسئلة فقط. اضغط Enter لقبول الافتراضي:
+الصق التوكن، ثم **اختر دومينك برقم** — يعرض لك `linko` الدومينات التي يراها
+توكنك فعلًا، فلا شيء تكتبه ولا شيء تخطئ في كتابته:
 
 ```console
 Cloudflare credentials
@@ -233,9 +234,11 @@ Cloudflare API token: ················
 ✓ Cloudflare connected
 
 Domain
-Domain: [example.com]
-✓ DNS zone found (example.com)
-Base subdomain: [example.com]
+Which domain should linko use?
+  1. example.com
+  2. another.dev
+  3. staging.io  (pending)
+Choose: 1
 ✓ URLs will look like https://abc12.example.com
 
 Tunnel
@@ -247,9 +250,9 @@ Tunnel name: [example-linko-tunnel]
 You're ready.
 ```
 
-> [!IMPORTANT]
-> عند سؤال **Base subdomain** اكتب دومينك مجرّدًا (`example.com`) — لا
-> `demo.example.com`. السبب في [قاعدة المستوى الواحد](#قاعدة-المستوى-الواحد).
+الدومين الذي تختاره **هو** الأساس — لا سؤال ثانٍ بعده. هذا بالضبط ما يبقي كل
+رابط على عمق مستوى واحد، وهو كل ما تغطّيه شهادة Cloudflare المجانية. التفصيل
+في [قاعدة المستوى الواحد](#قاعدة-المستوى-الواحد).
 
 ### ٣ · انشر أول مشروع
 
@@ -295,8 +298,8 @@ linko 3000     # المرة التالية → https://x92ka.example.com  (نف�
 | الخيار | الأثر |
 | --- | --- |
 | `--token <t>` | توكن Cloudflare (أو استخدم `LINKO_API_TOKEN`) |
-| `--domain <d>` | الدومين المُدار في Cloudflare |
-| `--base <b>` | الـ subdomain الأساس للروابط |
+| `--domain <d>` | تخطَّ القائمة واستخدم هذا الدومين |
+| `--base <b>` | انشر تحت subdomain أعمق — يحتاج شهادة مدفوعة |
 | `--tunnel <n>` | اسم النفق (الافتراضي `<domain>-linko-tunnel`) |
 | `--force` | إعادة الإعداد فوق إعداد موجود |
 | `-y`, `--yes` | بلا أسئلة: يفشل بدل أن يسأل |
@@ -305,7 +308,7 @@ linko 3000     # المرة التالية → https://x92ka.example.com  (نف�
 ```bash
 # إعداد كامل بلا تفاعل — مناسب لـ CI أو جهاز جديد
 export LINKO_API_TOKEN='cfut_…'
-linko init --yes --domain example.com --base example.com
+linko init --yes --domain example.com
 ```
 
 ### `linko <port>` · `linko start <port>`
@@ -434,6 +437,78 @@ $ linko doctor
 
 Everything looks good.
 ```
+
+### `linko domain`
+
+يغيّر الدومين الذي ينشر عليه `linko`، من نفس القائمة المرقّمة.
+
+```console
+$ linko domain
+
+Currently publishing to example.com
+
+Which domain should linko publish to?
+  1. example.com  (current)
+  2. another.dev
+Choose: 2
+
+! You have 2 URLs on example.com:
+    https://web.example.com -> http://localhost:3000
+    https://api.example.com -> http://localhost:8080
+
+Delete them before switching? [Y/n] y
+✓ Removed web.example.com
+✓ Removed api.example.com
+
+✓ Now publishing to another.dev
+```
+
+| الخيار | الأثر |
+| --- | --- |
+| `--list` | اعرض الدومينات التي يراها التوكن ثم اخرج |
+| `-y`, `--yes` | بدّل بلا أسئلة |
+
+و`linko domain another.dev` ينتقل مباشرة. وإن كان الدومين في حساب Cloudflare
+آخر فلا مشكلة — يهيّئ `linko` نفقًا هناك.
+
+### `linko token`
+
+يستبدل توكن الـ API المحفوظ — بعد تدويره، أو انتهائه، أو تصحيح صلاحياته.
+
+```console
+$ linko token
+
+New Cloudflare API token: ················
+✓ Token updated and saved to ~/.linko/config.json
+
+✓ Can reach example.com
+✓ Can reach the tunnel example-linko-tunnel
+
+All good.
+```
+
+يُفحص التوكن الجديد **قبل** حفظه، فلا يمكن لخطأ مطبعي أن يقفل عليك إعدادك.
+و`--token cfut_…` للاستخدام غير التفاعلي.
+
+### `linko uninstall`
+
+يزيل `linko` من الجهاز، وآثاره من Cloudflare، بهذا الترتيب:
+
+1. يوقف الأنفاق العاملة بالخلفية
+2. يزيل الخدمات التي تشغّلها عند تسجيل الدخول
+3. يحذف روابطك المنشورة وسجلات DNS الخاصة بها
+4. يحذف النفق من حساب Cloudflare
+5. يحذف `~/.linko` — الإعداد والسجلات ونسخة `cloudflared`
+6. يحذف ملف `linko` التنفيذي نفسه
+
+| الخيار | الأثر |
+| --- | --- |
+| `-y`, `--yes` | بلا سؤال تأكيد |
+| `--keep-cloud` | اترك الروابط وسجلات DNS والنفق على Cloudflare |
+| `--keep-binary` | اترك الملف التنفيذي مكانه |
+
+حسابك في Cloudflare ودومينك وتوكنك لا يُمسّون — ألغِ التوكن بنفسك إن لم تعد
+تريده.
 
 ### `linko docs`
 
@@ -573,6 +648,8 @@ Enterprise وBusiness.
 | `Could not create the tunnel` `code 10000` | التوكن يغطي DNS ولا يغطي الأنفاق | أضف `Account → Cloudflare Tunnel → Edit` على **نفس** التوكن. |
 | `ERR_SSL_VERSION_OR_CIPHER_MISMATCH` | الرابط بعمق مستويين | `linko init --force --base example.com` أو اشترِ ACM. |
 | `no API token: pass --token or set LINKO_API_TOKEN` | شغّلت `linko init --yes` بلا رمز | `export LINKO_API_TOKEN='…'` أو مرّر `--token`. |
+| انتهى التوكن أو دُوِّر | التوكن المحفوظ لم يعد يصادق | `linko token` — ويُفحص الجديد قبل حفظه. |
+| تريد النشر على دومين آخر | إعدادك يشير إلى القديم | `linko domain` — اختر الجديد من القائمة. |
 | `command not found: linko` | مجلد التثبيت ليس في مسارك | أعد فتح الطرفية، أو `exec $SHELL`. |
 | `HTTP 502` · `Error 1033` | النفق يعمل لكن لا شيء يستمع على المنفذ | تحقق بـ `curl http://localhost:3000`. وإن كان تطبيقك يستمع على الـ loopback فقط، استخدم `linko 127.0.0.1:3000`. |
 
@@ -633,6 +710,9 @@ linko remove --all --yes
 rm -rf ~/.linko
 linko init
 ```
+
+ولإزالة الأداة نفسها بالكامل — بالخلفية والخدمات والروابط والنفق والملف
+التنفيذي — استخدم `linko uninstall`.
 
 ## الأمان
 

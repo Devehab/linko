@@ -178,6 +178,7 @@ html[lang="ar"] [data-ar]{display:revert}
   <div class="grp"><span data-en>Using it</span><span data-ar>الاستخدام</span></div>
   <a href="#sticky"><span data-en>A port keeps its URL</span><span data-ar>المنفذ يحتفظ برابطه</span></a>
   <a href="#commands"><span data-en>Command reference</span><span data-ar>مرجع الأوامر</span></a>
+  <a href="#changing"><span data-en>Changing things later</span><span data-ar>التغيير لاحقًا</span></a>
   <a href="#background"><span data-en>Background &amp; boot</span><span data-ar>الخلفية والإقلاع</span></a>
   <a href="#cookbook"><span data-en>Cookbook</span><span data-ar>وصفات عملية</span></a>
 
@@ -461,6 +462,12 @@ LINKO_VERSION=v0.2.3 LINKO_INSTALL="$HOME/bin" \
 
 <div class="box"><button class="cp">copy</button><pre><code>linko init</code></pre></div>
 
+<p><span data-en>Paste the token, then <b>pick a domain by number</b>. linko lists the
+   domains your token can actually see, so there is nothing to type and nothing to
+   misspell.</span>
+   <span data-ar>الصق التوكن، ثم <b>اختر دومينك برقم</b>. يعرض لك linko الدومينات التي
+   يراها توكنك فعلًا، فلا شيء تكتبه ولا شيء تخطئ في كتابته.</span></p>
+
 <div class="box term">
   <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
   <pre><code><span class="o">Cloudflare credentials</span>
@@ -468,9 +475,11 @@ Cloudflare API token: <span class="c">················</span>
 <span class="g">✓</span> Cloudflare connected
 
 <span class="o">Domain</span>
-Domain: <span class="c">[example.com]</span>
-<span class="g">✓</span> DNS zone found (example.com)
-Base subdomain: <span class="c">[example.com]</span>
+Which domain should linko use?
+  1. example.com
+  2. another.dev
+  3. staging.io  <span class="c">(pending)</span>
+Choose: <span class="c">1</span>
 <span class="g">✓</span> URLs will look like https://abc12.example.com
 
 <span class="o">Tunnel</span>
@@ -482,20 +491,24 @@ Tunnel name: <span class="c">[example-linko-tunnel]</span>
 <span class="w">You're ready.</span></code></pre>
 </div>
 
-<div class="warn">
-  <b><span data-en>Answer "Base subdomain" with your bare domain</span>
-     <span data-ar>أجب عن «Base subdomain» بدومينك مجرّدًا</span></b>
-  <span data-en>Type <code>example.com</code>, not <code>demo.example.com</code>.
-    See <a href="#ssl">the one-level rule</a>.</span>
-  <span data-ar>اكتب <code>example.com</code> لا <code>demo.example.com</code>.
-    انظر <a href="#ssl">قاعدة المستوى الواحد</a>.</span>
+<div class="note">
+  <b><span data-en>There is no second question about a base</span>
+     <span data-ar>لا سؤال ثانٍ عن الأساس</span></b>
+  <span data-en>The domain you pick <b>is</b> the base. That is what keeps every URL one
+    label deep, which is all a free Cloudflare certificate covers —
+    see <a href="#ssl">the one-level rule</a>. <code>--base</code> still exists for
+    anyone with Advanced Certificate Manager who wants the extra depth.</span>
+  <span data-ar>الدومين الذي تختاره <b>هو</b> الأساس. وهذا ما يبقي كل رابط على عمق مستوى
+    واحد، وهو كل ما تغطيه شهادة Cloudflare المجانية — انظر
+    <a href="#ssl">قاعدة المستوى الواحد</a>. ويبقى <code>--base</code> لمن يملك
+    Advanced Certificate Manager ويريد عمقًا أكبر.</span>
 </div>
 
 <h4><span data-en>Non-interactive, for CI or a fresh machine</span>
     <span data-ar>بلا تفاعل — لـ CI أو جهاز جديد</span></h4>
 <div class="box"><button class="cp">copy</button>
 <pre><code>export LINKO_API_TOKEN='cfut_…'
-linko init --yes --domain example.com --base example.com</code></pre></div>
+linko init --yes --domain example.com</code></pre></div>
 
 <!-- ═══════════════════ sticky ═══════════════════ -->
 <h2 id="sticky"><span data-en>A port keeps its URL</span><span data-ar>المنفذ يحتفظ برابطه</span></h2>
@@ -594,10 +607,10 @@ linko 3000     <span class="c"># next run   → https://x92ka.example.com  (the 
     <tbody>
       <tr><td><code>--token</code></td><td><span data-en>Cloudflare API token (or <code>LINKO_API_TOKEN</code>)</span>
         <span data-ar>توكن Cloudflare (أو <code>LINKO_API_TOKEN</code>)</span></td></tr>
-      <tr><td><code>--domain</code></td><td><span data-en>Domain managed by Cloudflare</span>
-        <span data-ar>الدومين المُدار في Cloudflare</span></td></tr>
-      <tr><td><code>--base</code></td><td><span data-en>Base subdomain for generated URLs</span>
-        <span data-ar>الـ subdomain الأساس للروابط</span></td></tr>
+      <tr><td><code>--domain</code></td><td><span data-en>Skip the picker and use this domain</span>
+        <span data-ar>تخطَّ القائمة واستخدم هذا الدومين</span></td></tr>
+      <tr><td><code>--base</code></td><td><span data-en>Publish under a deeper subdomain — needs a paid certificate</span>
+        <span data-ar>انشر تحت subdomain أعمق — يحتاج شهادة مدفوعة</span></td></tr>
       <tr><td><code>--tunnel</code></td><td><span data-en>Tunnel name</span><span data-ar>اسم النفق</span></td></tr>
       <tr><td><code>--force</code></td><td><span data-en>Overwrite an existing configuration</span>
         <span data-ar>إعادة الإعداد فوق إعداد موجود</span></td></tr>
@@ -623,11 +636,140 @@ linko 3000     <span class="c"># next run   → https://x92ka.example.com  (the 
         <span data-ar>حذف المسار وسجل DNS والسطر المحلي</span></td></tr>
       <tr><td><code>linko doctor</code></td><td><span data-en>Eight checks; <code>--fix</code> repairs</span>
         <span data-ar>ثمانية فحوص؛ و<code>--fix</code> يصلح</span></td></tr>
+      <tr><td><code>linko domain</code></td><td><span data-en>Change the domain you publish to — see <a href="#changing">below</a></span>
+        <span data-ar>تغيير الدومين الذي تنشر عليه — <a href="#changing">بالأسفل</a></span></td></tr>
+      <tr><td><code>linko token</code></td><td><span data-en>Replace the API token — see <a href="#changing">below</a></span>
+        <span data-ar>استبدال توكن الـ API — <a href="#changing">بالأسفل</a></span></td></tr>
+      <tr><td><code>linko uninstall</code></td><td><span data-en>Remove linko and its Cloudflare traces</span>
+        <span data-ar>إزالة linko وآثاره من Cloudflare</span></td></tr>
       <tr><td><code>linko docs</code></td><td><span data-en>This guide in the terminal (<code>--open</code>)</span>
         <span data-ar>هذا الدليل في الطرفية (<code>--open</code>)</span></td></tr>
     </tbody>
   </table>
 </div>
+
+<!-- ═══════════════════ changing ═══════════════════ -->
+<h2 id="changing"><span data-en>Changing things later</span><span data-ar>التغيير لاحقًا</span></h2>
+
+<p><span data-en>Nothing you chose during setup is permanent, and none of it needs a
+   config file edit.</span>
+   <span data-ar>لا شيء اخترته في الإعداد دائم، ولا شيء منه يحتاج تعديل ملف إعداد يدويًا.</span></p>
+
+<h3><code>linko domain</code></h3>
+<p><span data-en>Switch to another of your domains, from the same numbered list.</span>
+   <span data-ar>انتقل إلى دومين آخر من دوميناتك، من نفس القائمة المرقّمة.</span></p>
+
+<div class="box term">
+  <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
+  <pre><code>$ linko domain
+
+Currently publishing to example.com
+
+Which domain should linko publish to?
+  1. example.com  <span class="c">(current)</span>
+  2. another.dev
+Choose: <span class="c">2</span>
+
+<span class="w">!</span> You have 2 URLs on example.com:
+    https://web.example.com -&gt; http://localhost:3000
+    https://api.example.com -&gt; http://localhost:8080
+
+Delete them before switching? [Y/n] <span class="c">y</span>
+<span class="g">✓</span> Removed web.example.com
+<span class="g">✓</span> Removed api.example.com
+
+<span class="g">✓</span> Now publishing to another.dev</code></pre>
+</div>
+
+<div class="tw">
+  <table>
+    <tbody>
+      <tr><td><code>linko domain another.dev</code></td>
+        <td><span data-en>Switch straight to one, no menu</span>
+            <span data-ar>الانتقال مباشرة بلا قائمة</span></td></tr>
+      <tr><td><code>--list</code></td>
+        <td><span data-en>Show the domains this token can see, then exit</span>
+            <span data-ar>اعرض الدومينات التي يراها التوكن ثم اخرج</span></td></tr>
+      <tr><td><code>-y</code>, <code>--yes</code></td>
+        <td><span data-en>Switch without asking</span><span data-ar>بدّل بلا أسئلة</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<p><span data-en>If the new domain lives in a different Cloudflare account, linko sets up a
+   tunnel there for you.</span>
+   <span data-ar>وإن كان الدومين الجديد في حساب Cloudflare آخر، يهيّئ linko نفقًا هناك.</span></p>
+
+<h3><code>linko token</code></h3>
+<p><span data-en>Replace the stored API token after a rotation, an expiry, or a
+   permission fix.</span>
+   <span data-ar>استبدل التوكن المحفوظ بعد تدويره أو انتهائه أو تصحيح صلاحياته.</span></p>
+
+<div class="box term">
+  <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
+  <pre><code>$ linko token
+
+New Cloudflare API token: <span class="c">················</span>
+<span class="g">✓</span> Token updated and saved to ~/.linko/config.json
+
+<span class="g">✓</span> Can reach example.com
+<span class="g">✓</span> Can reach the tunnel example-linko-tunnel
+
+<span class="w">All good.</span></code></pre>
+</div>
+
+<div class="note">
+  <b><span data-en>Checked before it is saved</span><span data-ar>يُفحص قبل حفظه</span></b>
+  <span data-en>Cloudflare verifies the new token first, so a typo cannot lock you out of
+    your own configuration. linko then re-checks that it can still reach your domain
+    and your tunnel — a replacement token often has different permissions, and it is
+    better to hear that now than at the next <code>linko 3000</code>.</span>
+  <span data-ar>يتحقق Cloudflare من التوكن الجديد أولًا، فلا يمكن لخطأ مطبعي أن يقفل عليك
+    إعدادك. ثم يعيد linko التأكد من وصوله إلى دومينك ونفقك — فالتوكن البديل غالبًا
+    بصلاحيات مختلفة، وسماع ذلك الآن أفضل من سماعه عند أول <code>linko 3000</code>.</span>
+</div>
+
+<h3><code>linko uninstall</code></h3>
+<p><span data-en>Remove linko from the machine, and its traces from Cloudflare, in
+   order:</span>
+   <span data-ar>يزيل linko من الجهاز، وآثاره من Cloudflare، بهذا الترتيب:</span></p>
+
+<ol>
+  <li><span data-en>stop tunnels running in the background</span>
+      <span data-ar>يوقف الأنفاق العاملة بالخلفية</span></li>
+  <li><span data-en>remove the services that start them at login</span>
+      <span data-ar>يزيل الخدمات التي تشغّلها عند تسجيل الدخول</span></li>
+  <li><span data-en>delete your published URLs and their DNS records</span>
+      <span data-ar>يحذف روابطك المنشورة وسجلات DNS الخاصة بها</span></li>
+  <li><span data-en>delete the tunnel from your Cloudflare account</span>
+      <span data-ar>يحذف النفق من حساب Cloudflare</span></li>
+  <li><span data-en>delete <code>~/.linko</code> — config, logs, the <code>cloudflared</code> copy</span>
+      <span data-ar>يحذف <code>~/.linko</code> — الإعداد والسجلات ونسخة <code>cloudflared</code></span></li>
+  <li><span data-en>delete the <code>linko</code> binary itself</span>
+      <span data-ar>يحذف ملف <code>linko</code> التنفيذي نفسه</span></li>
+</ol>
+
+<div class="tw">
+  <table>
+    <tbody>
+      <tr><td><code>-y</code>, <code>--yes</code></td>
+        <td><span data-en>Do not ask for confirmation</span><span data-ar>بلا سؤال تأكيد</span></td></tr>
+      <tr><td><code>--keep-cloud</code></td>
+        <td><span data-en>Leave the URLs, DNS records and tunnel on Cloudflare</span>
+            <span data-ar>اترك الروابط وسجلات DNS والنفق على Cloudflare</span></td></tr>
+      <tr><td><code>--keep-binary</code></td>
+        <td><span data-en>Leave the binary in place</span><span data-ar>اترك الملف التنفيذي مكانه</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<p><span data-en>Your Cloudflare account, your domain and your API token are never touched
+   — revoke the token yourself at
+   <a href="https://dash.cloudflare.com/profile/api-tokens">the tokens page</a> if you
+   no longer want it.</span>
+   <span data-ar>حسابك في Cloudflare ودومينك وتوكنك لا يُمسّون — ألغِ التوكن بنفسك من
+   <a href="https://dash.cloudflare.com/profile/api-tokens">صفحة التوكنات</a> إن لم تعد
+   تريده.</span></p>
 
 <!-- ═══════════════════ background ═══════════════════ -->
 <h2 id="background"><span data-en>Background and boot</span><span data-ar>الخلفية والإقلاع</span></h2>
