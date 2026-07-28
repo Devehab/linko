@@ -1,8 +1,8 @@
 platform: macos-latest
-commit:   4ca122f3a54c7966db495d072adc30f8ffb0b137
+commit:   0e71a7a80ad0f4ef386688800d852888be23f260
 runner:   Darwin 25.4.0 arm64
 go:       go version go1.26.5 darwin/arm64
-date:     2026-07-28 19:01:38 UTC
+date:     2026-07-28 19:09:53 UTC
 
 =================== go mod tidy ===================
 [exit 0]
@@ -44,8 +44,8 @@ date:     2026-07-28 19:01:38 UTC
 --- PASS: TestTunnelHelpers (0.00s)
 --- PASS: TestTunnelCNAMETarget (0.00s)
 PASS
-ok  	github.com/Devehab/linko/cloudflare	0.032s
---- PASS: TestRemoveRouteCleansUpEverything (0.01s)
+ok  	github.com/Devehab/linko/cloudflare	0.025s
+--- PASS: TestRemoveRouteCleansUpEverything (0.00s)
 --- PASS: TestRemoveRouteLooksUpMissingRecordID (0.00s)
 --- PASS: TestRemoveRouteSkipsForeignDNSRecords (0.00s)
 --- PASS: TestRemoveRouteIsIdempotent (0.00s)
@@ -73,38 +73,38 @@ ok  	github.com/Devehab/linko/cloudflare	0.032s
 --- PASS: TestFirstLine (0.00s)
 --- PASS: TestPlural (0.00s)
 PASS
-ok  	github.com/Devehab/linko/cmd	0.034s
+ok  	github.com/Devehab/linko/cmd	0.017s
 --- PASS: TestDirHonoursEnv (0.00s)
 --- PASS: TestLoadWithoutConfig (0.00s)
---- PASS: TestSaveLoadRoundTrip (0.01s)
---- PASS: TestSaveUsesRestrictivePermissions (0.03s)
---- PASS: TestEnvTokenOverridesStoredToken (0.03s)
---- PASS: TestLoadCorruptFile (0.01s)
+--- PASS: TestSaveLoadRoundTrip (0.00s)
+--- PASS: TestSaveUsesRestrictivePermissions (0.00s)
+--- PASS: TestEnvTokenOverridesStoredToken (0.00s)
+--- PASS: TestLoadCorruptFile (0.00s)
 --- PASS: TestHostname (0.00s)
 --- PASS: TestUpsertAndRemoveRoute (0.00s)
 --- PASS: TestValidate (0.00s)
 PASS
-ok  	github.com/Devehab/linko/config	0.101s
+ok  	github.com/Devehab/linko/config	0.012s
 --- PASS: TestAssetNameKnownPlatforms (0.00s)
 --- PASS: TestAssetNameUnsupportedPlatform (0.00s)
 --- PASS: TestCurrentPlatformIsSupported (0.00s)
---- PASS: TestLocateFindsLocalCopyFirst (0.01s)
---- PASS: TestLocateIgnoresNonExecutableFile (0.02s)
---- PASS: TestDownloadInstallsBinary (0.02s)
+--- PASS: TestLocateFindsLocalCopyFirst (0.00s)
+--- PASS: TestLocateIgnoresNonExecutableFile (0.00s)
+--- PASS: TestDownloadInstallsBinary (0.00s)
 --- PASS: TestDownloadHTTPError (0.00s)
 --- PASS: TestBinaryFromTarball (0.00s)
 --- PASS: TestBinaryFromTarballMissingEntry (0.00s)
 --- PASS: TestCommandPassesTokenViaEnvironment (0.00s)
 --- PASS: TestCommandDefaultsLogLevel (0.00s)
 PASS
-ok  	github.com/Devehab/linko/internal/cloudflared	0.085s
+ok  	github.com/Devehab/linko/internal/cloudflared	0.019s
 --- PASS: TestRandomProducesValidLabels (0.00s)
 --- PASS: TestRandomDefaultsLength (0.00s)
 --- PASS: TestRandomExcludesConfusingCharacters (0.00s)
 --- PASS: TestValidateLabel (0.00s)
 --- PASS: TestValidateHostname (0.00s)
 PASS
-ok  	github.com/Devehab/linko/internal/naming	0.011s
+ok  	github.com/Devehab/linko/internal/naming	0.014s
 --- PASS: TestParseValid (0.00s)
 --- PASS: TestParseInvalid (0.00s)
 --- PASS: TestLooksRejectsSubcommands (0.00s)
@@ -149,11 +149,11 @@ ok  	github.com/Devehab/linko/internal/ui	0.008s
 
 =================== go test (summary) =============
 ?   	github.com/Devehab/linko	[no test files]
-ok  	github.com/Devehab/linko/cloudflare	0.033s
-ok  	github.com/Devehab/linko/cmd	0.028s
-ok  	github.com/Devehab/linko/config	0.022s
-ok  	github.com/Devehab/linko/internal/cloudflared	0.039s
-ok  	github.com/Devehab/linko/internal/naming	0.020s
-ok  	github.com/Devehab/linko/internal/target	0.010s
+ok  	github.com/Devehab/linko/cloudflare	0.035s
+ok  	github.com/Devehab/linko/cmd	0.019s
+ok  	github.com/Devehab/linko/config	0.020s
+ok  	github.com/Devehab/linko/internal/cloudflared	0.020s
+ok  	github.com/Devehab/linko/internal/naming	0.008s
+ok  	github.com/Devehab/linko/internal/target	0.006s
 ok  	github.com/Devehab/linko/internal/ui	0.007s
 [exit 0]
