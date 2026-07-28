@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Devehab/linko/cloudflare"
 	"github.com/Devehab/linko/config"
 	"github.com/Devehab/linko/internal/naming"
 )
@@ -266,6 +267,49 @@ func TestFindRouteByService(t *testing.T) {
 	}
 	if r := cfg.FindRouteByService("http://localhost:9999"); r != nil {
 		t.Fatalf("FindRouteByService = %+v for an unpublished port, want nil", r)
+	}
+}
+
+func TestZoneLabelsMarkCurrentAndInactive(t *testing.T) {
+	zones := []cloudflare.Zone{
+		{Name: "example.com", Status: "active"},
+		{Name: "other.org", Status: "pending"},
+	}
+
+	labels := zoneLabels(zones, "example.com")
+	if len(labels) != 2 {
+		t.Fatalf("zoneLabels returned %d entries", len(labels))
+	}
+	if !strings.Contains(labels[0], "example.com") || !strings.Contains(labels[0], "current") {
+		t.Errorf("the domain in use should be marked: %q", labels[0])
+	}
+	if !strings.Contains(labels[1], "pending") {
+		t.Errorf("a domain that is not active yet should say so: %q", labels[1])
+	}
+	if strings.Contains(labels[1], "current") {
+		t.Errorf("only one domain is current: %q", labels[1])
+	}
+}
+
+func TestZoneNames(t *testing.T) {
+	got := zoneNames([]cloudflare.Zone{{Name: "a.com"}, {Name: "b.com"}})
+	if !equal(got, []string{"a.com", "b.com"}) {
+		t.Fatalf("zoneNames = %v", got)
+	}
+}
+
+// init no longer asks for a base subdomain: the chosen domain is the base.
+// That is what keeps generated URLs one level deep, which is all a free
+// Cloudflare certificate covers.
+func TestEmptyBaseDefaultsToTheDomain(t *testing.T) {
+	if got := expandBase("", "example.com"); got != "example.com" {
+		t.Fatalf("expandBase(\"\") = %q, want the bare domain", got)
+	}
+	if err := validateBase(expandBase("", "example.com"), "example.com"); err != nil {
+		t.Fatalf("the bare domain must be a valid base: %v", err)
+	}
+	if n := extraLabels(expandBase("", "example.com"), "example.com"); n != 0 {
+		t.Fatalf("the default base is %d labels deep, want 0", n)
 	}
 }
 

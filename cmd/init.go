@@ -49,8 +49,8 @@ func newInitCmd() *cobra.Command {
 
 	f := cmd.Flags()
 	f.StringVar(&opts.token, "token", "", "Cloudflare API token (or set LINKO_API_TOKEN)")
-	f.StringVar(&opts.domain, "domain", "", "domain managed by Cloudflare, e.g. example.com")
-	f.StringVar(&opts.base, "base", "", "base subdomain for generated URLs, e.g. demo.example.com")
+	f.StringVar(&opts.domain, "domain", "", "domain to use (default: pick from a list)")
+	f.StringVar(&opts.base, "base", "", "publish under a deeper subdomain — needs a paid certificate")
 	f.StringVar(&opts.tunnelName, "tunnel", "", "tunnel name (default <domain>-linko-tunnel)")
 	f.BoolVar(&opts.force, "force", false, "overwrite an existing configuration")
 	f.BoolVarP(&opts.yes, "yes", "y", false, "non-interactive: fail instead of prompting")
@@ -108,37 +108,15 @@ func runInit(ctx context.Context, opts *initOptions) error {
 	}
 	ui.Success("Cloudflare connected")
 
-	// 2. Domain / zone
+	// 2. Domain — picked from a numbered list of what the token can see.
 	ui.Header("Domain")
 	domain := strings.ToLower(strings.TrimSpace(opts.domain))
 	if domain == "" && existing != nil {
 		domain = existing.Domain
 	}
-	if domain == "" {
-		if opts.yes {
-			return fmt.Errorf("--domain is required in non-interactive mode")
-		}
-		zones, err := client.ListZones(ctx)
-		if err == nil && len(zones) > 0 {
-			names := make([]string, 0, len(zones))
-			for _, z := range zones {
-				names = append(names, z.Name)
-			}
-			ui.Info("Zones on this account: %s", strings.Join(names, ", "))
-			domain = names[0]
-		}
-		domain, err = p.AskRequired("Domain:", domain, func(s string) error {
-			return naming.ValidateHostname(s)
-		})
-		if err != nil {
-			return err
-		}
-	}
 
-	zone, err := client.FindZone(ctx, domain)
+	zone, err := chooseZone(ctx, client, p, domain, opts.yes)
 	if err != nil {
-		ui.Fail("DNS zone not found")
-		explainZoneFailure(ctx, client, domain)
 		return err
 	}
 	cfg.Domain = zone.Name
@@ -147,7 +125,7 @@ func runInit(ctx context.Context, opts *initOptions) error {
 	cfg.AccountName = zone.Account.Name
 	client.ZoneID = zone.ID
 	client.AccountID = zone.Account.ID
-	ui.Success("DNS zone found (%s)", zone.Name)
+
 	if cfg.AccountID == "" {
 		accounts, aerr := client.ListAccounts(ctx)
 		if aerr != nil || len(accounts) == 0 {
@@ -158,23 +136,11 @@ func runInit(ctx context.Context, opts *initOptions) error {
 		client.AccountID = accounts[0].ID
 	}
 
-	// 3. Base subdomain
-	base := strings.ToLower(strings.TrimSpace(opts.base))
-	if base == "" && existing != nil && strings.HasSuffix(existing.BaseDomain, cfg.Domain) {
-		base = existing.BaseDomain
-	}
-	if base == "" {
-		base = "demo." + cfg.Domain
-		if !opts.yes {
-			base, err = p.AskRequired("Base subdomain:", base, func(s string) error {
-				return validateBase(s, cfg.Domain)
-			})
-			if err != nil {
-				return err
-			}
-		}
-	}
-	base = expandBase(base, cfg.Domain)
+	// 3. Base. The domain you picked is the base — asking again was a
+	// question with one sensible answer, and the wrong answer produced URLs
+	// two labels deep that no free certificate covers. --base is still there
+	// for anyone who has Advanced Certificate Manager and wants the depth.
+	base := expandBase(strings.ToLower(strings.TrimSpace(opts.base)), cfg.Domain)
 	if err := validateBase(base, cfg.Domain); err != nil {
 		return err
 	}

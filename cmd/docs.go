@@ -18,6 +18,9 @@ const DocsURL = "https://github.com/Devehab/linko/blob/main/GUIDE.md"
 // TokenURL is where Cloudflare API tokens are created.
 const TokenURL = "https://dash.cloudflare.com/profile/api-tokens"
 
+// InstallURL is the one-liner installer, quoted by `linko uninstall`.
+const InstallURL = "https://raw.githubusercontent.com/Devehab/linko/main/install.sh"
+
 func newDocsCmd() *cobra.Command {
 	var open bool
 

@@ -57,6 +57,9 @@ using your own Cloudflare account and domain.
 		newStopCmd(),
 		newPsCmd(),
 		newServiceCmd(),
+		newDomainCmd(),
+		newTokenCmd(),
+		newUninstallCmd(),
 	)
 	return root
 }
