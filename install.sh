@@ -34,8 +34,13 @@ detect_platform() {
 
   # Return non-zero rather than dying: the caller falls back to building from
   # source, which covers platforms we do not ship binaries for.
+  #
+  # Git Bash, MSYS2 and Cygwin all report their own kernel name rather than
+  # "windows", so without this the one-liner silently fell through to a source
+  # build and only worked if Go happened to be installed.
   case "$os" in
     linux|darwin) ;;
+    mingw*|msys*|cygwin*|windows*) os="windows" ;;
     *) return 1 ;;
   esac
 
@@ -82,8 +87,7 @@ find_go() {
 }
 
 build_from_source() {
-  local dest="$1" ref="$VERSION"
-  [ "$ref" = "latest" ] && ref="latest"
+  local dest="$1" ref="${2:-$VERSION}"
 
   if ! find_go; then
     echo
@@ -97,8 +101,27 @@ build_from_source() {
   fi
 
   dim "building from source with $(go version | awk '{print $3}')"
-  GOBIN="$dest" go install "github.com/${REPO}@${ref}" \
-    || die "build from source failed"
+  # Stamp the version, otherwise `linko --version` reports "dev".
+  GOBIN="$dest" go install -ldflags "-s -w -X main.version=${ref#v}" \
+    "github.com/${REPO}@${ref}" || die "build from source failed"
+}
+
+# unpack <archive> <dir> — tar.gz everywhere, zip on Windows.
+unpack() {
+  case "$1" in
+    *.zip)
+      if command -v unzip >/dev/null 2>&1; then
+        unzip -q -o "$1" -d "$2"
+      elif tar -xf "$1" -C "$2" 2>/dev/null; then
+        : # Windows 10+ ships bsdtar, which reads zip archives
+      else
+        die "extracting $1 needs unzip, or a tar that understands zip"
+      fi
+      ;;
+    *)
+      tar -xzf "$1" -C "$2" || die "could not unpack $1"
+      ;;
+  esac
 }
 
 on_path() {
@@ -166,11 +189,17 @@ main() {
   command -v curl >/dev/null 2>&1 || die "curl is required"
   command -v tar  >/dev/null 2>&1 || die "tar is required"
 
-  local platform version tag archive url dest
+  local platform version tag archive url dest exe ext
   dest="$(choose_install_dir)"
   mkdir -p "$dest"
 
   platform="$(detect_platform)" || platform=""
+
+  exe="$BINARY"
+  ext="tar.gz"
+  case "$platform" in
+    windows_*) exe="${BINARY}.exe"; ext="zip" ;;
+  esac
 
   if [ -z "$platform" ]; then
     dim "no prebuilt binary for $(uname -s)/$(uname -m)"
@@ -178,7 +207,7 @@ main() {
   else
     tag="$(resolve_version)"
     version="${tag#v}"
-    archive="${BINARY}_${version}_${platform}.tar.gz"
+    archive="${BINARY}_${version}_${platform}.${ext}"
     url="https://github.com/${REPO}/releases/download/${tag}/${archive}"
 
     dim "Installing ${BINARY} ${tag} (${platform})"
@@ -186,31 +215,30 @@ main() {
     TMP="$(mktemp -d)"
 
     if curl -fsSL "$url" -o "$TMP/$archive"; then
-      tar -xzf "$TMP/$archive" -C "$TMP" \
-        || die "could not unpack $archive"
-      [ -f "$TMP/$BINARY" ] || die "the archive does not contain a ${BINARY} binary"
-      chmod +x "$TMP/$BINARY"
+      unpack "$TMP/$archive" "$TMP"
+      [ -f "$TMP/$exe" ] || die "the archive does not contain ${exe}"
+      chmod +x "$TMP/$exe"
 
       if [ -w "$dest" ]; then
-        mv "$TMP/$BINARY" "$dest/$BINARY"
+        mv "$TMP/$exe" "$dest/$exe"
       else
         dim "elevating with sudo to write to $dest"
-        sudo mv "$TMP/$BINARY" "$dest/$BINARY"
+        sudo mv "$TMP/$exe" "$dest/$exe"
       fi
     else
       dim "no release archive at $url — building from source instead"
-      build_from_source "$dest"
+      build_from_source "$dest" "$tag"
     fi
   fi
 
-  [ -x "$dest/$BINARY" ] || die "installation failed: $dest/$BINARY is missing"
+  [ -x "$dest/$exe" ] || die "installation failed: $dest/$exe is missing"
 
   # Prove the binary actually runs here. A wrong architecture or a libc
   # mismatch surfaces as "cannot execute binary file", which is far easier to
   # act on now than the first time the user types `linko`.
-  if ! "$dest/$BINARY" --version >/dev/null 2>&1; then
+  if ! "$dest/$exe" --version >/dev/null 2>&1; then
     red "! ${BINARY} was installed but will not run on this system"
-    echo "  $("$dest/$BINARY" --version 2>&1 | head -1)"
+    echo "  $("$dest/$exe" --version 2>&1 | head -1)"
     echo
     echo "  Please open an issue with the output of:"
     echo "    uname -sm && ldd --version 2>&1 | head -1"
@@ -218,7 +246,7 @@ main() {
     exit 1
   fi
 
-  green "✓ ${BINARY} installed to ${dest}/${BINARY}"
+  green "✓ ${BINARY} installed to ${dest}/${exe}"
 
   echo
   if on_path "$dest"; then

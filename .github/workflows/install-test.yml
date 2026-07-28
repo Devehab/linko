@@ -64,8 +64,12 @@ jobs:
             echo "\$ linko --help";      linko --help  >/dev/null; echo "[exit $?]"
             echo "\$ linko docs";        linko docs    >/dev/null; echo "[exit $?]"
             echo "\$ linko list  (must steer an unconfigured user to init)"
-            linko list 2>&1 | head -3
-            linko list 2>&1 | grep -qi 'linko init'; echo "[exit $?]"
+            # Not a pipeline: GitHub runs bash with -o pipefail, so
+            # `linko list | grep` would report linko's exit code — which is
+            # correctly 1 here — instead of whether the hint was printed.
+            linko list > list.out 2>&1
+            head -3 list.out
+            grep -qi 'linko init' list.out; echo "[exit $?]"
           } > "$LOG" 2>&1
           cat "$LOG"
           grep -qE '^\[.* exit [1-9]|^\[exit [1-9]' "$LOG" && exit 1 || exit 0
@@ -137,8 +141,12 @@ jobs:
             echo "\$ linko --help";     linko --help >/dev/null; echo "[exit $?]"
             echo "\$ linko docs";       linko docs   >/dev/null; echo "[exit $?]"
             echo "\$ linko list  (must steer an unconfigured user to init)"
-            linko list 2>&1 | head -3
-            linko list 2>&1 | grep -qi 'linko init'; echo "[exit $?]"
+            # Not a pipeline: GitHub runs bash with -o pipefail, so
+            # `linko list | grep` would report linko's exit code — which is
+            # correctly 1 here — instead of whether the hint was printed.
+            linko list > list.out 2>&1
+            head -3 list.out
+            grep -qi 'linko init' list.out; echo "[exit $?]"
           } > "$LOG" 2>&1
           cat "$LOG"
           grep -qE '^\[.* exit [1-9]|^\[exit [1-9]' "$LOG" && exit 1 || exit 0
