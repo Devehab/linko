@@ -1,11 +1,11 @@
 install one-liner test
-commit: 8b324ea06394c2fa89fef50af10cd1b248ac9517
-date:   2026-07-28 05:18:20 UTC
+commit: 487c643222a15e7eb74a1d0981206094419c0c93
+date:   2026-07-28 05:31:40 UTC
 
 command under test:
   curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/install.sh | bash
 
-hosts:      failure
+hosts:      success
 containers: failure
 
 ════════════════════ per platform ════════════════════
@@ -25,7 +25,7 @@ containers: failure
     
     $ curl -fsSL .../install.sh | bash
     curl: (23) Failure writing output to destination, passed 1370 returned 0
-    [2mInstalling linko v0.2.2 (linux_amd64)[0m
+    [2mInstalling linko v0.2.3 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
     Next step:
@@ -45,17 +45,13 @@ containers: failure
     /usr/local/bin/linko
     [exit 0]
     $ linko --version
-    linko 0.2.2
+    linko 0.2.3
     [exit 0]
     $ linko --help
     [exit 0]
     $ linko docs
     [exit 0]
     $ linko list  (must steer an unconfigured user to init)
-    
-    Error: linko is not set up yet — run `linko init` first
-    
-    [exit 0]
 
 ### PASS ──────── archlinux:latest ────────
     ──────── archlinux:latest ────────
@@ -72,7 +68,7 @@ containers: failure
     
     $ curl -fsSL .../install.sh | bash
     curl: Failed writing body
-    [2mInstalling linko v0.2.2 (linux_amd64)[0m
+    [2mInstalling linko v0.2.3 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
     Next step:
@@ -92,17 +88,13 @@ containers: failure
     /usr/local/bin/linko
     [exit 0]
     $ linko --version
-    linko 0.2.2
+    linko 0.2.3
     [exit 0]
     $ linko --help
     [exit 0]
     $ linko docs
     [exit 0]
     $ linko list  (must steer an unconfigured user to init)
-    
-    Error: linko is not set up yet — run `linko init` first
-    
-    [exit 0]
 
 ### PASS ──────── debian:11 ────────
     ──────── debian:11 ────────
@@ -119,7 +111,7 @@ containers: failure
     
     $ curl -fsSL .../install.sh | bash
     curl: (23) Failure writing output to destination
-    [2mInstalling linko v0.2.2 (linux_amd64)[0m
+    [2mInstalling linko v0.2.3 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
     Next step:
@@ -139,17 +131,13 @@ containers: failure
     /usr/local/bin/linko
     [exit 0]
     $ linko --version
-    linko 0.2.2
+    linko 0.2.3
     [exit 0]
     $ linko --help
     [exit 0]
     $ linko docs
     [exit 0]
     $ linko list  (must steer an unconfigured user to init)
-    
-    Error: linko is not set up yet — run `linko init` first
-    
-    [exit 0]
 
 ### PASS ──────── debian:12 ────────
     ──────── debian:12 ────────
@@ -165,8 +153,8 @@ containers: failure
       go is still absent — good
     
     $ curl -fsSL .../install.sh | bash
-    curl: (23) Failure writing output to destination
-    [2mInstalling linko v0.2.2 (linux_amd64)[0m
+    curl: (23) Failed writing body
+    [2mInstalling linko v0.2.3 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
     Next step:
@@ -186,17 +174,13 @@ containers: failure
     /usr/local/bin/linko
     [exit 0]
     $ linko --version
-    linko 0.2.2
+    linko 0.2.3
     [exit 0]
     $ linko --help
     [exit 0]
     $ linko docs
     [exit 0]
     $ linko list  (must steer an unconfigured user to init)
-    
-    Error: linko is not set up yet — run `linko init` first
-    
-    [exit 0]
 
 ### PASS ──────── fedora:latest ────────
     ──────── fedora:latest ────────
@@ -212,8 +196,8 @@ containers: failure
       go is still absent — good
     
     $ curl -fsSL .../install.sh | bash
-    curl: Failed writing body
-    [2mInstalling linko v0.2.2 (linux_amd64)[0m
+    curl: (23) Failure writing output to destination, passed 1370 returned 653
+    [2mInstalling linko v0.2.3 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
     Next step:
@@ -233,19 +217,15 @@ containers: failure
     /usr/local/bin/linko
     [exit 0]
     $ linko --version
-    linko 0.2.2
+    linko 0.2.3
     [exit 0]
     $ linko --help
     [exit 0]
     $ linko docs
     [exit 0]
     $ linko list  (must steer an unconfigured user to init)
-    
-    Error: linko is not set up yet — run `linko init` first
-    
-    [exit 0]
 
-### FAIL ──────── macos-latest ────────
+### PASS ──────── macos-latest ────────
     ──────── macos-latest ────────
     uname: Darwin arm64
       curl  /usr/bin/curl
@@ -254,7 +234,7 @@ containers: failure
       go    (absent)
     
     $ curl -fsSL .../install.sh | bash
-    [2mInstalling linko v0.2.2 (darwin_arm64)[0m
+    [2mInstalling linko v0.2.3 (darwin_arm64)[0m
     [32m✓ linko installed to /opt/homebrew/bin/linko[0m
     
     Next step:
@@ -274,7 +254,7 @@ containers: failure
     /opt/homebrew/bin/linko
     [exit 0]
     $ linko --version
-    linko 0.2.2
+    linko 0.2.3
     [exit 0]
     $ linko --help
     [exit 0]
@@ -284,7 +264,7 @@ containers: failure
     
     Error: linko is not set up yet — run `linko init` first
     
-    [exit 1]
+    [exit 0]
 
 ### PASS ──────── opensuse/leap:latest ────────
     ──────── opensuse/leap:latest ────────
@@ -300,8 +280,8 @@ containers: failure
       go is still absent — good
     
     $ curl -fsSL .../install.sh | bash
-    curl: (23) Failure writing output to destination, passed 1370 returned 653
-    [2mInstalling linko v0.2.2 (linux_amd64)[0m
+    curl: (23) Failure writing output to destination, passed 1370 returned 1089
+    [2mInstalling linko v0.2.3 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
     Next step:
@@ -321,17 +301,13 @@ containers: failure
     /usr/local/bin/linko
     [exit 0]
     $ linko --version
-    linko 0.2.2
+    linko 0.2.3
     [exit 0]
     $ linko --help
     [exit 0]
     $ linko docs
     [exit 0]
     $ linko list  (must steer an unconfigured user to init)
-    
-    Error: linko is not set up yet — run `linko init` first
-    
-    [exit 0]
 
 ### PASS ──────── rockylinux/rockylinux:9 ────────
     ──────── rockylinux/rockylinux:9 ────────
@@ -360,7 +336,7 @@ containers: failure
     
     $ curl -fsSL .../install.sh | bash
     curl: (23) Failure writing output to destination
-    [2mInstalling linko v0.2.2 (linux_amd64)[0m
+    [2mInstalling linko v0.2.3 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
     Next step:
@@ -380,17 +356,13 @@ containers: failure
     /usr/local/bin/linko
     [exit 0]
     $ linko --version
-    linko 0.2.2
+    linko 0.2.3
     [exit 0]
     $ linko --help
     [exit 0]
     $ linko docs
     [exit 0]
     $ linko list  (must steer an unconfigured user to init)
-    
-    Error: linko is not set up yet — run `linko init` first
-    
-    [exit 0]
 
 ### PASS ──────── ubuntu:24.04 ────────
     ──────── ubuntu:24.04 ────────
@@ -406,8 +378,7 @@ containers: failure
       go is still absent — good
     
     $ curl -fsSL .../install.sh | bash
-    curl: (23) Failure writing output to destination
-    [2mInstalling linko v0.2.2 (linux_amd64)[0m
+    [2mInstalling linko v0.2.3 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
     Next step:
@@ -427,19 +398,15 @@ containers: failure
     /usr/local/bin/linko
     [exit 0]
     $ linko --version
-    linko 0.2.2
+    linko 0.2.3
     [exit 0]
     $ linko --help
     [exit 0]
     $ linko docs
     [exit 0]
     $ linko list  (must steer an unconfigured user to init)
-    
-    Error: linko is not set up yet — run `linko init` first
-    
-    [exit 0]
 
-### FAIL ──────── ubuntu-latest ────────
+### PASS ──────── ubuntu-latest ────────
     ──────── ubuntu-latest ────────
     uname: Linux x86_64
       curl  /usr/bin/curl
@@ -448,7 +415,7 @@ containers: failure
       go    /usr/bin/go
     
     $ curl -fsSL .../install.sh | bash
-    [2mInstalling linko v0.2.2 (linux_amd64)[0m
+    [2mInstalling linko v0.2.3 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
     Next step:
@@ -468,7 +435,7 @@ containers: failure
     /usr/local/bin/linko
     [exit 0]
     $ linko --version
-    linko 0.2.2
+    linko 0.2.3
     [exit 0]
     $ linko --help
     [exit 0]
@@ -478,9 +445,9 @@ containers: failure
     
     Error: linko is not set up yet — run `linko init` first
     
-    [exit 1]
+    [exit 0]
 
-### FAIL ──────── windows-latest ────────
+### PASS ──────── windows-latest ────────
     ──────── windows-latest ────────
     uname: MINGW64_NT-10.0-26100 x86_64
       curl  /mingw64/bin/curl
@@ -489,13 +456,8 @@ containers: failure
       go    /c/hostedtoolcache/windows/go/1.24.13/x64/bin/go
     
     $ curl -fsSL .../install.sh | bash
-    [2mno prebuilt binary for MINGW64_NT-10.0-26100/x86_64[0m
-    [2mbuilding from source with go1.24.13[0m
-    go: downloading github.com/Devehab/linko v0.2.2
-    go: downloading github.com/spf13/cobra v1.8.1
-    go: downloading github.com/inconshreveable/mousetrap v1.1.0
-    go: downloading github.com/spf13/pflag v1.0.5
-    [32m✓ linko installed to /c/Users/runneradmin/.local/bin/linko[0m
+    [2mInstalling linko v0.2.3 (windows_amd64)[0m
+    [32m✓ linko installed to /c/Users/runneradmin/.local/bin/linko.exe[0m
     
     [2mcreated .bashrc with /c/Users/runneradmin/.local/bin on PATH[0m
     
@@ -517,7 +479,7 @@ containers: failure
     /c/Users/runneradmin/.local/bin/linko
     [exit 0]
     $ linko --version
-    linko dev
+    linko 0.2.3
     [exit 0]
     $ linko --help
     [exit 0]
@@ -527,4 +489,4 @@ containers: failure
     
     Error: linko is not set up yet — run `linko init` first
     
-    [exit 1]
+    [exit 0]
