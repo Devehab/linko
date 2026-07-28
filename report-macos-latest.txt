@@ -1,0 +1,117 @@
+platform: macos-latest
+commit:   f1ff70db2575445fef5ed5e3de4efb8330c623b4
+runner:   Darwin 25.4.0 arm64
+go:       go version go1.22.12 darwin/arm64
+date:     2026-07-28 04:38:13 UTC
+
+=================== go mod tidy ===================
+go: downloading github.com/spf13/cobra v1.8.1
+go: downloading github.com/spf13/pflag v1.0.5
+go: downloading github.com/inconshreveable/mousetrap v1.1.0
+[exit 0]
+
+=================== gofmt -s -l . =================
+(clean)
+
+=================== go build ./... ================
+[exit 0]
+
+=================== go vet ./... ==================
+[exit 0]
+
+=================== go test -v ====================
+?   	github.com/Devehab/linko	[no test files]
+dyld[20954]: missing LC_UUID load command in /private/var/folders/8j/sfr9qqcj73j4p6nhwcfpr0th0000gn/T/go-build3306326845/b163/cloudflare.test
+dyld[20954]: missing LC_UUID load command
+signal: abort trap
+FAIL	github.com/Devehab/linko/cloudflare	0.002s
+dyld[20955]: missing LC_UUID load command in /private/var/folders/8j/sfr9qqcj73j4p6nhwcfpr0th0000gn/T/go-build3306326845/b175/cmd.test
+dyld[20955]: missing LC_UUID load command
+signal: abort trap
+FAIL	github.com/Devehab/linko/cmd	0.003s
+--- PASS: TestDirHonoursEnv (0.00s)
+--- PASS: TestLoadWithoutConfig (0.00s)
+--- PASS: TestSaveLoadRoundTrip (0.00s)
+--- PASS: TestSaveUsesRestrictivePermissions (0.00s)
+--- PASS: TestEnvTokenOverridesStoredToken (0.00s)
+--- PASS: TestLoadCorruptFile (0.00s)
+--- PASS: TestHostname (0.00s)
+--- PASS: TestUpsertAndRemoveRoute (0.00s)
+--- PASS: TestValidate (0.00s)
+PASS
+ok  	github.com/Devehab/linko/config	0.014s
+dyld[20963]: missing LC_UUID load command in /private/var/folders/8j/sfr9qqcj73j4p6nhwcfpr0th0000gn/T/go-build3306326845/b181/cloudflared.test
+dyld[20963]: missing LC_UUID load command
+signal: abort trap
+FAIL	github.com/Devehab/linko/internal/cloudflared	0.003s
+--- PASS: TestRandomProducesValidLabels (0.00s)
+--- PASS: TestRandomDefaultsLength (0.00s)
+--- PASS: TestRandomExcludesConfusingCharacters (0.00s)
+--- PASS: TestValidateLabel (0.00s)
+--- PASS: TestValidateHostname (0.00s)
+PASS
+ok  	github.com/Devehab/linko/internal/naming	0.010s
+dyld[20964]: missing LC_UUID load command in /private/var/folders/8j/sfr9qqcj73j4p6nhwcfpr0th0000gn/T/go-build3306326845/b187/target.test
+dyld[20964]: missing LC_UUID load command
+signal: abort trap
+FAIL	github.com/Devehab/linko/internal/target	0.003s
+--- PASS: TestColourCanBeDisabled (0.00s)
+--- PASS: TestLinkWrapsInOSC8WhenSupported (0.00s)
+--- PASS: TestLinkIsPlainWhenUnsupported (0.00s)
+--- PASS: TestDetectHyperlinks (0.00s)
+--- PASS: TestClickHint (0.00s)
+--- PASS: TestTableAligns (0.00s)
+Domain: [example.com] --- PASS: TestAskUsesDefaultOnEmptyInput (0.00s)
+Domain: [example.com] --- PASS: TestAskTrimsInput (0.00s)
+Name: ! a value is required
+Name: ! not good
+Name: --- PASS: TestAskRequiredRetriesUntilValid (0.00s)
+Continue? [y/N] Continue? [y/N] Continue? [Y/n] Continue? [Y/n] Continue? [Y/n] Continue? [y/N] Continue? [Y/n] --- PASS: TestConfirm (0.00s)
+Pick:
+  1. a
+  2. b
+  3. c
+Choose: --- PASS: TestChoose (0.00s)
+Pick:
+  1. a
+  2. b
+Choose: ! enter a number between 1 and 2
+Choose: ! enter a number between 1 and 2
+Choose: --- PASS: TestChooseRejectsOutOfRange (0.00s)
+Pick:
+  1. a
+  2. b
+Choose: ! enter a number between 1 and 2
+Choose: ! enter a number between 1 and 2
+Choose: ! enter a number between 1 and 2
+Choose: ! enter a number between 1 and 2
+Choose: ! enter a number between 1 and 2
+--- PASS: TestChooseGivesUp (0.00s)
+PASS
+ok  	github.com/Devehab/linko/internal/ui	0.006s
+FAIL
+[exit 1]
+
+=================== go test (summary) =============
+?   	github.com/Devehab/linko	[no test files]
+dyld[20990]: missing LC_UUID load command in /private/var/folders/8j/sfr9qqcj73j4p6nhwcfpr0th0000gn/T/go-build2761241544/b163/cloudflare.test
+dyld[20990]: missing LC_UUID load command
+signal: abort trap
+FAIL	github.com/Devehab/linko/cloudflare	0.002s
+dyld[20993]: missing LC_UUID load command in /private/var/folders/8j/sfr9qqcj73j4p6nhwcfpr0th0000gn/T/go-build2761241544/b175/cmd.test
+dyld[20993]: missing LC_UUID load command
+signal: abort trap
+FAIL	github.com/Devehab/linko/cmd	0.002s
+ok  	github.com/Devehab/linko/config	0.008s
+dyld[20998]: missing LC_UUID load command in /private/var/folders/8j/sfr9qqcj73j4p6nhwcfpr0th0000gn/T/go-build2761241544/b181/cloudflared.test
+dyld[20998]: missing LC_UUID load command
+signal: abort trap
+FAIL	github.com/Devehab/linko/internal/cloudflared	0.002s
+ok  	github.com/Devehab/linko/internal/naming	0.011s
+dyld[21003]: missing LC_UUID load command in /private/var/folders/8j/sfr9qqcj73j4p6nhwcfpr0th0000gn/T/go-build2761241544/b187/target.test
+dyld[21003]: missing LC_UUID load command
+signal: abort trap
+FAIL	github.com/Devehab/linko/internal/target	0.007s
+ok  	github.com/Devehab/linko/internal/ui	0.005s
+FAIL
+[exit 1]
