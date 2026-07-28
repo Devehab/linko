@@ -6,7 +6,7 @@
 
 [![CI](https://github.com/Devehab/linko/actions/workflows/ci.yml/badge.svg)](https://github.com/Devehab/linko/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/Devehab/linko?color=f6821f)](https://github.com/Devehab/linko/releases)
-[![Go](https://img.shields.io/badge/go-1.22%2B-00ADD8)](https://go.dev)
+[![Go](https://img.shields.io/badge/go-1.23%2B-00ADD8)](https://go.dev)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 [Install](#install) · [Quick start](#quick-start) · [Commands](#command-reference) · [Cookbook](#cookbook) · [Troubleshooting](#troubleshooting) · [العربية](GUIDE.md)
@@ -132,7 +132,7 @@ linko --version
 <details>
 <summary><b>Other ways to install</b></summary>
 
-**Homebrew-managed Go, or any Go 1.22+**
+**Homebrew-managed Go, or any Go 1.23+**
 
 ```bash
 go install github.com/Devehab/linko@latest

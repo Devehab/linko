@@ -141,7 +141,7 @@ linko --version
 <details>
 <summary><b>طرق أخرى للتثبيت</b></summary>
 
-**عبر Go** — تحتاج Go 1.22 أو أحدث:
+**عبر Go** — تحتاج Go 1.23 أو أحدث:
 
 ```bash
 go install github.com/Devehab/linko@latest
