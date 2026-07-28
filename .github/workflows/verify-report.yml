@@ -1,11 +1,12 @@
 name: Verify report
 
-# Builds, vets and tests the project, then publishes the raw output to the
-# `ci-report` branch as a plain text file. That makes the full compiler and
-# test output readable with `git fetch` alone, without the Actions API.
+# Runs the full verification on every platform we ship for, and publishes the
+# raw output to the `ci-report` branch. That makes compiler and test failures
+# readable with `git fetch` alone, without the Actions API or web UI.
 #
 # Read it with:
-#   git fetch origin ci-report && git show origin/ci-report:report.txt
+#   git fetch origin ci-report
+#   git show origin/ci-report:report-ubuntu-latest.txt
 
 on:
   push:
@@ -16,8 +17,13 @@ permissions:
   contents: write
 
 jobs:
-  report:
-    runs-on: ubuntu-latest
+  verify:
+    name: verify (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
 
@@ -26,17 +32,16 @@ jobs:
           go-version: '1.22'
           cache: true
 
-      - name: Run the full verification and capture every byte
-        id: run
+      - name: Run everything and capture every byte
+        shell: bash
         run: |
           set +e
-          exec 3>&1
           {
-            echo "commit:  ${GITHUB_SHA}"
-            echo "ref:     ${GITHUB_REF}"
-            echo "runner:  $(uname -srm)"
-            echo "go:      $(go version)"
-            echo "date:    $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+            echo "platform: ${{ matrix.os }}"
+            echo "commit:   ${GITHUB_SHA}"
+            echo "runner:   $(uname -srm 2>/dev/null || echo windows)"
+            echo "go:       $(go version)"
+            echo "date:     $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
 
             echo
             echo "=================== go mod tidy ==================="
@@ -45,7 +50,7 @@ jobs:
             echo
             echo "=================== gofmt -s -l . ================="
             out=$(gofmt -s -l . 2>&1)
-            if [ -n "$out" ]; then echo "$out"; echo "[needs formatting]"; else echo "(clean)"; fi
+            if [ -n "$out" ]; then echo "$out"; echo "[NEEDS FORMATTING]"; else echo "(clean)"; fi
 
             echo
             echo "=================== go build ./... ================"
@@ -56,38 +61,90 @@ jobs:
             go vet ./... 2>&1; echo "[exit $?]"
 
             echo
-            echo "=================== go test ./... ================="
-            go test ./... -count=1 -v 2>&1 | tail -400
+            echo "=================== go test -v ===================="
+            go test ./... -count=1 -v 2>&1 | grep -vE '^(=== RUN|=== PAUSE|=== CONT)' | tail -300
             echo "[exit ${PIPESTATUS[0]}]"
 
             echo
             echo "=================== go test (summary) ============="
             go test ./... -count=1 2>&1; echo "[exit $?]"
 
-            echo
-            echo "=================== cross compile ================="
-            for t in darwin/amd64 darwin/arm64 linux/amd64 linux/arm64 windows/amd64; do
-              GOOS=${t%/*} GOARCH=${t#*/} go build -trimpath -o /dev/null . 2>&1 \
-                && echo "ok   $t" || echo "FAIL $t"
-            done
-          } > report.txt 2>&1
-          cat report.txt
+            if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
+              echo
+              echo "=================== go test -race ================="
+              go test ./... -race -count=1 2>&1 | tail -60
+              echo "[exit ${PIPESTATUS[0]}]"
 
-      - name: Publish the report to the ci-report branch
+              echo
+              echo "=================== cross compile ================="
+              for t in darwin/amd64 darwin/arm64 linux/amd64 linux/arm64 linux/arm windows/amd64; do
+                CGO_ENABLED=0 GOOS=${t%/*} GOARCH=${t#*/} go build -trimpath -o /dev/null . 2>&1 \
+                  && echo "ok   $t" || echo "FAIL $t"
+              done
+            fi
+          } > "report-${{ matrix.os }}.txt" 2>&1
+          cat "report-${{ matrix.os }}.txt"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-${{ matrix.os }}
+          path: report-${{ matrix.os }}.txt
+          retention-days: 7
+
+  publish:
+    needs: verify
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: reports
+          merge-multiple: true
+
+      - name: Summarise
+        run: |
+          ls -1 reports
+          {
+            echo "verify report"
+            echo "commit: ${GITHUB_SHA}"
+            echo "date:   $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+            echo
+            for f in reports/report-*.txt; do
+              plat=$(basename "$f" .txt | sed 's/^report-//')
+              fails=$(grep -cE '^\[exit [1-9]|^\[NEEDS FORMATTING\]|^FAIL' "$f" || true)
+              if [ "$fails" -eq 0 ]; then
+                printf '%-16s PASS\n' "$plat"
+              else
+                printf '%-16s FAIL (%s problem lines)\n' "$plat" "$fails"
+              fi
+            done
+            echo
+            echo "per-platform detail: report-<platform>.txt on this branch"
+          } > summary.txt
+          cat summary.txt
+
+      - name: Publish to the ci-report branch
         if: always()
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
-          mkdir -p /tmp/pub
-          cp report.txt /tmp/pub/
+          rm -rf /tmp/pub
+          git clone -q --depth 1 --branch ci-report \
+            "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/pub 2>/dev/null || {
+              mkdir -p /tmp/pub && cd /tmp/pub && git init -q -b ci-report
+              git remote add origin "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+            }
+          cp summary.txt reports/report-*.txt /tmp/pub/
           [ -f go.sum ] && cp go.sum /tmp/pub/go.sum || true
           cd /tmp/pub
-          git init -q -b ci-report
+          rm -f report.txt   # superseded by the per-platform files
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -q -m "verify report for ${GITHUB_SHA}"
-          git push -q --force \
-            "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" ci-report
-          echo "published to the ci-report branch"
+          git commit -q -m "verify report for ${GITHUB_SHA}" || echo "nothing changed"
+          git push -q --force origin HEAD:ci-report
+          echo published
