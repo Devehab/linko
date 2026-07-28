@@ -1,0 +1,181 @@
+name: Install test
+
+# Answers one question honestly: does the documented one-liner work on a
+# machine where nothing has ever been installed?
+#
+#   curl -fsSL .../install.sh | bash
+#
+# It runs against the published release, not the working tree, so it tests
+# exactly what a stranger gets. Results are force-pushed to the ci-report
+# branch as install-report.txt.
+
+on:
+  push:
+    branches: [run-install-test]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1' # catch a release that silently rots
+
+permissions:
+  contents: write
+
+env:
+  ONELINER: curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/install.sh | bash
+
+jobs:
+  # ── real GitHub-hosted machines ───────────────────────────────────────────
+  hosts:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-22.04, macos-latest, macos-13, windows-latest]
+    steps:
+      - name: Environment
+        shell: bash
+        run: |
+          echo "uname:  $(uname -sm)"
+          echo "shell:  $BASH_VERSION"
+          for t in curl tar go; do
+            printf '%-6s %s\n' "$t" "$(command -v $t || echo '(absent)')"
+          done
+
+      - name: Run the one-liner
+        shell: bash
+        run: |
+          set -o pipefail
+          curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/install.sh | bash
+
+      - name: Verify it runs
+        shell: bash
+        run: |
+          set -e
+          # Match what a user gets in a fresh shell.
+          export PATH="$HOME/.local/bin:/usr/local/bin:/opt/homebrew/bin:$PATH"
+          command -v linko
+          linko --version
+          linko --help    > /dev/null
+          linko docs      > /dev/null
+          # Before init, every command must fail gracefully and point at init.
+          linko list 2>&1 | grep -qi 'linko init'
+          echo "OK on ${{ matrix.os }}"
+
+  # ── bare distro images, nothing preinstalled ──────────────────────────────
+  containers:
+    name: ${{ matrix.image }}
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ matrix.image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - debian:12
+          - debian:11
+          - ubuntu:24.04
+          - ubuntu:22.04
+          - alpine:3.20
+          - fedora:40
+          - rockylinux:9
+          - archlinux:latest
+          - opensuse/leap:15.6
+    steps:
+      - name: What does this image ship with?
+        shell: sh
+        run: |
+          echo "image:  ${{ matrix.image }}"
+          echo "uname:  $(uname -sm)"
+          for t in sh bash curl wget tar go; do
+            printf '%-6s %s\n' "$t" "$(command -v $t 2>/dev/null || echo '(absent)')"
+          done
+
+      - name: Install only what a real desktop already has
+        shell: sh
+        run: |
+          # A fresh desktop install of any of these ships curl, bash and tar.
+          # Minimal container images do not, so add exactly those and nothing
+          # else — never Go, never a compiler.
+          if   command -v apk     >/dev/null 2>&1; then apk add --no-cache bash curl tar ca-certificates
+          elif command -v apt-get >/dev/null 2>&1; then apt-get update -qq && apt-get install -y -qq bash curl tar ca-certificates
+          elif command -v dnf     >/dev/null 2>&1; then dnf install -y -q bash curl tar ca-certificates
+          elif command -v pacman  >/dev/null 2>&1; then pacman -Sy --noconfirm --quiet bash curl tar ca-certificates
+          elif command -v zypper  >/dev/null 2>&1; then zypper -q --non-interactive install bash curl tar ca-certificates
+          fi
+          echo "go after setup: $(command -v go || echo '(still absent — good)')"
+
+      - name: Run the one-liner
+        shell: bash
+        run: |
+          set -o pipefail
+          curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/install.sh | bash
+
+      - name: Verify it runs
+        shell: bash
+        run: |
+          set -e
+          export PATH="$HOME/.local/bin:/usr/local/bin:$PATH"
+          command -v linko
+          linko --version
+          linko --help > /dev/null
+          linko docs   > /dev/null
+          linko list 2>&1 | grep -qi 'linko init'
+          echo "OK on ${{ matrix.image }}"
+
+  # ── collect everything into one readable report ───────────────────────────
+  report:
+    needs: [hosts, containers]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the report
+        env:
+          HOSTS: ${{ needs.hosts.result }}
+          CONTAINERS: ${{ needs.containers.result }}
+        run: |
+          {
+            echo "install one-liner test"
+            echo "commit: ${GITHUB_SHA}"
+            echo "run:    ${GITHUB_RUN_ID}"
+            echo "date:   $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+            echo
+            echo "command under test:"
+            echo "  curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/install.sh | bash"
+            echo
+            echo "each job installs from the published release, then checks that"
+            echo "linko runs, prints its version, shows help and docs, and points"
+            echo "an unconfigured user at 'linko init'."
+            echo
+            echo "hosts       (ubuntu 22/24, macos 13/14+, windows git-bash): ${HOSTS}"
+            echo "containers  (debian, ubuntu, alpine, fedora, rocky, arch, suse): ${CONTAINERS}"
+            echo
+            if [ "${HOSTS}" = "success" ] && [ "${CONTAINERS}" = "success" ]; then
+              echo "RESULT: every platform installed and ran the binary."
+            else
+              echo "RESULT: at least one platform failed — open the run for the matrix detail."
+              echo "        https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            fi
+          } > install-report.txt
+          cat install-report.txt
+
+      - name: Publish to the ci-report branch
+        if: always()
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          rm -rf /tmp/pub
+          git clone -q --depth 1 --branch ci-report \
+            "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/pub 2>/dev/null || {
+              mkdir -p /tmp/pub && cd /tmp/pub && git init -q -b ci-report
+              git remote add origin "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+            }
+          cp install-report.txt /tmp/pub/
+          cd /tmp/pub
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "install report for ${GITHUB_SHA}" || echo "nothing changed"
+          git push -q --force origin HEAD:ci-report

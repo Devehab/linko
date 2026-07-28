@@ -50,7 +50,10 @@ jobs:
             os=${target%/*}; arch=${target#*/}
             ext=""; [ "$os" = "windows" ] && ext=".exe"
             echo "==> $os/$arch"
-            GOOS=$os GOARCH=$arch go build -trimpath \
+            # CGO_ENABLED=0 is what makes these binaries portable. With cgo on,
+            # the linux/amd64 build links against the host's glibc and refuses
+            # to start on musl systems such as Alpine.
+            CGO_ENABLED=0 GOOS=$os GOARCH=$arch go build -trimpath \
               -ldflags "-s -w -X main.version=${VERSION}" \
               -o "dist/linko${ext}" .
             if [ "$os" = "windows" ]; then

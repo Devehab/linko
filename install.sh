@@ -205,6 +205,19 @@ main() {
 
   [ -x "$dest/$BINARY" ] || die "installation failed: $dest/$BINARY is missing"
 
+  # Prove the binary actually runs here. A wrong architecture or a libc
+  # mismatch surfaces as "cannot execute binary file", which is far easier to
+  # act on now than the first time the user types `linko`.
+  if ! "$dest/$BINARY" --version >/dev/null 2>&1; then
+    red "! ${BINARY} was installed but will not run on this system"
+    echo "  $("$dest/$BINARY" --version 2>&1 | head -1)"
+    echo
+    echo "  Please open an issue with the output of:"
+    echo "    uname -sm && ldd --version 2>&1 | head -1"
+    echo "    https://github.com/${REPO}/issues"
+    exit 1
+  fi
+
   green "✓ ${BINARY} installed to ${dest}/${BINARY}"
 
   echo
