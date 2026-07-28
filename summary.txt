@@ -1,9 +1,9 @@
 verify report
-commit: f1ff70db2575445fef5ed5e3de4efb8330c623b4
-date:   2026-07-28 04:38:56 UTC
+commit: 2d29cb7d18715f2b3662ed7aea6373f127378ff9
+date:   2026-07-28 04:55:32 UTC
 
-macos-latest     FAIL (12 problem lines)
+macos-latest     PASS
 ubuntu-latest    PASS
-windows-latest   FAIL (1 problem lines)
+windows-latest   PASS
 
 per-platform detail: report-<platform>.txt on this branch

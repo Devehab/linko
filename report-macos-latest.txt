@@ -1,17 +1,14 @@
 platform: macos-latest
-commit:   f1ff70db2575445fef5ed5e3de4efb8330c623b4
+commit:   2d29cb7d18715f2b3662ed7aea6373f127378ff9
 runner:   Darwin 25.4.0 arm64
-go:       go version go1.22.12 darwin/arm64
-date:     2026-07-28 04:38:13 UTC
+go:       go version go1.26.5 darwin/arm64
+date:     2026-07-28 04:53:23 UTC
 
 =================== go mod tidy ===================
 go: downloading github.com/spf13/cobra v1.8.1
-go: downloading github.com/spf13/pflag v1.0.5
 go: downloading github.com/inconshreveable/mousetrap v1.1.0
+go: downloading github.com/spf13/pflag v1.0.5
 [exit 0]
-
-=================== gofmt -s -l . =================
-(clean)
 
 =================== go build ./... ================
 [exit 0]
@@ -21,14 +18,62 @@ go: downloading github.com/inconshreveable/mousetrap v1.1.0
 
 =================== go test -v ====================
 ?   	github.com/Devehab/linko	[no test files]
-dyld[20954]: missing LC_UUID load command in /private/var/folders/8j/sfr9qqcj73j4p6nhwcfpr0th0000gn/T/go-build3306326845/b163/cloudflare.test
-dyld[20954]: missing LC_UUID load command
-signal: abort trap
-FAIL	github.com/Devehab/linko/cloudflare	0.002s
-dyld[20955]: missing LC_UUID load command in /private/var/folders/8j/sfr9qqcj73j4p6nhwcfpr0th0000gn/T/go-build3306326845/b175/cmd.test
-dyld[20955]: missing LC_UUID load command
-signal: abort trap
-FAIL	github.com/Devehab/linko/cmd	0.003s
+--- PASS: TestRequestHeaders (0.00s)
+--- PASS: TestVerifyTokenFallsBackToZones (0.00s)
+--- PASS: TestAPIErrorSurfacesMessages (0.00s)
+--- PASS: TestFindZone (0.00s)
+--- PASS: TestFindZoneNotFound (0.00s)
+--- PASS: TestCreateTunnelSendsConfigSrc (0.00s)
+--- PASS: TestFindTunnelReturnsNilWhenMissing (0.00s)
+--- PASS: TestTunnelToken (0.00s)
+--- PASS: TestGetTunnelConfigHandlesNullConfig (0.00s)
+--- PASS: TestPutTunnelConfigNormalizesIngress (0.00s)
+--- PASS: TestEnsureCNAMECreatesWhenMissing (0.00s)
+--- PASS: TestEnsureCNAMEIsIdempotent (0.00s)
+--- PASS: TestEnsureCNAMERefusesForeignRecords (0.00s)
+--- PASS: TestEnsureCNAMERepointsTunnelRecord (0.00s)
+--- PASS: TestDeleteDNSRecordTolerates404 (0.00s)
+--- PASS: TestMissingAccountIDIsAClearError (0.00s)
+--- PASS: TestZoneNameFor (0.00s)
+--- PASS: TestNormalizeIngressAddsCatchAll (0.00s)
+--- PASS: TestNormalizeIngressKeepsOneCatchAllLast (0.00s)
+--- PASS: TestNormalizeIngressFixesEmptyCatchAllService (0.00s)
+--- PASS: TestNormalizeIngressKeepsPathOnlyRules (0.00s)
+--- PASS: TestUpsertIngressInsertsBeforeCatchAll (0.00s)
+--- PASS: TestUpsertIngressReplacesExisting (0.00s)
+--- PASS: TestRemoveIngress (0.00s)
+--- PASS: TestFindIngressIgnoresCatchAll (0.00s)
+--- PASS: TestHostnameRules (0.00s)
+--- PASS: TestTunnelHelpers (0.00s)
+--- PASS: TestTunnelCNAMETarget (0.00s)
+PASS
+ok  	github.com/Devehab/linko/cloudflare	0.015s
+--- PASS: TestRemoveRouteCleansUpEverything (0.00s)
+--- PASS: TestRemoveRouteLooksUpMissingRecordID (0.00s)
+--- PASS: TestRemoveRouteSkipsForeignDNSRecords (0.00s)
+--- PASS: TestRemoveRouteIsIdempotent (0.00s)
+--- PASS: TestCommandTreeHasEveryCommand (0.00s)
+--- PASS: TestNormalizeArgsInsertsStart (0.00s)
+--- PASS: TestNormalizeArgsLeavesCommandsAlone (0.00s)
+--- PASS: TestNormalizeArgsLeavesUnknownWordsAlone (0.00s)
+--- PASS: TestHelpMentionsThePortShortcut (0.00s)
+--- PASS: TestExpandBase (0.00s)
+--- PASS: TestValidateBase (0.00s)
+--- PASS: TestResolveTokenPrefersFlagThenEnvThenConfig (0.00s)
+--- PASS: TestResolveLabelReusesThePortsExistingURL (0.00s)
+--- PASS: TestResolveLabelExplicitNameWins (0.00s)
+--- PASS: TestResolveLabelNewMintsAFreshOne (0.00s)
+--- PASS: TestResolveLabelTempIsAlwaysNew (0.00s)
+--- PASS: TestResolveLabelUnknownPortGetsARandomName (0.00s)
+--- PASS: TestFindRouteByService (0.00s)
+--- PASS: TestExtraLabels (0.00s)
+--- PASS: TestExpandBaseNormalisesCase (0.00s)
+--- PASS: TestDefaultTunnelName (0.00s)
+--- PASS: TestIsConnectedLine (0.00s)
+--- PASS: TestFirstLine (0.00s)
+--- PASS: TestPlural (0.00s)
+PASS
+ok  	github.com/Devehab/linko/cmd	0.018s
 --- PASS: TestDirHonoursEnv (0.00s)
 --- PASS: TestLoadWithoutConfig (0.00s)
 --- PASS: TestSaveLoadRoundTrip (0.00s)
@@ -39,11 +84,20 @@ FAIL	github.com/Devehab/linko/cmd	0.003s
 --- PASS: TestUpsertAndRemoveRoute (0.00s)
 --- PASS: TestValidate (0.00s)
 PASS
-ok  	github.com/Devehab/linko/config	0.014s
-dyld[20963]: missing LC_UUID load command in /private/var/folders/8j/sfr9qqcj73j4p6nhwcfpr0th0000gn/T/go-build3306326845/b181/cloudflared.test
-dyld[20963]: missing LC_UUID load command
-signal: abort trap
-FAIL	github.com/Devehab/linko/internal/cloudflared	0.003s
+ok  	github.com/Devehab/linko/config	0.013s
+--- PASS: TestAssetNameKnownPlatforms (0.00s)
+--- PASS: TestAssetNameUnsupportedPlatform (0.00s)
+--- PASS: TestCurrentPlatformIsSupported (0.00s)
+--- PASS: TestLocateFindsLocalCopyFirst (0.00s)
+--- PASS: TestLocateIgnoresNonExecutableFile (0.00s)
+--- PASS: TestDownloadInstallsBinary (0.00s)
+--- PASS: TestDownloadHTTPError (0.00s)
+--- PASS: TestBinaryFromTarball (0.00s)
+--- PASS: TestBinaryFromTarballMissingEntry (0.00s)
+--- PASS: TestCommandPassesTokenViaEnvironment (0.00s)
+--- PASS: TestCommandDefaultsLogLevel (0.00s)
+PASS
+ok  	github.com/Devehab/linko/internal/cloudflared	0.015s
 --- PASS: TestRandomProducesValidLabels (0.00s)
 --- PASS: TestRandomDefaultsLength (0.00s)
 --- PASS: TestRandomExcludesConfusingCharacters (0.00s)
@@ -51,10 +105,12 @@ FAIL	github.com/Devehab/linko/internal/cloudflared	0.003s
 --- PASS: TestValidateHostname (0.00s)
 PASS
 ok  	github.com/Devehab/linko/internal/naming	0.010s
-dyld[20964]: missing LC_UUID load command in /private/var/folders/8j/sfr9qqcj73j4p6nhwcfpr0th0000gn/T/go-build3306326845/b187/target.test
-dyld[20964]: missing LC_UUID load command
-signal: abort trap
-FAIL	github.com/Devehab/linko/internal/target	0.003s
+--- PASS: TestParseValid (0.00s)
+--- PASS: TestParseInvalid (0.00s)
+--- PASS: TestLooksRejectsSubcommands (0.00s)
+--- PASS: TestParseIPv6 (0.00s)
+PASS
+ok  	github.com/Devehab/linko/internal/target	0.007s
 --- PASS: TestColourCanBeDisabled (0.00s)
 --- PASS: TestLinkWrapsInOSC8WhenSupported (0.00s)
 --- PASS: TestLinkIsPlainWhenUnsupported (0.00s)
@@ -89,29 +145,15 @@ Choose: ! enter a number between 1 and 2
 --- PASS: TestChooseGivesUp (0.00s)
 PASS
 ok  	github.com/Devehab/linko/internal/ui	0.006s
-FAIL
-[exit 1]
+[exit 0]
 
 =================== go test (summary) =============
 ?   	github.com/Devehab/linko	[no test files]
-dyld[20990]: missing LC_UUID load command in /private/var/folders/8j/sfr9qqcj73j4p6nhwcfpr0th0000gn/T/go-build2761241544/b163/cloudflare.test
-dyld[20990]: missing LC_UUID load command
-signal: abort trap
-FAIL	github.com/Devehab/linko/cloudflare	0.002s
-dyld[20993]: missing LC_UUID load command in /private/var/folders/8j/sfr9qqcj73j4p6nhwcfpr0th0000gn/T/go-build2761241544/b175/cmd.test
-dyld[20993]: missing LC_UUID load command
-signal: abort trap
-FAIL	github.com/Devehab/linko/cmd	0.002s
-ok  	github.com/Devehab/linko/config	0.008s
-dyld[20998]: missing LC_UUID load command in /private/var/folders/8j/sfr9qqcj73j4p6nhwcfpr0th0000gn/T/go-build2761241544/b181/cloudflared.test
-dyld[20998]: missing LC_UUID load command
-signal: abort trap
-FAIL	github.com/Devehab/linko/internal/cloudflared	0.002s
-ok  	github.com/Devehab/linko/internal/naming	0.011s
-dyld[21003]: missing LC_UUID load command in /private/var/folders/8j/sfr9qqcj73j4p6nhwcfpr0th0000gn/T/go-build2761241544/b187/target.test
-dyld[21003]: missing LC_UUID load command
-signal: abort trap
-FAIL	github.com/Devehab/linko/internal/target	0.007s
-ok  	github.com/Devehab/linko/internal/ui	0.005s
-FAIL
-[exit 1]
+ok  	github.com/Devehab/linko/cloudflare	0.016s
+ok  	github.com/Devehab/linko/cmd	0.013s
+ok  	github.com/Devehab/linko/config	0.010s
+ok  	github.com/Devehab/linko/internal/cloudflared	0.015s
+ok  	github.com/Devehab/linko/internal/naming	0.008s
+ok  	github.com/Devehab/linko/internal/target	0.006s
+ok  	github.com/Devehab/linko/internal/ui	0.006s
+[exit 0]
