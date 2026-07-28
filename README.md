@@ -9,14 +9,21 @@
 [![Go](https://img.shields.io/badge/go-1.23%2B-00ADD8)](https://go.dev)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-[Install](#install) · [Quick start](#quick-start) · [Commands](#command-reference) · [Cookbook](#cookbook) · [Troubleshooting](#troubleshooting) · [العربية](GUIDE.md)
+[Install](#install) · [Quick start](#quick-start) · [Commands](#command-reference) · [Cookbook](#cookbook) · [Troubleshooting](#troubleshooting) · [Website](https://devehab.github.io/linko/) · [العربية](GUIDE.md)
 
 </div>
 
 ---
 
+## What linko is
+
+**linko is a command-line tool that gives a locally running service a public HTTPS
+address on a domain you own.** You type one command; anyone in the world can then
+open your work in a browser.
+
 ```console
-$ linko 3000
+$ npm run dev          # your app is on :3000
+$ linko 3000           # in another terminal
 
 ✓ DNS record created (x92ka.example.com)
 ✓ Route published (x92ka.example.com -> http://localhost:3000)
@@ -29,23 +36,36 @@ $ linko 3000
   Press Ctrl+C to stop
 ```
 
-No port forwarding. No reverse proxy. No SSL certificates. No manual DNS records.
+It does this by driving **Cloudflare Tunnel** for you. What you would otherwise do
+by hand — create a DNS record, configure a reverse proxy, obtain a certificate,
+open a port on your router — linko does through the Cloudflare API in about two
+seconds, and undoes just as cleanly.
 
-## Why
+**What it is not:** not a hosting service — your code keeps running on your
+machine. Not a paid tunnel provider — it uses *your* Cloudflare account on the
+free plan. Not a production deployment tool — it is built for development, demos,
+webhooks and sharing.
 
-`ngrok` is excellent until you want your own domain, no session limits and no
-interstitial warning page. `linko` gives you that on top of your own Cloudflare
-account — one command in, one public URL out.
+## Why not ngrok
+
+|  | Typical tunnel tool | linko |
+| --- | --- | --- |
+| The domain | Theirs | **Yours** |
+| URL after a restart | A new random one | **The same one** |
+| Warning page for visitors | Often | **Never** |
+| Session limits | On the free tier | **None** |
+| Survives a reboot | Manual | **`linko service install`** |
+| Runs on | Their infrastructure | **Cloudflare's network, your account** |
 
 |  | |
 | --- | --- |
 | **Your domain** | Every URL lives under a domain you control. |
 | **Stable URLs** | A port keeps its URL. Restarting your app does not change the link you shared. |
 | **Automatic HTTPS** | Cloudflare issues and renews the certificate. |
-| **One binary** | Written in Go. No Node, no Python, no runtime. |
+| **One binary** | Written in Go, statically linked. No Node, no Python, no runtime. |
 | **One tunnel, many projects** | Each project is a hostname routed to a different local port. |
 | **Runs anywhere** | Foreground, background, or started automatically at every boot. |
-| **Self-cleaning** | `--temp` URLs and their DNS records disappear when you quit. |
+| **Repairs itself** | A dead token or a deleted tunnel is explained and fixed, not just reported. |
 
 ## Requirements
 
@@ -115,7 +135,7 @@ already set up — nothing to move.
 
 ## Install
 
-### macOS and Linux
+### macOS, Linux, and Windows via Git Bash
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/install.sh | bash
@@ -146,13 +166,14 @@ cd linko
 make deps && make verify && make build
 ```
 
-**Windows** — download the `.zip` from [Releases](https://github.com/Devehab/linko/releases),
-unzip it, and put `linko.exe` somewhere on your `PATH`.
+**Windows without Git Bash** — download the `.zip` from
+[Releases](https://github.com/Devehab/linko/releases), unzip it, and put `linko.exe`
+on your `PATH`. PowerShell and CMD cannot run a `curl … | bash` line.
 
 **Pin a version or a directory**
 
 ```bash
-LINKO_VERSION=v0.2.0 LINKO_INSTALL="$HOME/bin" \
+LINKO_VERSION=v0.2.3 LINKO_INSTALL="$HOME/bin" \
   bash -c "$(curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/install.sh)"
 ```
 
