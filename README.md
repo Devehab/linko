@@ -173,7 +173,7 @@ on your `PATH`. PowerShell and CMD cannot run a `curl … | bash` line.
 **Pin a version or a directory**
 
 ```bash
-LINKO_VERSION=v0.2.3 LINKO_INSTALL="$HOME/bin" \
+LINKO_VERSION=v0.3.0 LINKO_INSTALL="$HOME/bin" \
   bash -c "$(curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/install.sh)"
 ```
 

@@ -181,7 +181,7 @@ make deps && make verify && make build
 **تحديد إصدار أو مجلد**
 
 ```bash
-LINKO_VERSION=v0.2.3 LINKO_INSTALL="$HOME/bin" \
+LINKO_VERSION=v0.3.0 LINKO_INSTALL="$HOME/bin" \
   bash -c "$(curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/install.sh)"
 ```
 
