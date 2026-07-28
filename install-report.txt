@@ -1,6 +1,6 @@
 install one-liner test
-commit: 487c643222a15e7eb74a1d0981206094419c0c93
-date:   2026-07-28 05:31:40 UTC
+commit: 0e71a7a80ad0f4ef386688800d852888be23f260
+date:   2026-07-28 19:18:26 UTC
 
 command under test:
   curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/install.sh | bash
@@ -25,7 +25,7 @@ containers: failure
     
     $ curl -fsSL .../install.sh | bash
     curl: (23) Failure writing output to destination, passed 1370 returned 0
-    [2mInstalling linko v0.2.3 (linux_amd64)[0m
+    [2mInstalling linko v0.3.0 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
     Next step:
@@ -45,7 +45,7 @@ containers: failure
     /usr/local/bin/linko
     [exit 0]
     $ linko --version
-    linko 0.2.3
+    linko 0.3.0
     [exit 0]
     $ linko --help
     [exit 0]
@@ -68,7 +68,7 @@ containers: failure
     
     $ curl -fsSL .../install.sh | bash
     curl: Failed writing body
-    [2mInstalling linko v0.2.3 (linux_amd64)[0m
+    [2mInstalling linko v0.3.0 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
     Next step:
@@ -88,7 +88,7 @@ containers: failure
     /usr/local/bin/linko
     [exit 0]
     $ linko --version
-    linko 0.2.3
+    linko 0.3.0
     [exit 0]
     $ linko --help
     [exit 0]
@@ -111,7 +111,7 @@ containers: failure
     
     $ curl -fsSL .../install.sh | bash
     curl: (23) Failure writing output to destination
-    [2mInstalling linko v0.2.3 (linux_amd64)[0m
+    [2mInstalling linko v0.3.0 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
     Next step:
@@ -131,7 +131,7 @@ containers: failure
     /usr/local/bin/linko
     [exit 0]
     $ linko --version
-    linko 0.2.3
+    linko 0.3.0
     [exit 0]
     $ linko --help
     [exit 0]
@@ -154,7 +154,7 @@ containers: failure
     
     $ curl -fsSL .../install.sh | bash
     curl: (23) Failed writing body
-    [2mInstalling linko v0.2.3 (linux_amd64)[0m
+    [2mInstalling linko v0.3.0 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
     Next step:
@@ -174,7 +174,7 @@ containers: failure
     /usr/local/bin/linko
     [exit 0]
     $ linko --version
-    linko 0.2.3
+    linko 0.3.0
     [exit 0]
     $ linko --help
     [exit 0]
@@ -196,8 +196,8 @@ containers: failure
       go is still absent — good
     
     $ curl -fsSL .../install.sh | bash
-    curl: (23) Failure writing output to destination, passed 1370 returned 653
-    [2mInstalling linko v0.2.3 (linux_amd64)[0m
+    curl: Failed writing body
+    [2mInstalling linko v0.3.0 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
     Next step:
@@ -217,7 +217,7 @@ containers: failure
     /usr/local/bin/linko
     [exit 0]
     $ linko --version
-    linko 0.2.3
+    linko 0.3.0
     [exit 0]
     $ linko --help
     [exit 0]
@@ -234,7 +234,7 @@ containers: failure
       go    (absent)
     
     $ curl -fsSL .../install.sh | bash
-    [2mInstalling linko v0.2.3 (darwin_arm64)[0m
+    [2mInstalling linko v0.3.0 (darwin_arm64)[0m
     [32m✓ linko installed to /opt/homebrew/bin/linko[0m
     
     Next step:
@@ -254,7 +254,7 @@ containers: failure
     /opt/homebrew/bin/linko
     [exit 0]
     $ linko --version
-    linko 0.2.3
+    linko 0.3.0
     [exit 0]
     $ linko --help
     [exit 0]
@@ -280,8 +280,7 @@ containers: failure
       go is still absent — good
     
     $ curl -fsSL .../install.sh | bash
-    curl: (23) Failure writing output to destination, passed 1370 returned 1089
-    [2mInstalling linko v0.2.3 (linux_amd64)[0m
+    [2mInstalling linko v0.3.0 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
     Next step:
@@ -301,7 +300,7 @@ containers: failure
     /usr/local/bin/linko
     [exit 0]
     $ linko --version
-    linko 0.2.3
+    linko 0.3.0
     [exit 0]
     $ linko --help
     [exit 0]
@@ -335,8 +334,8 @@ containers: failure
       go is still absent — good
     
     $ curl -fsSL .../install.sh | bash
-    curl: (23) Failure writing output to destination
-    [2mInstalling linko v0.2.3 (linux_amd64)[0m
+    curl: (23) Failed writing body
+    [2mInstalling linko v0.3.0 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
     Next step:
@@ -356,7 +355,7 @@ containers: failure
     /usr/local/bin/linko
     [exit 0]
     $ linko --version
-    linko 0.2.3
+    linko 0.3.0
     [exit 0]
     $ linko --help
     [exit 0]
@@ -378,7 +377,7 @@ containers: failure
       go is still absent — good
     
     $ curl -fsSL .../install.sh | bash
-    [2mInstalling linko v0.2.3 (linux_amd64)[0m
+    [2mInstalling linko v0.3.0 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
     Next step:
@@ -398,7 +397,7 @@ containers: failure
     /usr/local/bin/linko
     [exit 0]
     $ linko --version
-    linko 0.2.3
+    linko 0.3.0
     [exit 0]
     $ linko --help
     [exit 0]
@@ -415,7 +414,8 @@ containers: failure
       go    /usr/bin/go
     
     $ curl -fsSL .../install.sh | bash
-    [2mInstalling linko v0.2.3 (linux_amd64)[0m
+    curl: (23) Failure writing output to destination
+    [2mInstalling linko v0.3.0 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
     Next step:
@@ -435,7 +435,7 @@ containers: failure
     /usr/local/bin/linko
     [exit 0]
     $ linko --version
-    linko 0.2.3
+    linko 0.3.0
     [exit 0]
     $ linko --help
     [exit 0]
@@ -456,7 +456,7 @@ containers: failure
       go    /c/hostedtoolcache/windows/go/1.24.13/x64/bin/go
     
     $ curl -fsSL .../install.sh | bash
-    [2mInstalling linko v0.2.3 (windows_amd64)[0m
+    [2mInstalling linko v0.3.0 (windows_amd64)[0m
     [32m✓ linko installed to /c/Users/runneradmin/.local/bin/linko.exe[0m
     
     [2mcreated .bashrc with /c/Users/runneradmin/.local/bin on PATH[0m
@@ -479,7 +479,7 @@ containers: failure
     /c/Users/runneradmin/.local/bin/linko
     [exit 0]
     $ linko --version
-    linko 0.2.3
+    linko 0.3.0
     [exit 0]
     $ linko --help
     [exit 0]
