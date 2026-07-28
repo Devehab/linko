@@ -1,6 +1,8 @@
 <div align="center">
 
-# linko — الدليل الكامل
+<img src="docs/brand/logotype.png" alt="linko" width="252">
+
+### الدليل الكامل
 
 **حوّل أي منفذ محلي إلى رابط HTTPS عام — على دومينك أنت.**
 

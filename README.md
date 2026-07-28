@@ -1,6 +1,6 @@
 <div align="center">
 
-# linko
+<img src="docs/brand/logotype.png" alt="linko" width="252">
 
 **Turn any local port into a public HTTPS URL — on your own domain.**
 
