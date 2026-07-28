@@ -1,13 +1,10 @@
 platform: ubuntu-latest
-commit:   2d29cb7d18715f2b3662ed7aea6373f127378ff9
+commit:   53c563b381650bb068b925deb440a1622a8a995d
 runner:   Linux 6.17.0-1020-azure x86_64
 go:       go version go1.26.5 linux/amd64
-date:     2026-07-28 04:53:31 UTC
+date:     2026-07-28 05:03:38 UTC
 
 =================== go mod tidy ===================
-go: downloading github.com/spf13/cobra v1.8.1
-go: downloading github.com/inconshreveable/mousetrap v1.1.0
-go: downloading github.com/spf13/pflag v1.0.5
 [exit 0]
 
 =================== gofmt -s -l . =================
@@ -50,7 +47,7 @@ go: downloading github.com/spf13/pflag v1.0.5
 --- PASS: TestTunnelHelpers (0.00s)
 --- PASS: TestTunnelCNAMETarget (0.00s)
 PASS
-ok  	github.com/Devehab/linko/cloudflare	0.021s
+ok  	github.com/Devehab/linko/cloudflare	0.017s
 --- PASS: TestRemoveRouteCleansUpEverything (0.00s)
 --- PASS: TestRemoveRouteLooksUpMissingRecordID (0.00s)
 --- PASS: TestRemoveRouteSkipsForeignDNSRecords (0.00s)
@@ -76,18 +73,18 @@ ok  	github.com/Devehab/linko/cloudflare	0.021s
 --- PASS: TestFirstLine (0.00s)
 --- PASS: TestPlural (0.00s)
 PASS
-ok  	github.com/Devehab/linko/cmd	0.014s
+ok  	github.com/Devehab/linko/cmd	0.009s
 --- PASS: TestDirHonoursEnv (0.00s)
 --- PASS: TestLoadWithoutConfig (0.00s)
 --- PASS: TestSaveLoadRoundTrip (0.00s)
---- PASS: TestSaveUsesRestrictivePermissions (0.10s)
+--- PASS: TestSaveUsesRestrictivePermissions (0.00s)
 --- PASS: TestEnvTokenOverridesStoredToken (0.00s)
 --- PASS: TestLoadCorruptFile (0.00s)
 --- PASS: TestHostname (0.00s)
 --- PASS: TestUpsertAndRemoveRoute (0.00s)
 --- PASS: TestValidate (0.00s)
 PASS
-ok  	github.com/Devehab/linko/config	0.104s
+ok  	github.com/Devehab/linko/config	0.005s
 --- PASS: TestAssetNameKnownPlatforms (0.00s)
 --- PASS: TestAssetNameUnsupportedPlatform (0.00s)
 --- PASS: TestCurrentPlatformIsSupported (0.00s)
@@ -113,7 +110,7 @@ ok  	github.com/Devehab/linko/internal/naming	0.003s
 --- PASS: TestLooksRejectsSubcommands (0.00s)
 --- PASS: TestParseIPv6 (0.00s)
 PASS
-ok  	github.com/Devehab/linko/internal/target	0.003s
+ok  	github.com/Devehab/linko/internal/target	0.002s
 --- PASS: TestColourCanBeDisabled (0.00s)
 --- PASS: TestLinkWrapsInOSC8WhenSupported (0.00s)
 --- PASS: TestLinkIsPlainWhenUnsupported (0.00s)
@@ -152,24 +149,24 @@ ok  	github.com/Devehab/linko/internal/ui	0.002s
 
 =================== go test (summary) =============
 ?   	github.com/Devehab/linko	[no test files]
-ok  	github.com/Devehab/linko/cloudflare	0.016s
-ok  	github.com/Devehab/linko/cmd	0.009s
-ok  	github.com/Devehab/linko/config	0.039s
-ok  	github.com/Devehab/linko/internal/cloudflared	0.006s
+ok  	github.com/Devehab/linko/cloudflare	0.007s
+ok  	github.com/Devehab/linko/cmd	0.005s
+ok  	github.com/Devehab/linko/config	0.135s
+ok  	github.com/Devehab/linko/internal/cloudflared	0.005s
 ok  	github.com/Devehab/linko/internal/naming	0.003s
-ok  	github.com/Devehab/linko/internal/target	0.003s
-ok  	github.com/Devehab/linko/internal/ui	0.002s
+ok  	github.com/Devehab/linko/internal/target	0.002s
+ok  	github.com/Devehab/linko/internal/ui	0.003s
 [exit 0]
 
 =================== go test -race =================
 ?   	github.com/Devehab/linko	[no test files]
-ok  	github.com/Devehab/linko/cloudflare	1.029s
-ok  	github.com/Devehab/linko/cmd	1.028s
-ok  	github.com/Devehab/linko/config	1.012s
-ok  	github.com/Devehab/linko/internal/cloudflared	1.026s
-ok  	github.com/Devehab/linko/internal/naming	1.013s
-ok  	github.com/Devehab/linko/internal/target	1.009s
-ok  	github.com/Devehab/linko/internal/ui	1.009s
+ok  	github.com/Devehab/linko/cloudflare	1.033s
+ok  	github.com/Devehab/linko/cmd	1.023s
+ok  	github.com/Devehab/linko/config	1.035s
+ok  	github.com/Devehab/linko/internal/cloudflared	1.017s
+ok  	github.com/Devehab/linko/internal/naming	1.012s
+ok  	github.com/Devehab/linko/internal/target	1.008s
+ok  	github.com/Devehab/linko/internal/ui	1.007s
 [exit 0]
 
 =================== cross compile =================

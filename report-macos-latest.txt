@@ -1,13 +1,10 @@
 platform: macos-latest
-commit:   2d29cb7d18715f2b3662ed7aea6373f127378ff9
+commit:   53c563b381650bb068b925deb440a1622a8a995d
 runner:   Darwin 25.4.0 arm64
 go:       go version go1.26.5 darwin/arm64
-date:     2026-07-28 04:53:23 UTC
+date:     2026-07-28 05:03:42 UTC
 
 =================== go mod tidy ===================
-go: downloading github.com/spf13/cobra v1.8.1
-go: downloading github.com/inconshreveable/mousetrap v1.1.0
-go: downloading github.com/spf13/pflag v1.0.5
 [exit 0]
 
 =================== go build ./... ================
@@ -47,7 +44,7 @@ go: downloading github.com/spf13/pflag v1.0.5
 --- PASS: TestTunnelHelpers (0.00s)
 --- PASS: TestTunnelCNAMETarget (0.00s)
 PASS
-ok  	github.com/Devehab/linko/cloudflare	0.015s
+ok  	github.com/Devehab/linko/cloudflare	0.021s
 --- PASS: TestRemoveRouteCleansUpEverything (0.00s)
 --- PASS: TestRemoveRouteLooksUpMissingRecordID (0.00s)
 --- PASS: TestRemoveRouteSkipsForeignDNSRecords (0.00s)
@@ -73,7 +70,7 @@ ok  	github.com/Devehab/linko/cloudflare	0.015s
 --- PASS: TestFirstLine (0.00s)
 --- PASS: TestPlural (0.00s)
 PASS
-ok  	github.com/Devehab/linko/cmd	0.018s
+ok  	github.com/Devehab/linko/cmd	0.015s
 --- PASS: TestDirHonoursEnv (0.00s)
 --- PASS: TestLoadWithoutConfig (0.00s)
 --- PASS: TestSaveLoadRoundTrip (0.00s)
@@ -84,7 +81,7 @@ ok  	github.com/Devehab/linko/cmd	0.018s
 --- PASS: TestUpsertAndRemoveRoute (0.00s)
 --- PASS: TestValidate (0.00s)
 PASS
-ok  	github.com/Devehab/linko/config	0.013s
+ok  	github.com/Devehab/linko/config	0.010s
 --- PASS: TestAssetNameKnownPlatforms (0.00s)
 --- PASS: TestAssetNameUnsupportedPlatform (0.00s)
 --- PASS: TestCurrentPlatformIsSupported (0.00s)
@@ -97,14 +94,14 @@ ok  	github.com/Devehab/linko/config	0.013s
 --- PASS: TestCommandPassesTokenViaEnvironment (0.00s)
 --- PASS: TestCommandDefaultsLogLevel (0.00s)
 PASS
-ok  	github.com/Devehab/linko/internal/cloudflared	0.015s
+ok  	github.com/Devehab/linko/internal/cloudflared	0.017s
 --- PASS: TestRandomProducesValidLabels (0.00s)
 --- PASS: TestRandomDefaultsLength (0.00s)
 --- PASS: TestRandomExcludesConfusingCharacters (0.00s)
 --- PASS: TestValidateLabel (0.00s)
 --- PASS: TestValidateHostname (0.00s)
 PASS
-ok  	github.com/Devehab/linko/internal/naming	0.010s
+ok  	github.com/Devehab/linko/internal/naming	0.008s
 --- PASS: TestParseValid (0.00s)
 --- PASS: TestParseInvalid (0.00s)
 --- PASS: TestLooksRejectsSubcommands (0.00s)
@@ -149,11 +146,11 @@ ok  	github.com/Devehab/linko/internal/ui	0.006s
 
 =================== go test (summary) =============
 ?   	github.com/Devehab/linko	[no test files]
-ok  	github.com/Devehab/linko/cloudflare	0.016s
-ok  	github.com/Devehab/linko/cmd	0.013s
-ok  	github.com/Devehab/linko/config	0.010s
-ok  	github.com/Devehab/linko/internal/cloudflared	0.015s
-ok  	github.com/Devehab/linko/internal/naming	0.008s
-ok  	github.com/Devehab/linko/internal/target	0.006s
+ok  	github.com/Devehab/linko/cloudflare	0.018s
+ok  	github.com/Devehab/linko/cmd	0.015s
+ok  	github.com/Devehab/linko/config	0.012s
+ok  	github.com/Devehab/linko/internal/cloudflared	0.031s
+ok  	github.com/Devehab/linko/internal/naming	0.010s
+ok  	github.com/Devehab/linko/internal/target	0.007s
 ok  	github.com/Devehab/linko/internal/ui	0.006s
 [exit 0]
