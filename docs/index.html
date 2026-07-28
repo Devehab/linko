@@ -1,189 +1,374 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>linko — دليل الاستخدام</title>
+<title>linko — a public HTTPS URL for any local port</title>
+<meta name="description" content="Turn any local port into a public HTTPS URL on your own domain, through Cloudflare Tunnel. One binary, one command.">
+<meta property="og:title" content="linko">
+<meta property="og:description" content="Turn any local port into a public HTTPS URL on your own domain.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔗</text></svg>">
 <style>
-  :root {
-    --bg:#0d1117; --panel:#161b22; --code:#010409; --line:#21262d;
-    --fg:#e6edf3; --fg2:#8b949e; --orange:#f6821f; --orange-bg:rgba(246,130,31,.12);
-    --green:#3fb950; --blue:#58a6ff; --red:#f85149; --yellow:#d29922; --r:10px;
+  :root{
+    --bg:#0b0e14; --panel:#12161f; --panel2:#171c27; --code:#05070b;
+    --line:#222a38; --fg:#e6edf3; --fg2:#8b98ad; --fg3:#5c6779;
+    --accent:#f6821f; --accent2:#ffa552; --accent-bg:rgba(246,130,31,.11);
+    --green:#3fb950; --blue:#58a6ff; --red:#f85149; --yellow:#d29922;
+    --r:12px; --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
   }
-  @media (prefers-color-scheme: light) {
-    :root { --bg:#fff; --panel:#f6f8fa; --code:#1c2128; --line:#d0d7de;
-            --fg:#1f2328; --fg2:#59636e; --orange-bg:rgba(246,130,31,.1); }
+  :root[data-theme="light"]{
+    --bg:#fff; --panel:#f6f8fa; --panel2:#eef1f5; --code:#0d1117;
+    --line:#d8dee6; --fg:#1f2328; --fg2:#59636e; --fg3:#8c959f;
+    --accent-bg:rgba(246,130,31,.1);
   }
   *{box-sizing:border-box}
-  html{scroll-behavior:smooth;scroll-padding-top:20px}
-  body{margin:0;background:var(--bg);color:var(--fg);line-height:1.9;font-size:16.5px;
-       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans Arabic",Arial,sans-serif}
-  .wrap{max-width:760px;margin:0 auto;padding:0 22px 120px}
+  html{scroll-behavior:smooth;scroll-padding-top:80px}
+  body{margin:0;background:var(--bg);color:var(--fg);line-height:1.75;font-size:16px;
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans Arabic",Inter,Arial,sans-serif;
+       -webkit-font-smoothing:antialiased}
+  [dir="rtl"] body{line-height:1.9}
 
-  header{padding:56px 0 8px}
-  h1{font-size:52px;margin:0 0 6px;letter-spacing:-2px;font-weight:800}
-  h1 span{color:var(--orange)}
-  .lede{font-size:20px;color:var(--fg2);margin:0 0 8px}
+  /* ---------- chrome ---------- */
+  header.bar{position:sticky;top:0;z-index:50;background:var(--bg);
+       background:color-mix(in srgb,var(--bg) 88%,transparent);
+       backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .bar-in{max-width:1080px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:18px}
+  .logo{font-weight:800;font-size:19px;letter-spacing:-.5px;text-decoration:none;color:var(--fg)}
+  .logo span{color:var(--accent)}
+  .bar nav{display:flex;gap:20px;margin-inline-start:auto;font-size:14.5px}
+  .bar nav a{color:var(--fg2);text-decoration:none}
+  .bar nav a:hover{color:var(--fg)}
+  .btns{display:flex;gap:8px;margin-inline-start:12px}
+  .tbtn{background:var(--panel);border:1px solid var(--line);color:var(--fg2);border-radius:8px;
+        padding:5px 11px;font:inherit;font-size:13px;cursor:pointer;line-height:1.4}
+  .tbtn:hover{color:var(--fg);border-color:var(--fg3)}
 
-  h2{font-size:26px;margin:64px 0 6px;letter-spacing:-.5px;padding-top:36px;border-top:1px solid var(--line)}
-  h3{font-size:18px;margin:34px 0 4px}
+  main{max-width:1080px;margin:0 auto;padding:0 24px 120px}
+
+  /* ---------- hero ---------- */
+  .hero{padding:76px 0 40px;text-align:center}
+  h1{font-size:clamp(44px,8vw,76px);margin:0 0 14px;letter-spacing:-3px;font-weight:800;line-height:1}
+  h1 span{color:var(--accent)}
+  .tag{font-size:clamp(18px,2.6vw,23px);color:var(--fg2);margin:0 auto 10px;max-width:600px}
+  .sub{color:var(--fg3);font-size:15px;margin:0 auto 30px;max-width:560px}
+  .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:36px}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:10px;
+       text-decoration:none;font-weight:600;font-size:15px;border:1px solid transparent}
+  .btn.primary{background:var(--accent);color:#0b0e14}
+  .btn.primary:hover{background:var(--accent2)}
+  .btn.ghost{border-color:var(--line);color:var(--fg)}
+  .btn.ghost:hover{border-color:var(--fg3);background:var(--panel)}
+
+  /* ---------- code ---------- */
+  .box{position:relative;direction:ltr;text-align:left;background:var(--code);
+       border:1px solid var(--line);border-radius:var(--r);margin:16px 0;overflow:hidden}
+  .box.term::before{content:"";display:block;height:34px;background:rgba(255,255,255,.03);
+       border-bottom:1px solid rgba(255,255,255,.06)}
+  .box.term .dots{position:absolute;top:12px;left:14px;display:flex;gap:7px}
+  .box.term .dots i{width:11px;height:11px;border-radius:50%;display:block}
+  .box pre{margin:0;padding:16px 18px;overflow-x:auto;line-height:1.65}
+  .box code{color:#e6edf3;font-family:var(--mono);font-size:13.5px}
+  .c{color:#5c6779}.g{color:var(--green)}.b{color:var(--blue)}
+  .y{color:var(--yellow)}.r{color:var(--red)}.o{color:var(--accent)}.w{color:#fff;font-weight:600}
+  .cp{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.07);color:#c9d1d9;
+      border:1px solid rgba(255,255,255,.14);border-radius:7px;font-size:11.5px;padding:4px 10px;
+      cursor:pointer;font-family:inherit;opacity:0;transition:.15s;z-index:2}
+  .box:hover .cp{opacity:1}.cp:hover{background:rgba(255,255,255,.16)}
+  .cp.done{color:var(--green);border-color:var(--green);opacity:1}
+  .box.term .cp{top:11px}
+
+  /* ---------- sections ---------- */
+  section{padding-top:74px}
+  h2{font-size:clamp(26px,4vw,33px);margin:0 0 6px;letter-spacing:-1px;font-weight:750}
+  h2 .num{color:var(--accent);font-size:.62em;font-weight:700;margin-inline-end:10px;
+          font-variant-numeric:tabular-nums}
+  .lead{color:var(--fg2);margin:0 0 22px;font-size:17px;max-width:620px}
+  h3{font-size:18.5px;margin:34px 0 6px;font-weight:650}
   p{margin:12px 0}
   a{color:var(--blue)}
   ul,ol{padding-inline-start:22px}
   li{margin:7px 0}
-  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.87em}
-  p code,li code,td code{background:var(--panel);border:1px solid var(--line);
-       padding:1px 6px;border-radius:5px;direction:ltr;display:inline-block}
+  code{font-family:var(--mono);font-size:.875em}
+  p code,li code,td code,dd code{background:var(--panel);border:1px solid var(--line);
+       padding:1.5px 7px;border-radius:6px;direction:ltr;display:inline-block;white-space:nowrap}
 
-  .box{position:relative;direction:ltr;text-align:left;background:var(--code);
-       border:1px solid var(--line);border-radius:var(--r);margin:14px 0;overflow:hidden}
-  .box pre{margin:0;padding:15px 17px;overflow-x:auto;line-height:1.7}
-  .box code{color:#e6edf3;font-size:13.5px}
-  .c{color:#6e7681}.g{color:var(--green)}.b{color:var(--blue)}
-  .y{color:var(--yellow)}.r{color:var(--red)}.o{color:var(--orange)}
-  .cp{position:absolute;top:7px;right:7px;background:rgba(255,255,255,.07);color:#c9d1d9;
-      border:1px solid rgba(255,255,255,.13);border-radius:6px;font-size:11px;padding:3px 9px;
-      cursor:pointer;font-family:inherit;opacity:0;transition:.15s}
-  .box:hover .cp{opacity:1}.cp:hover{background:rgba(255,255,255,.15)}
-  .cp.ok{color:var(--green);border-color:var(--green)}
+  /* ---------- grid ---------- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:26px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px}
+  .card b{display:block;font-size:16px;margin-bottom:5px}
+  .card span{color:var(--fg2);font-size:14.5px;line-height:1.65;display:block}
 
-  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
-  th,td{text-align:start;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
-  th{color:var(--fg2);font-size:12px;text-transform:uppercase;letter-spacing:.7px;font-weight:700}
+  /* ---------- tables ---------- */
+  .tw{overflow-x:auto;margin:18px 0}
+  table{width:100%;border-collapse:collapse;font-size:15px;min-width:460px}
+  th,td{text-align:start;padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--fg3);font-size:11.5px;text-transform:uppercase;letter-spacing:.9px;font-weight:700}
+  tbody tr:hover{background:var(--panel)}
+  td:first-child code{background:var(--accent-bg);border-color:transparent;color:var(--accent)}
 
-  .note,.warn,.good{border-radius:var(--r);padding:13px 16px;margin:18px 0;font-size:15.5px;
+  /* ---------- callouts ---------- */
+  .note,.warn,.good,.danger{border-radius:var(--r);padding:14px 18px;margin:20px 0;font-size:15.5px;
        background:var(--panel);border-inline-start:3px solid var(--blue)}
   .warn{border-inline-start-color:var(--yellow)}
   .good{border-inline-start-color:var(--green)}
-  .note b,.warn b,.good b{display:block;margin-bottom:3px}
+  .danger{border-inline-start-color:var(--red)}
+  .note b,.warn b,.good b,.danger b{display:block;margin-bottom:3px}
 
-  .steps{counter-reset:s;list-style:none;padding:0;margin:22px 0}
-  .steps>li{counter-increment:s;position:relative;padding-inline-start:44px;margin-bottom:30px}
-  .steps>li::before{content:counter(s);position:absolute;inset-inline-start:0;top:2px;
-       width:29px;height:29px;border-radius:50%;background:var(--orange-bg);color:var(--orange);
-       display:grid;place-items:center;font-weight:700;font-size:14px}
-  .steps>li>b{display:block;font-size:17px;margin-bottom:2px}
+  /* ---------- steps ---------- */
+  .steps{counter-reset:s;list-style:none;padding:0;margin:26px 0}
+  .steps>li{counter-increment:s;position:relative;padding-inline-start:46px;margin-bottom:32px}
+  .steps>li::before{content:counter(s);position:absolute;inset-inline-start:0;top:0;
+       width:30px;height:30px;border-radius:9px;background:var(--accent-bg);color:var(--accent);
+       display:grid;place-items:center;font-weight:700;font-size:14.5px}
+  .steps>li>b{display:block;font-size:17px;margin-bottom:3px}
 
-  .fix{border:1px solid var(--line);border-radius:var(--r);margin:20px 0;overflow:hidden}
-  .fix .err{background:var(--code);direction:ltr;text-align:left;padding:12px 16px;
-       color:#ff7b72;font-family:ui-monospace,Menlo,monospace;font-size:13px;border-bottom:1px solid var(--line)}
-  .fix .body{padding:14px 16px;font-size:15.5px}
-  .fix .body b{color:var(--fg)}
+  /* ---------- fix cards ---------- */
+  .fix{border:1px solid var(--line);border-radius:var(--r);margin:16px 0;overflow:hidden}
+  .fix .err{background:var(--code);direction:ltr;text-align:left;padding:12px 17px;
+       color:#ff7b72;font-family:var(--mono);font-size:12.8px;border-bottom:1px solid var(--line);
+       white-space:pre-wrap;line-height:1.6}
+  .fix .body{padding:14px 17px;font-size:15.5px}
 
-  footer{border-top:1px solid var(--line);margin-top:70px;padding-top:22px;color:var(--fg2);font-size:14px}
+  footer{border-top:1px solid var(--line);margin-top:90px;padding-top:26px;
+         color:var(--fg3);font-size:14px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+  footer a{color:var(--fg2)}
+  footer .sp{margin-inline-start:auto}
+
+  [data-ar]{display:none}
+  html[lang="ar"] [data-en]{display:none}
+  html[lang="ar"] [data-ar]{display:revert}
+
+  @media(max-width:760px){
+    .bar nav{display:none}
+    .hero{padding:52px 0 30px}
+    section{padding-top:56px}
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-<header>
-  <h1>lin<span>ko</span></h1>
-  <p class="lede">أمر واحد يحوّل مشروعك المحلي إلى رابط <b>HTTPS</b> عام على دومينك.</p>
+<header class="bar">
+  <div class="bar-in">
+    <a class="logo" href="#top">lin<span>ko</span></a>
+    <nav>
+      <a href="#install"><span data-en>Install</span><span data-ar>التثبيت</span></a>
+      <a href="#token"><span data-en>Token</span><span data-ar>التوكن</span></a>
+      <a href="#commands"><span data-en>Commands</span><span data-ar>الأوامر</span></a>
+      <a href="#cookbook"><span data-en>Cookbook</span><span data-ar>وصفات</span></a>
+      <a href="#fix"><span data-en>Troubleshooting</span><span data-ar>حل المشاكل</span></a>
+    </nav>
+    <div class="btns">
+      <button class="tbtn" id="lang">العربية</button>
+      <button class="tbtn" id="theme" title="Theme">◐</button>
+    </div>
+  </div>
 </header>
 
-<div class="box">
-  <button class="cp">نسخ</button>
-  <pre><code>$ linko 3000
+<main id="top">
+
+<div class="hero">
+  <h1>lin<span>ko</span></h1>
+  <p class="tag">
+    <span data-en>A public HTTPS URL for any local port — on your own domain.</span>
+    <span data-ar>رابط HTTPS عام لأي منفذ محلي — على دومينك أنت.</span>
+  </p>
+  <p class="sub">
+    <span data-en>No port forwarding. No reverse proxy. No SSL certificates. No manual DNS records.</span>
+    <span data-ar>بدون فتح بورت، بدون Port Forwarding، بدون شهادات SSL، بدون سجلات DNS يدوية.</span>
+  </p>
+
+  <div class="cta">
+    <a class="btn primary" href="#install">
+      <span data-en>Get started</span><span data-ar>ابدأ الآن</span>
+    </a>
+    <a class="btn ghost" href="https://github.com/Devehab/linko" target="_blank" rel="noopener">GitHub</a>
+  </div>
+
+  <div class="box term">
+    <div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
+    <button class="cp">copy</button>
+    <pre><code>$ linko 3000
 
 <span class="g">✓</span> DNS record created (x92ka.example.com)
-<span class="g">✓</span> Route published (x92ka.example.com -> http://localhost:3000)
+<span class="g">✓</span> Route published (x92ka.example.com -&gt; http://localhost:3000)
 <span class="g">✓</span> Tunnel connected
 
   Public URL  <span class="b">https://x92ka.example.com</span>
   Forwards    http://localhost:3000
+  Tunnel      example-linko-tunnel
 
   <span class="c">Press Ctrl+C to stop</span></code></pre>
+  </div>
 </div>
 
-<p>بدون فتح بورت، بدون Port Forwarding، بدون شهادات SSL، بدون إنشاء سجلات DNS يدويًا.</p>
+<!-- ══════════════════════════════════════════════════════ why -->
+<section id="why">
+  <h2><span data-en>Why linko</span><span data-ar>لماذا linko</span></h2>
+  <p class="lead">
+    <span data-en>ngrok is excellent until you want your own domain, no session limits and no
+      interstitial warning page. linko gives you that on top of your own Cloudflare account.</span>
+    <span data-ar>‏ngrok ممتاز حتى تريد دومينك أنت، بلا حدود جلسات وبلا صفحة تحذير وسيطة.
+      يعطيك linko ذلك فوق حسابك في Cloudflare.</span>
+  </p>
 
-<h2 id="need">ما تحتاجه</h2>
-
-<ul>
-  <li>حساب Cloudflare مجاني</li>
-  <li>دومين موجّهة nameservers الخاصة به إلى Cloudflare</li>
-</ul>
-
-<p>‏<code>cloudflared</code> يُنزَّل تلقائيًا عند أول استخدام — لا تثبّته بنفسك.</p>
-
-<h2 id="install">١ · التثبيت</h2>
-
-<p><b>macOS و Linux</b></p>
-<div class="box">
-  <button class="cp">نسخ</button>
-  <pre><code>curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/install.sh | bash</code></pre>
-</div>
-
-<p>للتحقق:</p>
-<div class="box">
-  <button class="cp">نسخ</button>
-  <pre><code>linko --version</code></pre>
-</div>
-
-<div class="note">
-  <b>‏<code>command not found</code> بعد التثبيت؟</b>
-  مجلد التثبيت ليس في مسارك. أضف هذا السطر إلى <code>~/.zshrc</code> ثم أعد فتح الطرفية:
-  <code>export PATH="$HOME/.local/bin:$PATH"</code>
-</div>
-
-<p><b>طرق أخرى:</b> عبر Go بـ <code>go install github.com/Devehab/linko@latest</code>، أو نزّل الملف
-   الجاهز لنظامك من <a href="https://github.com/Devehab/linko/releases" target="_blank" rel="noopener">صفحة الإصدارات</a>
-   (ويندوز: ملف <code>.zip</code>).</p>
-
-<h2 id="token">٢ · توكن Cloudflare</h2>
-
-<p>هذه الخطوة هي التي تتعثّر فيها الأغلبية. القاعدة في سطر واحد:</p>
-
-<div class="good">
-  <b>توكن واحد، صلاحيتان معًا.</b>
-  ليس توكنًا للـ DNS وآخر للنفق — بل توكن واحد يحمل الاثنتين. وكلتاهما <b>Edit</b> لا Read.
-</div>
-
-<ol class="steps">
-  <li>
-    <b>افتح صفحة الرموز</b>
-    <a href="https://dash.cloudflare.com/profile/api-tokens" target="_blank" rel="noopener">dash.cloudflare.com/profile/api-tokens</a>
-    ← <b>Create Token</b> ← انزل إلى الأسفل واختر <b>Create Custom Token</b>.
-  </li>
-  <li>
-    <b>أضف السطرين في قسم Permissions</b>
-    اضغط <b>+ Add more</b> لإضافة السطر الثاني.
-    <table>
-      <thead><tr><th>#</th><th>الأول</th><th>الثاني</th><th>الثالث</th></tr></thead>
-      <tbody>
-        <tr><td>١</td><td><code>Zone</code></td><td><code>DNS</code></td><td><code>Edit</code></td></tr>
-        <tr><td>٢</td><td><code>Account</code></td><td><code>Cloudflare Tunnel</code></td><td><code>Edit</code></td></tr>
-      </tbody>
-    </table>
-  </li>
-  <li>
-    <b>حدّد الموارد</b>
-    في <b>Account Resources</b> اختر حسابك.
-    وفي <b>Zone Resources</b> اختر <code>Include → Specific zone → دومينك</code>.
-    <div class="warn" style="margin-top:10px">
-      إن تركت <b>Zone Resources</b> فارغًا فسيتصل التوكن بنجاح لكنه لن يرى أي دومين،
-      وستحصل على <code>no zone named …</code>.
+  <div class="grid">
+    <div class="card">
+      <b><span data-en>Your domain</span><span data-ar>دومينك أنت</span></b>
+      <span data-en>Every URL lives under a domain you control.</span>
+      <span data-ar>كل رابط تحت دومين تملكه بالكامل.</span>
     </div>
-  </li>
-  <li>
-    <b>انسخ الرمز</b>
-    يُعرض مرة واحدة فقط.
-  </li>
-</ol>
+    <div class="card">
+      <b><span data-en>Stable URLs</span><span data-ar>روابط ثابتة</span></b>
+      <span data-en>A port keeps its URL. Restarting your app never changes the link you shared.</span>
+      <span data-ar>المنفذ يحتفظ برابطه. إعادة التشغيل لا تغيّر الرابط الذي أرسلته.</span>
+    </div>
+    <div class="card">
+      <b><span data-en>Automatic HTTPS</span><span data-ar>HTTPS تلقائي</span></b>
+      <span data-en>Cloudflare issues and renews the certificate for you.</span>
+      <span data-ar>‏Cloudflare تصدر الشهادة وتجدّدها نيابة عنك.</span>
+    </div>
+    <div class="card">
+      <b><span data-en>One binary</span><span data-ar>ملف تنفيذي واحد</span></b>
+      <span data-en>Written in Go. No Node, no Python, no runtime to install.</span>
+      <span data-ar>مكتوب بـ Go. لا Node ولا Python ولا أي بيئة تشغيل.</span>
+    </div>
+    <div class="card">
+      <b><span data-en>One tunnel, many projects</span><span data-ar>نفق واحد لكل مشاريعك</span></b>
+      <span data-en>Each project is a hostname routed to a different local port.</span>
+      <span data-ar>كل مشروع اسم داخل النفق موجّه إلى منفذ مختلف.</span>
+    </div>
+    <div class="card">
+      <b><span data-en>Runs anywhere</span><span data-ar>يعمل كما تشاء</span></b>
+      <span data-en>Foreground, background, or started automatically at every boot.</span>
+      <span data-ar>في المقدمة، أو بالخلفية، أو يبدأ مع كل إقلاع.</span>
+    </div>
+  </div>
 
-<h2 id="init">٣ · الإعداد</h2>
+  <div class="note">
+    <b><span data-en>What you need</span><span data-ar>ما تحتاجه</span></b>
+    <span data-en>A free Cloudflare account and a domain whose nameservers point at Cloudflare.
+      <code>cloudflared</code> is downloaded automatically — you never install it,
+      and you do not need Go.</span>
+    <span data-ar>حساب Cloudflare مجاني، ودومين موجّهة nameservers الخاصة به إلى Cloudflare.
+      و<code>cloudflared</code> يُنزَّل تلقائيًا — لا تثبّته بنفسك، ولا تحتاج Go.</span>
+  </div>
+</section>
 
-<div class="box">
-  <button class="cp">نسخ</button>
-  <pre><code>linko init</code></pre>
-</div>
+<!-- ══════════════════════════════════════════════════════ install -->
+<section id="install">
+  <h2><span class="num">01</span><span data-en>Install</span><span data-ar>التثبيت</span></h2>
+  <p class="lead">
+    <span data-en>macOS and Linux, one line. It picks a directory already on your PATH.</span>
+    <span data-ar>‏macOS ولينكس بسطر واحد. يختار مجلدًا موجودًا في مسارك أصلًا.</span>
+  </p>
 
-<p>يسألك ثلاثة أسئلة: الرمز، ثم الدومين، ثم اسم النفق. اضغط Enter لقبول الافتراضي.</p>
+  <div class="box">
+    <button class="cp">copy</button>
+    <pre><code>curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/install.sh | bash</code></pre>
+  </div>
 
-<div class="box">
-  <button class="cp">نسخ</button>
-  <pre><code><span class="o">Cloudflare credentials</span>
-Cloudflare API token: <span class="c">(مخفي أثناء الكتابة)</span>
+  <div class="box">
+    <button class="cp">copy</button>
+    <pre><code>linko --version</code></pre>
+  </div>
+
+  <h3><span data-en>Other ways</span><span data-ar>طرق أخرى</span></h3>
+  <div class="box">
+    <button class="cp">copy</button>
+    <pre><code><span class="c"># with Go 1.22+</span>
+go install github.com/Devehab/linko@latest
+
+<span class="c"># Go not installed?</span>
+brew install go                 <span class="c"># macOS</span>
+sudo apt install golang-go      <span class="c"># Debian / Ubuntu</span>
+sudo dnf install golang         <span class="c"># Fedora</span></code></pre>
+  </div>
+  <p>
+    <span data-en><b>Windows:</b> download the <code>.zip</code> from the
+      <a href="https://github.com/Devehab/linko/releases" target="_blank" rel="noopener">releases page</a>
+      and put <code>linko.exe</code> on your <code>PATH</code>.</span>
+    <span data-ar><b>ويندوز:</b> نزّل ملف <code>.zip</code> من
+      <a href="https://github.com/Devehab/linko/releases" target="_blank" rel="noopener">صفحة الإصدارات</a>
+      وضع <code>linko.exe</code> في مجلد ضمن <code>PATH</code>.</span>
+  </p>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ token -->
+<section id="token">
+  <h2><span class="num">02</span><span data-en>The Cloudflare token</span><span data-ar>توكن Cloudflare</span></h2>
+  <p class="lead">
+    <span data-en>This is the step almost everyone gets wrong. The rule, in one line:</span>
+    <span data-ar>هذه الخطوة التي تتعثّر فيها الأغلبية. القاعدة في سطر واحد:</span>
+  </p>
+
+  <div class="good">
+    <b><span data-en>One token, both permissions.</span><span data-ar>توكن واحد، صلاحيتان معًا.</span></b>
+    <span data-en>Not one token for DNS and another for the tunnel — a single token carrying
+      both rows. And both must be <b>Edit</b>, not Read.</span>
+    <span data-ar>ليس توكنًا للـ DNS وآخر للنفق — بل توكن واحد يحمل السطرين.
+      وكلتاهما <b>Edit</b> لا Read.</span>
+  </div>
+
+  <ol class="steps">
+    <li>
+      <b><span data-en>Open the tokens page</span><span data-ar>افتح صفحة الرموز</span></b>
+      <a href="https://dash.cloudflare.com/profile/api-tokens" target="_blank" rel="noopener">dash.cloudflare.com/profile/api-tokens</a>
+      → <b>Create Token</b> → <b>Create Custom Token</b>
+    </li>
+    <li>
+      <b><span data-en>Add both permission rows</span><span data-ar>أضف السطرين في Permissions</span></b>
+      <span data-en>Press <b>+ Add more</b> for the second row.</span>
+      <span data-ar>اضغط <b>+ Add more</b> لإضافة السطر الثاني.</span>
+      <div class="tw">
+        <table>
+          <thead><tr><th>#</th><th>1</th><th>2</th><th>3</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td><code>Zone</code></td><td><code>DNS</code></td><td><b>Edit</b></td></tr>
+            <tr><td>2</td><td><code>Account</code></td><td><code>Cloudflare Tunnel</code></td><td><b>Edit</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </li>
+    <li>
+      <b><span data-en>Scope the resources</span><span data-ar>حدّد الموارد</span></b>
+      <span data-en><b>Account Resources</b> → your account.<br>
+        <b>Zone Resources</b> → <code>Include</code> → <code>Specific zone</code> → your domain.</span>
+      <span data-ar><b>Account Resources</b> ← اختر حسابك.<br>
+        <b>Zone Resources</b> ← <code>Include</code> → <code>Specific zone</code> → دومينك.</span>
+      <div class="warn" style="margin-top:12px">
+        <span data-en>Leaving <b>Zone Resources</b> empty produces a token that authenticates
+          successfully but sees no domains at all — you will get
+          <code>no zone named …</code>.</span>
+        <span data-ar>ترك <b>Zone Resources</b> فارغًا ينتج توكنًا يتصل بنجاح لكنه لا يرى
+          أي دومين — وستحصل على <code>no zone named …</code>.</span>
+      </div>
+    </li>
+    <li>
+      <b><span data-en>Copy the token</span><span data-ar>انسخ الرمز</span></b>
+      <span data-en>It is shown exactly once.</span>
+      <span data-ar>يُعرض مرة واحدة فقط.</span>
+    </li>
+  </ol>
+
+  <p>
+    <span data-en>Forgot the steps? <code>linko docs</code> prints them in your terminal.</span>
+    <span data-ar>نسيت الخطوات؟ اكتب <code>linko docs</code> وستظهر في طرفيتك.</span>
+  </p>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ setup -->
+<section id="setup">
+  <h2><span class="num">03</span><span data-en>Connect it</span><span data-ar>الإعداد</span></h2>
+
+  <div class="box">
+    <button class="cp">copy</button>
+    <pre><code>linko init</code></pre>
+  </div>
+
+  <div class="box term">
+    <div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
+    <pre><code><span class="o">Cloudflare credentials</span>
+Cloudflare API token: <span class="c">················</span>
 <span class="g">✓</span> Cloudflare connected
 
 <span class="o">Domain</span>
@@ -198,227 +383,469 @@ Tunnel name: <span class="c">[example-linko-tunnel]</span>
 <span class="g">✓</span> Configuration saved to ~/.linko/config.json
 <span class="g">✓</span> cloudflared installed
 
-You're ready.</code></pre>
-</div>
-
-<h3>سؤال «Base subdomain» — انتبه هنا</h3>
-
-<div class="warn">
-  <b>اترك الإجابة على الدومين نفسه: <code>example.com</code></b>
-  لا تكتب <code>demo.example.com</code>. السبب في القسم التالي.
-</div>
-
-<h2 id="ssl">٤ · قاعدة المستوى الواحد</h2>
-
-<p>شهادة Cloudflare المجانية تُصدَر لاسمين اثنين فقط:</p>
-
-<div class="box">
-  <pre><code>example.com        <span class="c">← الجذر</span>
-*.example.com      <span class="c">← مستوى واحد</span></code></pre>
-</div>
-
-<p>و<code>*</code> لا تعبر النقطة — تطابق تسمية واحدة فقط:</p>
-
-<table>
-  <thead><tr><th>الرابط</th><th>يعمل؟</th></tr></thead>
-  <tbody>
-    <tr><td><code>demo.example.com</code></td><td>✅ يطابق <code>*.example.com</code></td></tr>
-    <tr><td><code>demo.app.example.com</code></td><td>❌ مستويان — لا شهادة تغطيه</td></tr>
-  </tbody>
-</table>
-
-<div class="warn">
-  <b>هذا العطل هو الأصعب في التشخيص كله.</b>
-  الـ DNS صحيح، والنفق متصل، و<code>linko doctor</code> أخضر بالكامل — ومع ذلك يرفض المتصفح
-  الاتصال بـ <code>ERR_SSL_VERSION_OR_CIPHER_MISMATCH</code>، لأن الرفض يحدث قبل وصول
-  أي طلب إلى نفقك. لهذا يحذّرك <code>linko init</code> منه مسبقًا.
-</div>
-
-<p>تريد مستويين مثل <code>demo.app.example.com</code>؟ يلزمك
-   <b>Advanced Certificate Manager</b> من Cloudflare (‏١٠ دولارات شهريًا للدومين)، ثم فعّل
-   <b>Total TLS</b>. البدائل المجانية (Subdomain setup، إعداد CNAME جزئي) محصورة بخطط
-   Enterprise وBusiness.</p>
-
-<div class="good">
-  <b>الأبسط والمجاني:</b> استخدم المستوى الأول واجعل التمييز في الاسم نفسه —
-  <code>myapp-dev.example.com</code> بدلًا من <code>myapp.dev.example.com</code>.
-</div>
-
-<h2 id="use">٥ · الاستخدام</h2>
-
-<p>شغّل مشروعك أولًا (مثلًا على المنفذ 3000)، ثم:</p>
-
-<div class="box">
-  <button class="cp">نسخ</button>
-  <pre><code>linko 3000</code></pre>
-</div>
-
-<p>تحصل على اسم عشوائي مثل <code>x92ka</code>. الرابط يعيش ما دامت الأداة تعمل، وعند
-   <code>Ctrl+C</code> يُحذف الاسم وسجل الـ DNS تلقائيًا — لا تتراكم لديك سجلات.</p>
-
-<h3>رابط ثابت</h3>
-<div class="box">
-  <button class="cp">نسخ</button>
-  <pre><code>linko 3000 --name crm</code></pre>
-</div>
-<p>النتيجة <code>https://crm.example.com</code>، ويبقى محفوظًا بعد الإيقاف.</p>
-
-<h3>الأوامر كلها</h3>
-<table>
-  <thead><tr><th>الأمر</th><th>الوظيفة</th></tr></thead>
-  <tbody>
-    <tr><td><code>linko init</code></td><td>الإعداد لمرة واحدة</td></tr>
-    <tr><td><code>linko 3000</code></td><td>رابط عشوائي مؤقت</td></tr>
-    <tr><td><code>linko 3000 --name crm</code></td><td>رابط باسم ثابت</td></tr>
-    <tr><td><code>linko 3000 --keep</code></td><td>يبقي الاسم العشوائي بعد الإيقاف</td></tr>
-    <tr><td><code>linko list</code></td><td>عرض روابطك</td></tr>
-    <tr><td><code>linko status</code></td><td>حالة النفق وعدد الاتصالات</td></tr>
-    <tr><td><code>linko remove crm</code></td><td>حذف رابط (المسار + سجل DNS)</td></tr>
-    <tr><td><code>linko remove --all</code></td><td>حذف كل الروابط</td></tr>
-    <tr><td><code>linko doctor</code></td><td>فحص شامل للإعداد</td></tr>
-  </tbody>
-</table>
-
-<h3>صيغ المنفذ</h3>
-<table>
-  <thead><tr><th>ما تكتبه</th><th>ما يعنيه</th></tr></thead>
-  <tbody>
-    <tr><td><code>linko 3000</code></td><td><code>http://localhost:3000</code></td></tr>
-    <tr><td><code>linko 127.0.0.1:8080</code></td><td>عنوان محدد</td></tr>
-    <tr><td><code>linko https://localhost:8443</code></td><td>أصل يعمل بـ HTTPS</td></tr>
-  </tbody>
-</table>
-
-<h3>عدة مشاريع معًا</h3>
-<div class="box">
-  <button class="cp">نسخ</button>
-  <pre><code><span class="c"># نافذة طرفية لكل مشروع</span>
-linko 3000 -n web
-linko 8080 -n api</code></pre>
-</div>
-
-<h2 id="fix">٦ · حل المشاكل</h2>
-
-<p>كل ما يلي أخطاء حقيقية ظهرت أثناء التطوير، وهذه أسبابها الفعلية.</p>
-
-<div class="fix">
-  <div class="err">Error: no zone named "example.com" on this account</div>
-  <div class="body">
-    <b>السبب:</b> التوكن ينقصه صلاحية <code>Zone</code>، أو أن <b>Zone Resources</b> فيه فارغة.<br>
-    <b>الحل:</b> عدّل التوكن وأضف <code>Zone → DNS → Edit</code> مع
-    <code>Zone Resources → Include → Specific zone → دومينك</code>.<br>
-    <span style="color:var(--fg2)">‏<code>linko</code> يعرض لك النطاقات التي يراها التوكن فعلًا، فتعرف فورًا أين الخلل.</span>
+<span class="w">You're ready.</span></code></pre>
   </div>
-</div>
 
-<div class="fix">
-  <div class="err">✗ Cloudflare refused to create the DNS record.<br>&nbsp;&nbsp;Authentication error (code 10000)</div>
-  <div class="body">
-    <b>السبب:</b> صلاحية DNS مضبوطة على <code>Read</code> بدل <code>Edit</code>. العثور على
-    الدومين يحتاج قراءة فقط، لذلك يمر الإعداد كاملًا ثم يفشل عند أول كتابة.<br>
-    <b>الحل:</b> غيّر القائمة المنسدلة من <b>Read</b> إلى <b>Edit</b>.
+  <div class="warn">
+    <b><span data-en>Answer "Base subdomain" with your bare domain</span>
+       <span data-ar>أجب عن «Base subdomain» بدومينك مجرّدًا</span></b>
+    <span data-en>Type <code>example.com</code>, not <code>demo.example.com</code>.
+      The reason is in <a href="#ssl">the one-level rule</a>.</span>
+    <span data-ar>اكتب <code>example.com</code> لا <code>demo.example.com</code>.
+      السبب في <a href="#ssl">قاعدة المستوى الواحد</a>.</span>
   </div>
-</div>
 
-<div class="fix">
-  <div class="err">✗ Could not create the tunnel<br>&nbsp;&nbsp;Authentication error (code 10000)</div>
-  <div class="body">
-    <b>السبب:</b> التوكن يغطي DNS فقط ولا يملك صلاحية النفق.<br>
-    <b>الحل:</b> أضف السطر الثاني <code>Account → Cloudflare Tunnel → Edit</code>
-    على <b>نفس</b> التوكن.
+  <h3><span data-en>Non-interactive</span><span data-ar>بلا تفاعل</span></h3>
+  <div class="box">
+    <button class="cp">copy</button>
+    <pre><code>export LINKO_API_TOKEN='cfut_…'
+linko init --yes --domain example.com --base example.com</code></pre>
   </div>
-</div>
+</section>
 
-<div class="fix">
-  <div class="err">This site can't provide a secure connection<br>ERR_SSL_VERSION_OR_CIPHER_MISMATCH</div>
-  <div class="body">
-    <b>السبب:</b> رابطك بعمق مستويين. لا شهادة مجانية تغطيه.<br>
-    <b>الحل:</b> أعد الإعداد بـ <code>linko init --base example.com</code> ليصبح الرابط
-    <code>name.example.com</code>. أو اشترِ Advanced Certificate Manager.
+<!-- ══════════════════════════════════════════════════════ sticky -->
+<section id="sticky">
+  <h2><span class="num">04</span><span data-en>A port keeps its URL</span><span data-ar>المنفذ يحتفظ برابطه</span></h2>
+  <p class="lead">
+    <span data-en>The behaviour that makes linko pleasant to live with.</span>
+    <span data-ar>السلوك الذي يجعل استخدام linko مريحًا يومًا بعد يوم.</span>
+  </p>
+
+  <div class="box">
+    <button class="cp">copy</button>
+    <pre><code>linko 3000     <span class="c"># first run  → https://x92ka.example.com</span>
+<span class="c"># Ctrl+C</span>
+linko 3000     <span class="c"># next run   → https://x92ka.example.com  (the same one)</span></code></pre>
   </div>
-</div>
 
-<div class="fix">
-  <div class="err">Error: no API token: pass --token or set LINKO_API_TOKEN</div>
-  <div class="body">
-    <b>السبب:</b> شغّلت <code>linko init --yes</code> بلا رمز.<br>
-    <b>الحل:</b> إما <code>export LINKO_API_TOKEN='...'</code> قبل الأمر، أو مرّر <code>--token '...'</code>.
+  <p>
+    <span data-en>A link you already shared keeps working across restarts, and your DNS does not
+      fill up with dead records. When you do want to change it:</span>
+    <span data-ar>الرابط الذي أرسلته يبقى يعمل بعد كل إعادة تشغيل، ولا تتراكم سجلات DNS ميتة
+      في حسابك. وحين تريد التغيير فعلًا:</span>
+  </p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th><span data-en>Command</span><span data-ar>الأمر</span></th>
+                 <th><span data-en>What happens</span><span data-ar>ماذا يحدث</span></th></tr></thead>
+      <tbody>
+        <tr><td><code>linko 3000 --new</code></td>
+            <td><span data-en>Mint a fresh random URL and retire the old one</span>
+                <span data-ar>رابط عشوائي جديد، ويحذف القديم</span></td></tr>
+        <tr><td><code>linko 3000 --name crm</code></td>
+            <td><span data-en>Choose the name yourself → <code>crm.example.com</code></span>
+                <span data-ar>اسم تختاره أنت ← <code>crm.example.com</code></span></td></tr>
+        <tr><td><code>linko 3000 --temp</code></td>
+            <td><span data-en>Throwaway: deleted the moment you quit</span>
+                <span data-ar>رابط لمرة واحدة، يُحذف لحظة الإيقاف</span></td></tr>
+      </tbody>
+    </table>
   </div>
-</div>
+</section>
 
-<div class="fix">
-  <div class="err">HTTP 502 · Error 1033</div>
-  <div class="body">
-    <b>السبب:</b> النفق يعمل لكن لا شيء يستمع على المنفذ.<br>
-    <b>الحل:</b> تأكد بـ <code>curl http://localhost:3000</code>. وإن كان تطبيقك يستمع على
-    <code>127.0.0.1</code> فقط، جرّب <code>linko 127.0.0.1:3000</code>.
+<!-- ══════════════════════════════════════════════════════ commands -->
+<section id="commands">
+  <h2><span class="num">05</span><span data-en>Commands</span><span data-ar>الأوامر</span></h2>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th><span data-en>Command</span><span data-ar>الأمر</span></th>
+                 <th><span data-en>Purpose</span><span data-ar>الوظيفة</span></th></tr></thead>
+      <tbody>
+        <tr><td><code>linko init</code></td>
+            <td><span data-en>One-time setup</span><span data-ar>الإعداد لمرة واحدة</span></td></tr>
+        <tr><td><code>linko 3000</code></td>
+            <td><span data-en>Publish the port — same URL every time</span>
+                <span data-ar>نشر المنفذ — نفس الرابط في كل مرة</span></td></tr>
+        <tr><td><code>linko 3000 --new</code></td>
+            <td><span data-en>Fresh random URL, retiring the old</span>
+                <span data-ar>رابط عشوائي جديد بدل القديم</span></td></tr>
+        <tr><td><code>linko 3000 --name crm</code></td>
+            <td><span data-en>A name you choose</span><span data-ar>اسم تختاره أنت</span></td></tr>
+        <tr><td><code>linko 3000 --temp</code></td>
+            <td><span data-en>Deleted when you quit</span><span data-ar>يُحذف عند الإيقاف</span></td></tr>
+        <tr><td><code>linko 3000 -d</code></td>
+            <td><span data-en>Run in the background</span><span data-ar>تشغيل بالخلفية</span></td></tr>
+        <tr><td><code>linko 3000 --open</code></td>
+            <td><span data-en>Open the browser once the URL answers</span>
+                <span data-ar>يفتح المتصفح حين يجهز الرابط فعلًا</span></td></tr>
+        <tr><td><code>linko ps</code></td>
+            <td><span data-en>What is running in the background</span>
+                <span data-ar>ما الذي يعمل بالخلفية</span></td></tr>
+        <tr><td><code>linko stop crm</code></td>
+            <td><span data-en>Stop a background tunnel (<code>--all</code>)</span>
+                <span data-ar>إيقاف نفق بالخلفية (<code>--all</code>)</span></td></tr>
+        <tr><td><code>linko list</code></td>
+            <td><span data-en>Everything you have published</span><span data-ar>كل ما نشرته</span></td></tr>
+        <tr><td><code>linko status</code></td>
+            <td><span data-en>Tunnel health and live connections</span>
+                <span data-ar>حالة النفق والاتصالات الحيّة</span></td></tr>
+        <tr><td><code>linko remove crm</code></td>
+            <td><span data-en>Delete a URL and its DNS record</span>
+                <span data-ar>حذف رابط وسجل الـ DNS الخاص به</span></td></tr>
+        <tr><td><code>linko service install 3000 -n crm</code></td>
+            <td><span data-en>Start it at every boot</span><span data-ar>يبدأ مع كل إقلاع</span></td></tr>
+        <tr><td><code>linko doctor</code></td>
+            <td><span data-en>Diagnose the whole setup</span><span data-ar>فحص شامل للإعداد</span></td></tr>
+        <tr><td><code>linko docs</code></td>
+            <td><span data-en>This guide in your terminal</span><span data-ar>هذا الدليل في طرفيتك</span></td></tr>
+      </tbody>
+    </table>
   </div>
-</div>
 
-<h3>عند الشك، ابدأ من هنا</h3>
-<div class="box">
-  <button class="cp">نسخ</button>
-  <pre><code>linko doctor</code></pre>
-</div>
-<p>يفحص ثمانية أشياء بالترتيب — من وجود <code>cloudflared</code> إلى الاتصالات الحيّة —
-   ويقول لك أين توقّف بالضبط.</p>
+  <h3><span data-en>Background and boot</span><span data-ar>الخلفية والإقلاع</span></h3>
+  <div class="box">
+    <button class="cp">copy</button>
+    <pre><code>linko 3000 -d                          <span class="c"># detach, return to the prompt</span>
+linko ps                               <span class="c"># what is running</span>
+linko stop web                         <span class="c"># stop one</span>
+linko stop --all                       <span class="c"># stop everything</span>
 
-<h3>بداية نظيفة تمامًا</h3>
-<div class="box">
-  <button class="cp">نسخ</button>
-  <pre><code>linko remove --all --yes
-rm -rf ~/.linko
-linko init</code></pre>
-</div>
+linko service install 3000 --name crm  <span class="c"># launchd / systemd, restarts on failure</span>
+linko service list
+linko service uninstall crm</code></pre>
+  </div>
 
-<h2 id="how">كيف يعمل</h2>
+  <h3><span data-en>Accepted targets</span><span data-ar>صيغ المنفذ المقبولة</span></h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th><span data-en>You type</span><span data-ar>ما تكتبه</span></th>
+                 <th><span data-en>It means</span><span data-ar>ما يعنيه</span></th></tr></thead>
+      <tbody>
+        <tr><td><code>linko 3000</code></td><td><code>http://localhost:3000</code></td></tr>
+        <tr><td><code>linko :3000</code></td><td><code>http://localhost:3000</code></td></tr>
+        <tr><td><code>linko 127.0.0.1:8080</code></td>
+            <td><span data-en>a specific address</span><span data-ar>عنوان محدد</span></td></tr>
+        <tr><td><code>linko https://localhost:8443</code></td>
+            <td><span data-en>an origin that speaks HTTPS</span><span data-ar>أصل يعمل بـ HTTPS</span></td></tr>
+        <tr><td><code>linko tcp://localhost:22</code></td>
+            <td><span data-en>a raw TCP service</span><span data-ar>خدمة TCP خام</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 
-<p>‏<code>linko</code> ينشئ نفقًا واحدًا في حسابك، وكل مشروع يصبح اسمًا داخله موجّهًا إلى منفذ مختلف.</p>
+<!-- ══════════════════════════════════════════════════════ cookbook -->
+<section id="cookbook">
+  <h2><span class="num">06</span><span data-en>Cookbook</span><span data-ar>وصفات عملية</span></h2>
 
-<div class="box">
-  <pre><code>  crm.example.com   ──┐
+  <h3><span data-en>Show a client your work in progress</span><span data-ar>تُري عميلًا عملك الحالي</span></h3>
+  <div class="box"><button class="cp">copy</button><pre><code>linko 3000 --name preview --open</code></pre></div>
+
+  <h3><span data-en>Two services at once, one tunnel</span><span data-ar>خدمتان معًا في نفق واحد</span></h3>
+  <div class="box"><button class="cp">copy</button><pre><code>linko 3000 -n web   <span class="c"># terminal 1</span>
+linko 8080 -n api   <span class="c"># terminal 2</span></code></pre></div>
+
+  <h3><span data-en>A webhook endpoint you leave running all week</span><span data-ar>نقطة webhooks تعمل طوال الأسبوع</span></h3>
+  <div class="box"><button class="cp">copy</button><pre><code>linko 4000 -n hooks -d
+linko ps</code></pre></div>
+
+  <h3><span data-en>A staging box that survives reboots</span><span data-ar>بيئة تجريبية تصمد بعد إعادة التشغيل</span></h3>
+  <div class="box"><button class="cp">copy</button><pre><code>linko service install 8080 --name staging</code></pre></div>
+
+  <h3><span data-en>A one-off link that cleans up after itself</span><span data-ar>رابط لمرة واحدة ينظّف نفسه</span></h3>
+  <div class="box"><button class="cp">copy</button><pre><code>linko 5173 --temp</code></pre></div>
+
+  <h3><span data-en>Rotate a URL you shared too widely</span><span data-ar>تدوير رابط انتشر أكثر مما ينبغي</span></h3>
+  <div class="box"><button class="cp">copy</button><pre><code>linko 3000 --new</code></pre></div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ ssl -->
+<section id="ssl">
+  <h2><span class="num">07</span><span data-en>The one-level rule</span><span data-ar>قاعدة المستوى الواحد</span></h2>
+  <p class="lead">
+    <span data-en>Cloudflare's free certificate covers exactly two names.</span>
+    <span data-ar>شهادة Cloudflare المجانية تغطي اسمين اثنين بالضبط.</span>
+  </p>
+
+  <div class="box">
+    <pre><code>example.com        <span class="c">← the apex</span>
+*.example.com      <span class="c">← one level</span></code></pre>
+  </div>
+
+  <p>
+    <span data-en>A wildcard in a certificate does <b>not</b> cross a dot:</span>
+    <span data-ar>و<code>*</code> في الشهادات <b>لا تعبر النقطة</b>:</span>
+  </p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>URL</th><th><span data-en>Works?</span><span data-ar>يعمل؟</span></th></tr></thead>
+      <tbody>
+        <tr><td><code>demo.example.com</code></td><td>✅ <code>*.example.com</code></td></tr>
+        <tr><td><code>demo.app.example.com</code></td>
+            <td>❌ <span data-en>two levels — nothing covers it</span>
+                   <span data-ar>مستويان — لا شيء يغطيه</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="danger">
+    <b><span data-en>The hardest failure to diagnose in the whole system</span>
+       <span data-ar>أصعب عطل في النظام كله</span></b>
+    <span data-en>DNS is correct, the tunnel is connected, and <code>linko doctor</code> is
+      entirely green — yet the browser refuses with
+      <code>ERR_SSL_VERSION_OR_CIPHER_MISMATCH</code>, because the rejection happens
+      before any request reaches your tunnel. <code>linko init</code> warns you up front.</span>
+    <span data-ar>الـ DNS صحيح، والنفق متصل، و<code>linko doctor</code> أخضر بالكامل — ومع
+      ذلك يرفض المتصفح بـ <code>ERR_SSL_VERSION_OR_CIPHER_MISMATCH</code>، لأن الرفض
+      يحدث قبل وصول أي طلب إلى نفقك. لهذا يحذّرك <code>linko init</code> مسبقًا.</span>
+  </div>
+
+  <div class="good">
+    <b><span data-en>Simplest free answer</span><span data-ar>أبسط حل مجاني</span></b>
+    <span data-en>Put the distinction in the name itself: <code>myapp-dev.example.com</code>
+      rather than <code>myapp.dev.example.com</code>. Two levels require Cloudflare
+      Advanced Certificate Manager ($10/month per zone) plus Total TLS.</span>
+    <span data-ar>اجعل التمييز في الاسم نفسه: <code>myapp-dev.example.com</code> بدل
+      <code>myapp.dev.example.com</code>. المستويان يحتاجان Advanced Certificate Manager
+      (‏١٠ دولارات شهريًا للدومين) مع تفعيل Total TLS.</span>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ how -->
+<section id="how">
+  <h2><span class="num">08</span><span data-en>How it works</span><span data-ar>كيف يعمل</span></h2>
+  <p class="lead">
+    <span data-en>One tunnel in your account. Each project is a hostname inside it, routed to a
+      different local port.</span>
+    <span data-ar>نفق واحد في حسابك، وكل مشروع اسم داخله موجّه إلى منفذ مختلف.</span>
+  </p>
+
+  <div class="box">
+    <pre><code>  crm.example.com   ──┐
                       │                     ┌──▶ localhost:3000
   api.example.com   ──┼──▶ Cloudflare Edge ─┼──▶ localhost:8080
-                      │      (نفق واحد)      │
+                      │      (one tunnel)   │
   test.example.com  ──┘                     └──▶ localhost:5173
                                 ▲
-                                │  اتصال صادر فقط
-                          cloudflared على جهازك</code></pre>
-</div>
+                                │  <span class="o">outbound connection only</span>
+                          cloudflared on your machine</code></pre>
+  </div>
 
-<p>عند تشغيل <code>linko 3000</code> تحدث ثلاثة أشياء: يُنشأ سجل <code>CNAME</code> يشير إلى
-   نفقك، وتُضاف قاعدة توجيه تربط الاسم بـ <code>localhost:3000</code>، ثم يُشغَّل
-   <code>cloudflared</code> فيفتح اتصالًا <b>صادرًا</b> نحو Cloudflare. لا شيء على جهازك ينتظر
-   اتصالات واردة — لهذا لا تحتاج لمسّ الراوتر أو جدار الحماية.</p>
+  <ol>
+    <li><span data-en>A proxied <code>CNAME</code> is created, pointing at
+        <code>&lt;tunnel-id&gt;.cfargotunnel.com</code></span>
+        <span data-ar>يُنشأ سجل <code>CNAME</code> مُوكَّل يشير إلى
+        <code>&lt;tunnel-id&gt;.cfargotunnel.com</code></span></li>
+    <li><span data-en>An ingress rule maps the hostname to <code>http://localhost:3000</code></span>
+        <span data-ar>تُضاف قاعدة توجيه تربط الاسم بـ <code>http://localhost:3000</code></span></li>
+    <li><span data-en><code>cloudflared</code> starts and opens an <b>outbound</b> connection</span>
+        <span data-ar>يُشغَّل <code>cloudflared</code> فيفتح اتصالًا <b>صادرًا</b></span></li>
+  </ol>
 
-<h2 id="safe">أمان</h2>
+  <p>
+    <span data-en>Nothing on your machine listens for inbound connections, which is why no
+      firewall or router change is ever needed.</span>
+    <span data-ar>لا شيء على جهازك ينتظر اتصالات واردة — لهذا لا تحتاج لمسّ الراوتر أو جدار
+      الحماية إطلاقًا.</span>
+  </p>
+</section>
 
-<ul>
-  <li><b>الرابط عام.</b> أي شخص يملكه يصل إلى مشروعك. لا تنشر بيانات حساسة. للحماية أضف
-      Cloudflare Access من لوحة Zero Trust.</li>
-  <li><b>الرمز محفوظ في <code>~/.linko/config.json</code></b> بصلاحيات <code>0600</code>
-      — لا ترفعه إلى Git. للفرق وCI استخدم <code>LINKO_API_TOKEN</code>.</li>
-  <li><b>لا يحذف سجلًا ليس له.</b> إن كان الاسم يشير إلى موقعك الحقيقي فلن يلمسه
-      <code>linko</code> إطلاقًا.</li>
-</ul>
+<!-- ══════════════════════════════════════════════════════ troubleshooting -->
+<section id="fix">
+  <h2><span class="num">09</span><span data-en>Troubleshooting</span><span data-ar>حل المشاكل</span></h2>
+  <p class="lead">
+    <span data-en>Every message below is a real error this project hit, with its actual cause.</span>
+    <span data-ar>كل رسالة أدناه خطأ حقيقي واجهه هذا المشروع، وهذا سببها الفعلي.</span>
+  </p>
+
+  <div class="fix">
+    <div class="err">Error: no zone named "example.com" on this account</div>
+    <div class="body">
+      <span data-en><b>Cause:</b> the token is missing the <code>Zone</code> permission, or its
+        Zone Resources are empty.<br>
+        <b>Fix:</b> add <code>Zone → DNS → Edit</code> and include your domain.
+        linko lists the zones the token <i>can</i> see, so you know immediately.</span>
+      <span data-ar><b>السبب:</b> التوكن ينقصه صلاحية <code>Zone</code>، أو أن Zone Resources
+        فارغة.<br>
+        <b>الحل:</b> أضف <code>Zone → DNS → Edit</code> مع تضمين دومينك.
+        يعرض linko النطاقات التي <i>يراها</i> التوكن فتعرف فورًا أين الخلل.</span>
+    </div>
+  </div>
+
+  <div class="fix">
+    <div class="err">✗ Cloudflare refused to create the DNS record.
+  Authentication error (code 10000)</div>
+    <div class="body">
+      <span data-en><b>Cause:</b> the DNS permission is <code>Read</code>, not <code>Edit</code>.
+        Finding the zone only needs read access, so setup passes completely and the
+        first write fails.<br>
+        <b>Fix:</b> switch that dropdown to <b>Edit</b>.</span>
+      <span data-ar><b>السبب:</b> صلاحية DNS على <code>Read</code> بدل <code>Edit</code>.
+        العثور على الـ zone يحتاج قراءة فقط، لذلك يمر الإعداد كاملًا ثم يفشل عند أول
+        كتابة.<br>
+        <b>الحل:</b> غيّر القائمة المنسدلة إلى <b>Edit</b>.</span>
+    </div>
+  </div>
+
+  <div class="fix">
+    <div class="err">✗ Could not create the tunnel
+  Authentication error (code 10000)</div>
+    <div class="body">
+      <span data-en><b>Cause:</b> the token covers DNS but not tunnels.<br>
+        <b>Fix:</b> add <code>Account → Cloudflare Tunnel → Edit</code> to the
+        <b>same</b> token.</span>
+      <span data-ar><b>السبب:</b> التوكن يغطي DNS ولا يغطي الأنفاق.<br>
+        <b>الحل:</b> أضف <code>Account → Cloudflare Tunnel → Edit</code> على
+        <b>نفس</b> التوكن.</span>
+    </div>
+  </div>
+
+  <div class="fix">
+    <div class="err">This site can't provide a secure connection
+ERR_SSL_VERSION_OR_CIPHER_MISMATCH</div>
+    <div class="body">
+      <span data-en><b>Cause:</b> the hostname is two levels deep.<br>
+        <b>Fix:</b> <code>linko init --force --base example.com</code>, or buy ACM.</span>
+      <span data-ar><b>السبب:</b> الرابط بعمق مستويين.<br>
+        <b>الحل:</b> <code>linko init --force --base example.com</code> أو اشترِ ACM.</span>
+    </div>
+  </div>
+
+  <div class="fix">
+    <div class="err">HTTP 502  ·  Error 1033</div>
+    <div class="body">
+      <span data-en><b>Cause:</b> the tunnel is up but nothing is listening on the port.<br>
+        <b>Fix:</b> check <code>curl http://localhost:3000</code>. If your app binds the
+        loopback only, use <code>linko 127.0.0.1:3000</code>.</span>
+      <span data-ar><b>السبب:</b> النفق يعمل لكن لا شيء يستمع على المنفذ.<br>
+        <b>الحل:</b> تحقق بـ <code>curl http://localhost:3000</code>. وإن كان تطبيقك
+        يستمع على الـ loopback فقط، استخدم <code>linko 127.0.0.1:3000</code>.</span>
+    </div>
+  </div>
+
+  <div class="fix">
+    <div class="err">zsh: command not found: linko</div>
+    <div class="body">
+      <span data-en><b>Cause:</b> the install directory is not on your <code>PATH</code>.<br>
+        <b>Fix:</b> reopen the terminal, or run <code>exec $SHELL</code>. The installer
+        adds the line for you.</span>
+      <span data-ar><b>السبب:</b> مجلد التثبيت ليس في مسارك.<br>
+        <b>الحل:</b> أعد فتح الطرفية أو نفّذ <code>exec $SHELL</code>. المثبّت يضيف
+        السطر تلقائيًا.</span>
+    </div>
+  </div>
+
+  <h3><span data-en>When in doubt</span><span data-ar>عند الشك</span></h3>
+  <div class="box"><button class="cp">copy</button><pre><code>linko doctor</code></pre></div>
+  <p>
+    <span data-en>Eight checks in order, from <code>cloudflared</code> being present to live edge
+      connections. It tells you exactly where things stop.</span>
+    <span data-ar>ثمانية فحوص بالترتيب، من وجود <code>cloudflared</code> إلى الاتصالات الحيّة.
+      يقول لك أين توقّف بالضبط.</span>
+  </p>
+
+  <h3><span data-en>Start completely fresh</span><span data-ar>بداية نظيفة تمامًا</span></h3>
+  <div class="box"><button class="cp">copy</button><pre><code>linko remove --all --yes
+rm -rf ~/.linko
+linko init</code></pre></div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ security -->
+<section id="security">
+  <h2><span class="num">10</span><span data-en>Security</span><span data-ar>الأمان</span></h2>
+
+  <div class="grid">
+    <div class="card">
+      <b><span data-en>URLs are public</span><span data-ar>الروابط عامة</span></b>
+      <span data-en>Anyone with the link reaches your local service. Put Cloudflare Access in
+        front of the hostname if you need authentication.</span>
+      <span data-ar>أي شخص يملك الرابط يصل إلى مشروعك. ضع Cloudflare Access أمام الاسم إن
+        احتجت مصادقة.</span>
+    </div>
+    <div class="card">
+      <b><span data-en>The token is chmod 0600</span><span data-ar>التوكن بصلاحيات 0600</span></b>
+      <span data-en>Stored in <code>~/.linko/config.json</code>. Never commit it — use
+        <code>LINKO_API_TOKEN</code> for teams and CI.</span>
+      <span data-ar>محفوظ في <code>~/.linko/config.json</code>. لا ترفعه إلى Git — استخدم
+        <code>LINKO_API_TOKEN</code> للفرق وCI.</span>
+    </div>
+    <div class="card">
+      <b><span data-en>Nothing leaks into ps</span><span data-ar>لا شيء يظهر في ps</span></b>
+      <span data-en>The tunnel token reaches <code>cloudflared</code> through the environment,
+        never on the command line.</span>
+      <span data-ar>توكن النفق يصل إلى <code>cloudflared</code> عبر البيئة، لا عبر سطر
+        الأوامر.</span>
+    </div>
+    <div class="card">
+      <b><span data-en>Foreign records are safe</span><span data-ar>سجلاتك الأخرى بأمان</span></b>
+      <span data-en>linko refuses to overwrite or delete any DNS record that does not point at
+        a Cloudflare tunnel.</span>
+      <span data-ar>يرفض linko استبدال أو حذف أي سجل DNS لا يشير إلى نفق Cloudflare.</span>
+    </div>
+  </div>
+</section>
 
 <footer>
-  <p><b>linko</b> · <a href="https://github.com/Devehab/linko" target="_blank" rel="noopener">github.com/Devehab/linko</a> · رخصة MIT</p>
+  <span>linko · MIT</span>
+  <a href="https://github.com/Devehab/linko" target="_blank" rel="noopener">GitHub</a>
+  <a href="https://github.com/Devehab/linko/releases" target="_blank" rel="noopener">
+    <span data-en>Releases</span><span data-ar>الإصدارات</span></a>
+  <a href="https://github.com/Devehab/linko/blob/main/GUIDE.md" target="_blank" rel="noopener">
+    <span data-en>Arabic guide</span><span data-ar>الدليل العربي</span></a>
+  <span class="sp"></span>
+  <span data-en>Built on Cloudflare Tunnel</span><span data-ar>مبني على Cloudflare Tunnel</span>
 </footer>
 
-</div>
+</main>
 
 <script>
-document.querySelectorAll('.cp').forEach(function (b) {
-  b.addEventListener('click', function () {
-    var t = b.parentElement.querySelector('code').innerText.replace(/^\$ /gm, '');
-    navigator.clipboard.writeText(t).then(function () {
-      var o = b.textContent;
-      b.textContent = 'تم ✓'; b.classList.add('ok');
-      setTimeout(function () { b.textContent = o; b.classList.remove('ok'); }, 1400);
+(function () {
+  // ---- copy buttons
+  document.querySelectorAll('.cp').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var t = b.parentElement.querySelector('code').innerText.replace(/^\$ /gm, '');
+      navigator.clipboard.writeText(t).then(function () {
+        var o = b.textContent;
+        b.textContent = '✓'; b.classList.add('done');
+        setTimeout(function () { b.textContent = o; b.classList.remove('done'); }, 1300);
+      });
     });
   });
-});
+
+  // ---- language
+  var html = document.documentElement;
+  var langBtn = document.getElementById('lang');
+  function setLang(l) {
+    html.lang = l;
+    html.dir = l === 'ar' ? 'rtl' : 'ltr';
+    langBtn.textContent = l === 'ar' ? 'English' : 'العربية';
+    document.title = l === 'ar' ? 'linko — دليل الاستخدام'
+                                : 'linko — a public HTTPS URL for any local port';
+    try { localStorage.setItem('linko-lang', l); } catch (e) {}
+  }
+  langBtn.addEventListener('click', function () {
+    setLang(html.lang === 'ar' ? 'en' : 'ar');
+  });
+
+  // ---- theme
+  var themeBtn = document.getElementById('theme');
+  function setTheme(t) {
+    if (t === 'light') { html.setAttribute('data-theme', 'light'); }
+    else { html.removeAttribute('data-theme'); }
+    try { localStorage.setItem('linko-theme', t); } catch (e) {}
+  }
+  themeBtn.addEventListener('click', function () {
+    setTheme(html.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+  });
+
+  // ---- restore preferences
+  var savedLang = null, savedTheme = null;
+  try {
+    savedLang = localStorage.getItem('linko-lang');
+    savedTheme = localStorage.getItem('linko-theme');
+  } catch (e) {}
+  // Note the parentheses: `a || b === c ? x : y` would parse as
+  // `(a || (b === c)) ? x : y` and always win on a saved value of "en".
+  var browserAr = (navigator.language || '').slice(0, 2) === 'ar';
+  setLang(savedLang || (browserAr ? 'ar' : 'en'));
+  if (savedTheme) { setTheme(savedTheme); }
+  else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    setTheme('light');
+  }
+})();
 </script>
 </body>
 </html>
