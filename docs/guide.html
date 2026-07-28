@@ -998,9 +998,9 @@ New Cloudflare API token: <span class="c">················</span
 ERR_SSL_VERSION_OR_CIPHER_MISMATCH</div>
   <div class="body">
     <span data-en><b>Cause:</b> the hostname is two levels deep.<br>
-      <b>Fix:</b> <code>linko init --force --base example.com</code>, or buy ACM.</span>
+      <b>Fix:</b> <code>linko init --force</code> and pick the domain itself, or buy ACM.</span>
     <span data-ar><b>السبب:</b> الرابط بعمق مستويين.<br>
-      <b>الحل:</b> <code>linko init --force --base example.com</code> أو اشترِ ACM.</span>
+      <b>الحل:</b> <code>linko init --force</code> واختر الدومين نفسه، أو اشترِ ACM.</span>
   </div>
 </div>
 
@@ -1040,6 +1040,11 @@ ERR_SSL_VERSION_OR_CIPHER_MISMATCH</div>
 <div class="box"><button class="cp">copy</button><pre><code>linko remove --all --yes
 rm -rf ~/.linko
 linko init</code></pre></div>
+
+<p><span data-en>To remove the tool itself — background tunnels, login services,
+   URLs, tunnel and binary — use <code>linko uninstall</code>.</span>
+   <span data-ar>ولإزالة الأداة نفسها — الأنفاق والخدمات والروابط والنفق والملف التنفيذي —
+   استخدم <code>linko uninstall</code>.</span></p>
 
 <!-- ═══════════════════ security ═══════════════════ -->
 <h2 id="security"><span data-en>Security</span><span data-ar>الأمان</span></h2>

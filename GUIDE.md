@@ -646,7 +646,7 @@ Enterprise وBusiness.
 | `no zone named "example.com"` | التوكن ينقصه صلاحية `Zone`، أو أن Zone Resources فارغة | أضف `Zone → DNS → Edit` مع تضمين دومينك. ‏`linko` يعرض لك النطاقات التي **يراها** التوكن. |
 | `Cloudflare refused to create the DNS record` `code 10000` | صلاحية DNS على `Read` بدل `Edit` | العثور على الـ zone يحتاج قراءة فقط، لذلك يمر الإعداد كاملًا ثم يفشل عند أول كتابة. غيّرها إلى **Edit**. |
 | `Could not create the tunnel` `code 10000` | التوكن يغطي DNS ولا يغطي الأنفاق | أضف `Account → Cloudflare Tunnel → Edit` على **نفس** التوكن. |
-| `ERR_SSL_VERSION_OR_CIPHER_MISMATCH` | الرابط بعمق مستويين | `linko init --force --base example.com` أو اشترِ ACM. |
+| `ERR_SSL_VERSION_OR_CIPHER_MISMATCH` | الرابط بعمق مستويين | `linko init --force` واختر الدومين نفسه، أو اشترِ ACM. |
 | `no API token: pass --token or set LINKO_API_TOKEN` | شغّلت `linko init --yes` بلا رمز | `export LINKO_API_TOKEN='…'` أو مرّر `--token`. |
 | انتهى التوكن أو دُوِّر | التوكن المحفوظ لم يعد يصادق | `linko token` — ويُفحص الجديد قبل حفظه. |
 | تريد النشر على دومين آخر | إعدادك يشير إلى القديم | `linko domain` — اختر الجديد من القائمة. |

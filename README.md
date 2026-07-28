@@ -631,7 +631,7 @@ firewall or router change is ever needed.
 | `no zone named "example.com"` | Token is missing the `Zone` permission, or its Zone Resources are empty | Add `Zone → DNS → Edit` and include your domain. `linko` lists the zones the token *can* see. |
 | `Cloudflare refused to create the DNS record` `code 10000` | DNS permission is `Read`, not `Edit` | Finding the zone only needs read access, so setup passes and the first write fails. Switch it to **Edit**. |
 | `Could not create the tunnel` `code 10000` | Token covers DNS but not tunnels | Add `Account → Cloudflare Tunnel → Edit` to the **same** token. |
-| `ERR_SSL_VERSION_OR_CIPHER_MISMATCH` | Hostname is two levels deep | `linko init --force --base example.com`, or buy ACM. |
+| `ERR_SSL_VERSION_OR_CIPHER_MISMATCH` | Hostname is two levels deep | `linko init --force` and pick the domain itself, or buy ACM. |
 | `no API token: pass --token or set LINKO_API_TOKEN` | `linko init --yes` with no token | `export LINKO_API_TOKEN='…'` or pass `--token`. |
 | Token expired or was rotated | The stored token no longer authenticates | `linko token` — the new one is checked before it is saved. |
 | You want to publish to a different domain | Your setup points at the old one | `linko domain` — pick the new one from the list. |
@@ -696,6 +696,9 @@ linko remove --all --yes
 rm -rf ~/.linko
 linko init
 ```
+
+To remove the tool itself — background tunnels, login services, URLs, tunnel and
+binary — use `linko uninstall`.
 
 ## Security
 
