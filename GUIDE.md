@@ -60,11 +60,68 @@ $ linko 3000
 
 ## ما تحتاجه
 
-- حساب [Cloudflare](https://dash.cloudflare.com) مجاني
-- دومين موجّهة nameservers الخاصة به إلى Cloudflare
+| | مطلوب؟ | ملاحظات |
+| --- | --- | --- |
+| حساب Cloudflare | ✅ | الخطة المجانية تكفي — [أنشئ حسابًا](https://dash.cloudflare.com/sign-up) |
+| دومين تملكه | ✅ | من أي مكان اشتريته: Namecheap أو GoDaddy أو غيرهما |
+| **أن تكون إدارة DNS عند Cloudflare** | ✅ | اقرأ الفقرة التالية — مجاني، وتبقى مسجّلًا عند بائعك |
+| `cloudflared` | ❌ | يُنزَّل تلقائيًا عند أول استخدام |
+| Go | ❌ | فقط إن أردت البناء من المصدر |
+| Node أو Python أو Docker | ❌ | غير مستخدمة إطلاقًا |
 
-**لا تحتاج تثبيت `cloudflared`** — يُنزَّل تلقائيًا عند أول استخدام.
-**ولا تحتاج Go** إلا إن أردت البناء من المصدر.
+> [!IMPORTANT]
+> **امتلاك الدومين وحده لا يكفي — يجب أن تشير nameservers الخاصة به إلى
+> Cloudflare.** يُنشئ `linko` سجلات DNS عبر واجهة Cloudflare، فلا بد أن تكون
+> Cloudflare هي المرجع الرسمي للـ DNS. العملية مجانية وتستغرق عشر دقائق
+> معظمها انتظار.
+
+<details>
+<summary><b>كيف تنقل إدارة DNS إلى Cloudflare (مجانًا، وتبقى مسجّلًا عند بائعك)</b></summary>
+
+أنت **لا تنقل ملكية** الدومين. يبقى مسجّلًا حيث اشتريته، وتستمر بالدفع لنفس
+الجهة، ويمكنك التراجع في أي وقت. الذي يتغيّر هو **nameservers** فقط.
+
+**١. أنشئ حسابًا مجانيًا** من
+[dash.cloudflare.com/sign-up](https://dash.cloudflare.com/sign-up).
+
+**٢. أضف دومينك.** من اللوحة اضغط **Add a site** ← اكتب `example.com` ←
+اختر خطة **Free**.
+
+**٣. دع Cloudflare تفحص سجلاتك.** ستنسخ سجلات DNS الحالية تلقائيًا. راجع
+القائمة وقارنها بمزوّدك الحالي — **خصوصًا سجلات `MX`** إن كان لديك بريد على
+هذا الدومين، وإلا توقّف بريدك.
+
+**٤. انسخ الـ nameservers** اللذين تعرضهما لك، مثل:
+
+```
+dana.ns.cloudflare.com
+rick.ns.cloudflare.com
+```
+
+**٥. ضعهما عند بائع الدومين.** سجّل الدخول حيث اشتريت الدومين، وابحث عن
+*Nameservers* أو *DNS settings* أو *Custom DNS*، واحذف الموجود وضع اللذين
+نسختهما. أدلة حسب البائع:
+[Namecheap](https://www.namecheap.com/support/knowledgebase/article.aspx/767/10/how-to-change-dns-for-a-domain/) ·
+[GoDaddy](https://www.godaddy.com/help/change-nameservers-for-my-domain-664) ·
+[Google Domains / Squarespace](https://support.squarespace.com/hc/en-us/articles/4404183898125) ·
+[Hostinger](https://support.hostinger.com/en/articles/1583227-how-to-change-nameservers-at-hostinger)
+
+**٦. انتظر.** عادة أقل من ساعة، وقد تصل إلى ٢٤ ساعة. تصلك رسالة من Cloudflare
+حين يصبح الدومين **Active**.
+
+للتحقق بنفسك في أي وقت:
+
+```bash
+dig NS example.com +short          # يجب أن تظهر *.ns.cloudflare.com
+```
+
+وحين يظهر الدومين **Active** في اللوحة، شغّل `linko init`.
+
+**ليس لديك دومين أصلًا؟** Cloudflare
+[تبيع الدومينات بسعر التكلفة](https://developers.cloudflare.com/registrar/)
+مع إدارة DNS جاهزة — فلا تحتاج لنقل أي شيء.
+
+</details>
 
 ## التثبيت
 
@@ -348,6 +405,11 @@ linko service uninstall crm
 ثمانية فحوص بالترتيب، من وجود `cloudflared` إلى الاتصالات الحيّة. يخرج برمز
 غير صفري عند الفشل، فيصلح للاستخدام داخل السكربتات.
 
+| الخيار | الأثر |
+| --- | --- |
+| `--fix` | يصلح توكنًا ميتًا أو نفقًا محذوفًا أو سجلات DNS ومسارات ناقصة |
+| `-y`, `--yes` | يصلح بلا أسئلة |
+
 ```console
 $ linko doctor
 
@@ -503,6 +565,50 @@ Enterprise وBusiness.
 | `no API token: pass --token or set LINKO_API_TOKEN` | شغّلت `linko init --yes` بلا رمز | `export LINKO_API_TOKEN='…'` أو مرّر `--token`. |
 | `command not found: linko` | مجلد التثبيت ليس في مسارك | أعد فتح الطرفية، أو `exec $SHELL`. |
 | `HTTP 502` · `Error 1033` | النفق يعمل لكن لا شيء يستمع على المنفذ | تحقق بـ `curl http://localhost:3000`. وإن كان تطبيقك يستمع على الـ loopback فقط، استخدم `linko 127.0.0.1:3000`. |
+
+### حين يتغيّر شيء من خلفك
+
+التوكنات تنتهي صلاحيتها، والأنفاق تُحذف من لوحة Zero Trust، وسجلات DNS تُمسح
+يدويًا. يكتشف `linko` الثلاثة، ويشرح ما حدث بوضوح، **ثم يصلحه** — لا يكتفي
+بطباعة رمز خطأ من Cloudflare.
+
+**التوكن توقّف عن العمل**
+
+```console
+$ linko 3000
+
+✗ Cloudflare is no longer accepting the stored API token.
+· It was most likely deleted, edited, or it expired.
+
+  Create a Cloudflare API token
+  1. https://dash.cloudflare.com/profile/api-tokens
+  2. Add both permission rows (+ Add more):
+       Zone     →  DNS               →  Edit
+       Account  →  Cloudflare Tunnel →  Edit
+
+New Cloudflare API token: ················
+✓ Token updated and saved to ~/.linko/config.json
+✓ Tunnel connected
+```
+
+يتحقق من التوكن الجديد **قبل** حفظه، فلا يمكن لخطأ مطبعي أن يقفل عليك إعدادك.
+
+**النفق حُذف**
+
+يعيد `linko` إنشاءه (أو يتبنّى واحدًا بنفس الاسم)، ويجلب توكن نفق جديدًا،
+**ويعيد توجيه كل سجلات DNS إلى النفق الجديد** — لأن النفق الجديد يعني هدف
+CNAME جديدًا — ثم يستعيد كل المسارات.
+
+**سجل DNS حُذف**
+
+يُعاد إنشاؤه عند أول `linko <port>`، أو كلها دفعة واحدة:
+
+```bash
+linko doctor --fix
+```
+
+يصلح `--fix` التوكن الميت، والنفق المحذوف، وسجلات DNS الناقصة، والمسارات
+المفقودة، ثم يعيد الفحص كاملًا. أضف `--yes` لتخطّي أسئلة التأكيد.
 
 عند الشك:
 

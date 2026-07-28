@@ -14,16 +14,65 @@ import (
 )
 
 func newDoctorCmd() *cobra.Command {
-	return &cobra.Command{
+	var fix bool
+	var yes bool
+
+	cmd := &cobra.Command{
 		Use:   "doctor",
 		Short: "Check that everything linko needs is in place",
-		Args:  cobra.NoArgs,
+		Long: `doctor runs eight checks in order, from cloudflared being present to
+live edge connections, and tells you exactly where things stop.
+
+  linko doctor         report only
+  linko doctor --fix   repair what it can: a dead token, a deleted tunnel,
+                       missing DNS records, missing routes
+
+It exits non-zero when a check fails, so it works inside scripts.`,
+		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, cancel := signalContext(cmd.Context())
 			defer cancel()
+			if fix {
+				return runDoctorFix(ctx, yes)
+			}
 			return runDoctor(ctx)
 		},
 	}
+	cmd.Flags().BoolVar(&fix, "fix", false, "repair whatever is broken, then re-check")
+	cmd.Flags().BoolVarP(&yes, "yes", "y", false, "do not ask before repairing")
+	return cmd
+}
+
+// runDoctorFix repairs the account side of the setup and then reports.
+func runDoctorFix(ctx context.Context, yes bool) error {
+	cfg, client, err := loadClient()
+	if err != nil {
+		return err
+	}
+
+	ui.Header("Repairing")
+
+	// preflight covers a dead token and a missing tunnel, prompting as needed.
+	if err := preflight(ctx, cfg, client, yes); err != nil {
+		return err
+	}
+	ui.Success("token and tunnel are healthy")
+
+	if len(cfg.Routes) == 0 {
+		ui.Info("no routes to check — publish one with: linko 3000")
+	} else {
+		changed, rerr := repairRoutes(ctx, cfg, client)
+		if rerr != nil {
+			return rerr
+		}
+		if changed == 0 {
+			ui.Success("all %s already correct", plural(len(cfg.Routes), "route"))
+		} else {
+			ui.Success("restored %s", plural(changed, "item"))
+		}
+	}
+
+	return runDoctor(ctx)
 }
 
 type checkResult struct {
@@ -73,6 +122,7 @@ func runDoctor(ctx context.Context) error {
 	// 3. token
 	if _, terr := client.VerifyToken(ctx); terr != nil {
 		res.bad("API token rejected: %v", terr)
+		ui.Info("Fix it with: linko doctor --fix")
 		return summarize(res)
 	}
 	res.ok("API token valid")
@@ -91,6 +141,7 @@ func runDoctor(ctx context.Context) error {
 	tunnel, terr := client.GetTunnel(ctx, cfg.TunnelID)
 	if terr != nil {
 		res.bad("tunnel not found: %v", terr)
+		ui.Info("Recreate it with: linko doctor --fix")
 		return summarize(res)
 	}
 	res.ok("tunnel exists (%s)", tunnel.Name)
@@ -122,6 +173,7 @@ func runDoctor(ctx context.Context) error {
 			res.ok("DNS configured for %s", plural(len(cfg.Routes), "route"))
 		default:
 			res.warn("DNS missing or wrong for: %s", strings.Join(missing, ", "))
+			ui.Info("Restore it with: linko doctor --fix")
 		}
 	}
 

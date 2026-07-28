@@ -142,6 +142,12 @@ func runStart(ctx context.Context, rawTarget string, opts *startOptions) error {
 		return startDetached(rawTarget, label, hostname, opts)
 	}
 
+	// Make sure the token still works and the tunnel still exists, repairing
+	// either before we try to publish anything.
+	if err := preflight(ctx, cfg, client, opts.yes); err != nil {
+		return err
+	}
+
 	// What is already published under this hostname?
 	tunnelCfg, err := client.GetTunnelConfig(ctx, cfg.TunnelID)
 	if err != nil {

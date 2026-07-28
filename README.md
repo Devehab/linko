@@ -49,11 +49,69 @@ account — one command in, one public URL out.
 
 ## Requirements
 
-- A free [Cloudflare](https://dash.cloudflare.com) account
-- A domain whose nameservers point at Cloudflare
+| | Required | Notes |
+| --- | --- | --- |
+| Cloudflare account | ✅ | Free plan is enough — [sign up](https://dash.cloudflare.com/sign-up) |
+| A domain you own | ✅ | Bought anywhere: Namecheap, GoDaddy, Google, anywhere |
+| **Its DNS managed by Cloudflare** | ✅ | See below — free, and you keep your registrar |
+| `cloudflared` | ❌ | Downloaded automatically on first use |
+| Go | ❌ | Only if you build from source |
+| Node, Python, Docker | ❌ | Not used at all |
 
-`cloudflared` is downloaded automatically on first use — you do not install it,
-and you do not need Go unless you build from source.
+> [!IMPORTANT]
+> **Owning a domain is not enough — its nameservers must point at Cloudflare.**
+> `linko` creates DNS records through the Cloudflare API, so Cloudflare has to
+> be the authoritative DNS for that domain. This is free and takes about ten
+> minutes, most of it waiting.
+
+<details>
+<summary><b>Moving a domain's DNS to Cloudflare (free, keeps your registrar)</b></summary>
+
+You are **not** transferring ownership. The domain stays registered where you
+bought it, you keep paying the same registrar, and you can undo this any time.
+Only the nameservers change.
+
+1. **Create a free account** at
+   [dash.cloudflare.com/sign-up](https://dash.cloudflare.com/sign-up).
+
+2. **Add your domain.** Dashboard → **Add a site** → type `example.com` →
+   choose the **Free** plan.
+
+3. **Let it scan.** Cloudflare copies your existing DNS records automatically.
+   Check the list against your current provider — especially `MX` records if
+   you use email on that domain, or your mail will stop.
+
+4. **Copy the two nameservers** Cloudflare shows you, for example:
+
+   ```
+   dana.ns.cloudflare.com
+   rick.ns.cloudflare.com
+   ```
+
+5. **Paste them at your registrar.** Sign in where you bought the domain, find
+   *Nameservers* / *DNS settings* / *Custom DNS*, remove what is there, and put
+   Cloudflare's two in. Registrar-specific guides:
+   [Namecheap](https://www.namecheap.com/support/knowledgebase/article.aspx/767/10/how-to-change-dns-for-a-domain/) ·
+   [GoDaddy](https://www.godaddy.com/help/change-nameservers-for-my-domain-664) ·
+   [Google Domains / Squarespace](https://support.squarespace.com/hc/en-us/articles/4404183898125) ·
+   [Hostinger](https://support.hostinger.com/en/articles/1583227-how-to-change-nameservers-at-hostinger)
+
+6. **Wait.** Usually under an hour, occasionally up to 24. Cloudflare emails
+   you when the domain becomes **Active**.
+
+Check it yourself at any time:
+
+```bash
+dig NS example.com +short          # should list *.ns.cloudflare.com
+```
+
+Once the domain shows **Active** in the dashboard, run `linko init`.
+
+**Do not have a domain yet?** Cloudflare
+[sells them at cost](https://developers.cloudflare.com/registrar/) with DNS
+already set up — nothing to move.
+
+</details>
 
 ## Install
 
@@ -322,6 +380,11 @@ linko service uninstall crm
 Eight checks in order, from `cloudflared` being present to live edge
 connections. Exits non-zero on failure, so it works inside scripts.
 
+| Flag | Effect |
+| --- | --- |
+| `--fix` | Repair a dead token, a deleted tunnel, missing DNS records and routes |
+| `-y`, `--yes` | Repair without asking |
+
 ```console
 $ linko doctor
 
@@ -475,6 +538,51 @@ firewall or router change is ever needed.
 | `no API token: pass --token or set LINKO_API_TOKEN` | `linko init --yes` with no token | `export LINKO_API_TOKEN='…'` or pass `--token`. |
 | `command not found: linko` | Install directory is not on `PATH` | Reopen the terminal, or run `exec $SHELL`. |
 | `HTTP 502` · `Error 1033` | Tunnel is up but nothing is listening | Check `curl http://localhost:3000`. If your app binds the loopback only, use `linko 127.0.0.1:3000`. |
+
+### When things change behind your back
+
+Tokens expire. People delete tunnels from the Zero Trust dashboard. DNS records
+get removed by hand. `linko` detects all three, explains what happened in plain
+terms, and repairs it — it never just prints a Cloudflare error code.
+
+**The token stopped working**
+
+```console
+$ linko 3000
+
+✗ Cloudflare is no longer accepting the stored API token.
+· It was most likely deleted, edited, or it expired.
+
+  Create a Cloudflare API token
+  1. https://dash.cloudflare.com/profile/api-tokens
+  2. Add both permission rows (+ Add more):
+       Zone     →  DNS               →  Edit
+       Account  →  Cloudflare Tunnel →  Edit
+
+New Cloudflare API token: ················
+✓ Token updated and saved to ~/.linko/config.json
+✓ Tunnel connected
+```
+
+The new token is verified against Cloudflare *before* it is saved, so a typo
+cannot lock you out of your own configuration.
+
+**The tunnel was deleted**
+
+`linko` recreates it (or adopts one of the same name), fetches a fresh tunnel
+token, **re-points every DNS record at the new tunnel** — a new tunnel means a
+new CNAME target — and restores every route.
+
+**A DNS record was removed**
+
+Recreated on the next `linko <port>`, or for all of them at once:
+
+```bash
+linko doctor --fix
+```
+
+`--fix` repairs a dead token, a deleted tunnel, missing DNS records and missing
+routes, then re-runs the full check. Add `--yes` to skip the confirmations.
 
 When in doubt:
 

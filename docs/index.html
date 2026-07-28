@@ -244,13 +244,114 @@
     </div>
   </div>
 
-  <div class="note">
-    <b><span data-en>What you need</span><span data-ar>ما تحتاجه</span></b>
-    <span data-en>A free Cloudflare account and a domain whose nameservers point at Cloudflare.
-      <code>cloudflared</code> is downloaded automatically — you never install it,
-      and you do not need Go.</span>
-    <span data-ar>حساب Cloudflare مجاني، ودومين موجّهة nameservers الخاصة به إلى Cloudflare.
-      و<code>cloudflared</code> يُنزَّل تلقائيًا — لا تثبّته بنفسك، ولا تحتاج Go.</span>
+  <h3 id="requirements"><span data-en>Requirements</span><span data-ar>المتطلبات</span></h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th></th>
+        <th><span data-en>Required</span><span data-ar>مطلوب؟</span></th>
+        <th><span data-en>Notes</span><span data-ar>ملاحظات</span></th></tr></thead>
+      <tbody>
+        <tr><td><span data-en>Cloudflare account</span><span data-ar>حساب Cloudflare</span></td><td>✅</td>
+            <td><span data-en>Free plan is enough —
+                <a href="https://dash.cloudflare.com/sign-up" target="_blank" rel="noopener">sign up</a></span>
+                <span data-ar>الخطة المجانية تكفي —
+                <a href="https://dash.cloudflare.com/sign-up" target="_blank" rel="noopener">أنشئ حسابًا</a></span></td></tr>
+        <tr><td><span data-en>A domain you own</span><span data-ar>دومين تملكه</span></td><td>✅</td>
+            <td><span data-en>Bought anywhere — Namecheap, GoDaddy, anywhere</span>
+                <span data-ar>من أي مكان اشتريته</span></td></tr>
+        <tr><td><b><span data-en>Its DNS managed by Cloudflare</span>
+                   <span data-ar>إدارة DNS عند Cloudflare</span></b></td><td>✅</td>
+            <td><span data-en>Free, and you keep your registrar — see below</span>
+                <span data-ar>مجاني، وتبقى مسجّلًا عند بائعك — اقرأ أدناه</span></td></tr>
+        <tr><td><code>cloudflared</code></td><td>❌</td>
+            <td><span data-en>Downloaded automatically on first use</span>
+                <span data-ar>يُنزَّل تلقائيًا عند أول استخدام</span></td></tr>
+        <tr><td>Go</td><td>❌</td>
+            <td><span data-en>Only if you build from source</span>
+                <span data-ar>فقط إن أردت البناء من المصدر</span></td></tr>
+        <tr><td><span data-en>Node, Python, Docker</span><span data-ar>Node أو Python أو Docker</span></td><td>❌</td>
+            <td><span data-en>Not used at all</span><span data-ar>غير مستخدمة إطلاقًا</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="warn">
+    <b><span data-en>Owning a domain is not enough</span><span data-ar>امتلاك الدومين وحده لا يكفي</span></b>
+    <span data-en>Its nameservers must point at Cloudflare. linko creates DNS records through
+      the Cloudflare API, so Cloudflare has to be the authoritative DNS for that domain.
+      This is free and takes about ten minutes, most of it waiting.</span>
+    <span data-ar>يجب أن تشير nameservers الخاصة به إلى Cloudflare. يُنشئ linko سجلات DNS عبر
+      واجهة Cloudflare، فلا بد أن تكون Cloudflare هي المرجع الرسمي للـ DNS.
+      العملية مجانية وتستغرق عشر دقائق معظمها انتظار.</span>
+  </div>
+
+  <h3 id="movedns">
+    <span data-en>Moving a domain's DNS to Cloudflare</span>
+    <span data-ar>نقل إدارة DNS إلى Cloudflare</span>
+  </h3>
+  <p>
+    <span data-en>You are <b>not</b> transferring ownership. The domain stays registered where
+      you bought it, you keep paying the same registrar, and you can undo this any time.
+      Only the nameservers change.</span>
+    <span data-ar>أنت <b>لا تنقل ملكية</b> الدومين. يبقى مسجّلًا حيث اشتريته، وتستمر بالدفع
+      لنفس الجهة، ويمكنك التراجع في أي وقت. الذي يتغيّر هو nameservers فقط.</span>
+  </p>
+
+  <ol class="steps">
+    <li>
+      <b><span data-en>Create a free account</span><span data-ar>أنشئ حسابًا مجانيًا</span></b>
+      <a href="https://dash.cloudflare.com/sign-up" target="_blank" rel="noopener">dash.cloudflare.com/sign-up</a>
+    </li>
+    <li>
+      <b><span data-en>Add your domain</span><span data-ar>أضف دومينك</span></b>
+      <span data-en><b>Add a site</b> → type <code>example.com</code> → choose the <b>Free</b> plan.</span>
+      <span data-ar>اضغط <b>Add a site</b> ← اكتب <code>example.com</code> ← اختر خطة <b>Free</b>.</span>
+    </li>
+    <li>
+      <b><span data-en>Let it scan your records</span><span data-ar>دع Cloudflare تفحص سجلاتك</span></b>
+      <span data-en>Cloudflare copies your existing DNS automatically. Compare the list against
+        your current provider — <b>especially <code>MX</code> records</b> if you use email on
+        that domain, or your mail will stop.</span>
+      <span data-ar>ستنسخ سجلاتك الحالية تلقائيًا. قارن القائمة بمزوّدك الحالي —
+        <b>خصوصًا سجلات <code>MX</code></b> إن كان لديك بريد على هذا الدومين، وإلا توقّف بريدك.</span>
+    </li>
+    <li>
+      <b><span data-en>Copy the two nameservers</span><span data-ar>انسخ الـ nameservers</span></b>
+      <div class="box" style="margin-top:8px">
+        <pre><code>dana.ns.cloudflare.com
+rick.ns.cloudflare.com</code></pre>
+      </div>
+    </li>
+    <li>
+      <b><span data-en>Paste them at your registrar</span><span data-ar>ضعهما عند بائع الدومين</span></b>
+      <span data-en>Find <i>Nameservers</i> / <i>DNS settings</i> / <i>Custom DNS</i>, remove what
+        is there, and put Cloudflare's two in.</span>
+      <span data-ar>ابحث عن <i>Nameservers</i> أو <i>DNS settings</i> أو <i>Custom DNS</i>،
+        واحذف الموجود وضع اللذين نسختهما.</span>
+      <div style="margin-top:8px;font-size:14.5px">
+        <a href="https://www.namecheap.com/support/knowledgebase/article.aspx/767/10/how-to-change-dns-for-a-domain/" target="_blank" rel="noopener">Namecheap</a> ·
+        <a href="https://www.godaddy.com/help/change-nameservers-for-my-domain-664" target="_blank" rel="noopener">GoDaddy</a> ·
+        <a href="https://support.squarespace.com/hc/en-us/articles/4404183898125" target="_blank" rel="noopener">Google&nbsp;/&nbsp;Squarespace</a> ·
+        <a href="https://support.hostinger.com/en/articles/1583227-how-to-change-nameservers-at-hostinger" target="_blank" rel="noopener">Hostinger</a>
+      </div>
+    </li>
+    <li>
+      <b><span data-en>Wait for "Active"</span><span data-ar>انتظر حتى تصبح Active</span></b>
+      <span data-en>Usually under an hour, occasionally up to 24. Verify it yourself:</span>
+      <span data-ar>عادة أقل من ساعة، وقد تصل إلى ٢٤. للتحقق بنفسك:</span>
+      <div class="box" style="margin-top:8px">
+        <button class="cp">copy</button>
+        <pre><code>dig NS example.com +short   <span class="c"># → *.ns.cloudflare.com</span></code></pre>
+      </div>
+    </li>
+  </ol>
+
+  <div class="good">
+    <b><span data-en>No domain yet?</span><span data-ar>ليس لديك دومين أصلًا؟</span></b>
+    <span data-en>Cloudflare <a href="https://developers.cloudflare.com/registrar/" target="_blank" rel="noopener">sells
+      them at cost</a> with DNS already set up — nothing to move.</span>
+    <span data-ar>‏Cloudflare <a href="https://developers.cloudflare.com/registrar/" target="_blank" rel="noopener">تبيع
+      الدومينات بسعر التكلفة</a> مع إدارة DNS جاهزة — فلا تحتاج لنقل أي شيء.</span>
   </div>
 </section>
 
@@ -727,6 +828,49 @@ ERR_SSL_VERSION_OR_CIPHER_MISMATCH</div>
         السطر تلقائيًا.</span>
     </div>
   </div>
+
+  <h3><span data-en>When things change behind your back</span><span data-ar>حين يتغيّر شيء من خلفك</span></h3>
+  <p>
+    <span data-en>Tokens expire. People delete tunnels from the dashboard. DNS records get
+      removed by hand. linko notices all three, says so in plain terms, and repairs them.</span>
+    <span data-ar>التوكنات تنتهي صلاحيتها، والأنفاق تُحذف من اللوحة، وسجلات DNS تُمسح يدويًا.
+      يكتشف linko الثلاثة، ويقول لك ما حدث بوضوح، ثم يصلحه.</span>
+  </p>
+
+  <div class="box term">
+    <div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
+    <pre><code>$ linko 3000
+
+<span class="r">✗</span> Cloudflare is no longer accepting the stored API token.
+<span class="c">·</span> It was most likely deleted, edited, or it expired.
+
+  <span class="w">Create a Cloudflare API token</span>
+  1. https://dash.cloudflare.com/profile/api-tokens
+  2. Add both permission rows (+ Add more):
+       Zone     →  DNS               →  Edit
+       Account  →  Cloudflare Tunnel →  Edit
+
+New Cloudflare API token: <span class="c">················</span>
+<span class="g">✓</span> Token updated and saved to ~/.linko/config.json
+<span class="g">✓</span> Tunnel connected</code></pre>
+  </div>
+
+  <p>
+    <span data-en>Deleted the tunnel instead? linko recreates it, fetches a new tunnel token,
+      re-points every DNS record at the new tunnel, and restores every route — because a
+      new tunnel means a new CNAME target.</span>
+    <span data-ar>حذفت النفق بدلًا من ذلك؟ يعيد linko إنشاءه، ويجلب توكنًا جديدًا، ويعيد توجيه
+      كل سجلات DNS إلى النفق الجديد، ويستعيد كل المسارات — لأن النفق الجديد يعني هدف
+      CNAME جديدًا.</span>
+  </p>
+
+  <div class="box"><button class="cp">copy</button><pre><code>linko doctor --fix</code></pre></div>
+  <p>
+    <span data-en>Repairs everything at once: a dead token, a deleted tunnel, missing DNS
+      records, missing routes — then re-runs the full check.</span>
+    <span data-ar>يصلح كل شيء دفعة واحدة: توكن ميت، نفق محذوف، سجلات DNS ناقصة، مسارات
+      مفقودة — ثم يعيد الفحص كاملًا.</span>
+  </p>
 
   <h3><span data-en>When in doubt</span><span data-ar>عند الشك</span></h3>
   <div class="box"><button class="cp">copy</button><pre><code>linko doctor</code></pre></div>
