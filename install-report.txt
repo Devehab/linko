@@ -1,7 +1,7 @@
 install one-liner test
-commit: 19d543fd2a295bb4bb189943602db6474c46ebd2
-run:    30328706098
-date:   2026-07-29 04:25:36 UTC
+commit: 2d29cb7d18715f2b3662ed7aea6373f127378ff9
+run:    30330245819
+date:   2026-07-29 04:58:34 UTC
 
 command under test:
   curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/install.sh | bash
@@ -14,4 +14,4 @@ hosts       (ubuntu 22/24, macos 13/14+, windows git-bash): failure
 containers  (debian, ubuntu, alpine, fedora, rocky, arch, suse): failure
 
 RESULT: at least one platform failed — open the run for the matrix detail.
-        https://github.com/Devehab/linko/actions/runs/30328706098
+        https://github.com/Devehab/linko/actions/runs/30330245819
