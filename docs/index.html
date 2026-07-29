@@ -21,7 +21,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <style>
 :root{
@@ -29,9 +29,11 @@
   --line:#1e2430; --line2:#2a3242;
   --fg:#eef2f7; --fg2:#98a3b6; --fg3:#5f6b80;
   --brand:#f6821f; --brand2:#ffa752; --brand-dim:rgba(246,130,31,.12);
+  --brand-line:rgba(246,130,31,.28);
   --green:#3fb950; --blue:#5aa9ff; --red:#ff6b60; --yellow:#e3b341;
   --r:14px; --rs:10px;
-  --sans:'Inter','Cairo',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --ar:'Tajawal','Inter',sans-serif;
   --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   --shadow:0 20px 60px -20px rgba(0,0,0,.7);
 }
@@ -39,10 +41,12 @@
   --bg:#fff; --bg2:#fafbfc; --panel:#f5f7fa; --panel2:#eef1f6; --code:#0b0e14;
   --line:#e2e7ee; --line2:#cfd7e2;
   --fg:#0f1620; --fg2:#4d5a6c; --fg3:#8794a6;
-  --brand-dim:rgba(246,130,31,.1);
+  --brand:#c2410c; --brand-dim:rgba(194,65,12,.09); --brand-line:rgba(194,65,12,.26);
   --shadow:0 18px 50px -22px rgba(16,24,40,.25);
 }
-html[lang="ar"]{--sans:'Cairo','Inter',sans-serif}
+html[lang="ar"]{--sans:var(--ar)}
+/* Arabic runs inside an English page, and vice versa, still get their own face */
+html[lang="en"] [data-ar],html[lang="en"] .ar{font-family:var(--ar)}
 
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:88px;-webkit-text-size-adjust:100%}
@@ -82,7 +86,7 @@ main{max-width:1140px;margin:0 auto;padding:0 26px 120px}
   background:radial-gradient(50% 50% at 50% 40%,rgba(246,130,31,.13),transparent 70%);filter:blur(20px)}
 .hero>*{position:relative}
 .pill{display:inline-flex;align-items:center;gap:8px;padding:5px 14px;border-radius:999px;
-      background:var(--brand-dim);border:1px solid rgba(246,130,31,.28);color:var(--brand2);
+      background:var(--brand-dim);border:1px solid var(--brand-line);color:var(--brand);
       font-size:13.5px;font-weight:600;margin-bottom:22px}
 :root[data-theme="light"] .pill{color:#b45c09}
 h1{font-size:clamp(42px,7.4vw,74px);margin:0 0 16px;letter-spacing:-2.6px;
@@ -159,8 +163,23 @@ h3{font-size:19px;margin:30px 0 8px;font-weight:650}
 
 /* diagram */
 .diagram{background:var(--code);border:1px solid var(--line2);border-radius:var(--r);
-  padding:24px;overflow-x:auto;direction:ltr;margin-top:26px}
-.diagram pre{margin:0;font:400 13px var(--mono);color:var(--fg2);line-height:1.8}
+  padding:20px 24px;overflow-x:auto;direction:ltr;margin-top:26px}
+.wiring{display:block;width:100%;min-width:660px;height:auto}
+.wiring .wire{fill:none;stroke:rgba(255,255,255,.15);stroke-width:1.6}
+.wiring .dash{stroke-dasharray:5 5}
+.wiring .head{fill:none;stroke:rgba(255,255,255,.3);stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round}
+.wiring .node{fill:rgba(255,255,255,.045);stroke:rgba(255,255,255,.1)}
+.wiring .mono{font:400 13px var(--mono);fill:#8e9aad}
+.wiring .note{font:400 13px var(--sans);fill:#5f6b80}
+.wiring .core{fill:rgba(246,130,31,.1);stroke:rgba(246,130,31,.45)}
+.wiring .halo{fill:none;stroke:rgba(246,130,31,.16);animation:breathe 3.6s ease-in-out infinite}
+.wiring .lbl{font:600 15px var(--sans);fill:#f3f6fa}
+.wiring .sub{font:400 12.5px var(--sans);fill:#98a3b6}
+.wiring .pk{fill:var(--brand2);filter:drop-shadow(0 0 6px rgba(246,130,31,.75))}
+.wiring .pk.up{fill:#7fb2ff;filter:drop-shadow(0 0 6px rgba(90,169,255,.7))}
+@keyframes breathe{0%,100%{opacity:.35}50%{opacity:1}}
+@media(prefers-reduced-motion:reduce){.wiring .halo{animation:none}}
 
 /* table */
 .tw{overflow-x:auto;margin-top:28px;border:1px solid var(--line);border-radius:var(--r)}
@@ -181,8 +200,8 @@ td code,th code{font-family:var(--mono);font-size:13.5px;background:var(--panel2
 .cmd{display:flex;gap:18px;align-items:baseline;padding:14px 20px;border-bottom:1px solid var(--line)}
 .cmd:last-child{border-bottom:none}
 .cmd:hover{background:var(--panel)}
-.cmd code{font-family:var(--mono);font-size:13.8px;color:var(--brand2);
-  flex-shrink:0;min-width:250px;direction:ltr}
+.cmd code{font-family:var(--mono);font-size:13.8px;color:var(--brand);
+  flex-shrink:0;min-width:252px;direction:ltr;white-space:nowrap}
 .cmd span{color:var(--fg2);font-size:15px}
 @media(max-width:620px){.cmd{flex-direction:column;gap:4px}.cmd code{min-width:0}}
 
@@ -423,14 +442,34 @@ html[lang="ar"] [data-ar]{display:revert}
   </p>
 
   <div class="diagram">
-    <pre>  crm.example.com   ──┐
-                      │                      ┌──▶ localhost:3000
-  api.example.com   ──┼──▶  Cloudflare Edge ─┼──▶ localhost:8080
-                      │       (one tunnel)   │
-  test.example.com  ──┘                      └──▶ localhost:5173
-                                 ▲
-                                 │  outbound connection only
-                           cloudflared on your machine</pre>
+    <svg viewBox="0 0 920 400" role="img" aria-labelledby="dgt" class="wiring">
+      <title id="dgt">Three hostnames enter one Cloudflare tunnel and leave to three local ports</title>
+
+      <path id="in0" class="wire" d="M204 64 C272 64 296 168 352 168"/><path id="out0" class="wire" d="M548 168 C604 168 628 64 700 64"/><path id="in1" class="wire" d="M204 168 H352"/><path id="out1" class="wire" d="M548 168 H700"/><path id="in2" class="wire" d="M204 272 C272 272 296 168 352 168"/><path id="out2" class="wire" d="M548 168 C604 168 628 272 700 272"/>
+      <path id="up" class="wire dash" d="M450 326 V218"/>
+
+      <rect class="node" x="8" y="45" width="196" height="38" rx="10"/><text class="mono" x="106" y="69" text-anchor="middle">crm.example.com</text><rect class="node" x="700" y="45" width="212" height="38" rx="10"/><text class="mono" x="806" y="69" text-anchor="middle">localhost:3000</text><rect class="node" x="8" y="149" width="196" height="38" rx="10"/><text class="mono" x="106" y="173" text-anchor="middle">api.example.com</text><rect class="node" x="700" y="149" width="212" height="38" rx="10"/><text class="mono" x="806" y="173" text-anchor="middle">localhost:8080</text><rect class="node" x="8" y="253" width="196" height="38" rx="10"/><text class="mono" x="106" y="277" text-anchor="middle">test.example.com</text><rect class="node" x="700" y="253" width="212" height="38" rx="10"/><text class="mono" x="806" y="277" text-anchor="middle">localhost:5173</text>
+
+      <g class="edge">
+        <rect class="halo" x="344" y="118" width="212" height="100" rx="20"/>
+        <rect class="core" x="352" y="126" width="196" height="84" rx="16"/>
+        <text class="lbl" x="450" y="161" text-anchor="middle">Cloudflare Edge</text>
+        <text class="sub" x="450" y="185" text-anchor="middle" data-en="">one tunnel</text>
+        <text class="sub" x="450" y="185" text-anchor="middle" data-ar="">نفق واحد</text>
+      </g>
+
+      <path class="head" d="M444 226 L450 216 L456 226"/>
+      <rect class="node" x="330" y="326" width="240" height="40" rx="11"/>
+      <text class="mono" x="450" y="351" text-anchor="middle">cloudflared</text>
+      <text class="sub" x="450" y="388" text-anchor="middle" data-en="">on your machine</text>
+      <text class="sub" x="450" y="388" text-anchor="middle" data-ar="">على جهازك</text>
+      <text class="note" x="478" y="300" data-en="">outbound connection only</text>
+      <text class="note" x="478" y="300" data-ar="">اتصال صادر فقط</text>
+
+      <circle class="pk" r="4.5"><animateMotion dur="1.7s" begin="0.00s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#in0"/></animateMotion></circle><circle class="pk" r="4.5"><animateMotion dur="1.7s" begin="1.70s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#out0"/></animateMotion></circle><circle class="pk" r="4.5"><animateMotion dur="1.7s" begin="0.34s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#in1"/></animateMotion></circle><circle class="pk" r="4.5"><animateMotion dur="1.7s" begin="2.04s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#out1"/></animateMotion></circle><circle class="pk" r="4.5"><animateMotion dur="1.7s" begin="0.68s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#in2"/></animateMotion></circle><circle class="pk" r="4.5"><animateMotion dur="1.7s" begin="2.38s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#out2"/></animateMotion></circle>
+      <circle class="pk up" r="4.5"><animateMotion dur="2.4s" repeatCount="indefinite"
+        keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#up"/></animateMotion></circle>
+    </svg>
   </div>
 
   <div class="flow">
@@ -491,10 +530,10 @@ html[lang="ar"] [data-ar]{display:revert}
     <div class="cmd"><code>linko 3000 -d</code>
       <span data-en>Run in the background</span>
       <span data-ar>تشغيل في الخلفية</span></div>
-    <div class="cmd"><code>linko ps</code> / <code>stop</code>
+    <div class="cmd"><code>linko ps &middot; linko stop</code>
       <span data-en>See and stop background tunnels</span>
       <span data-ar>عرض وإيقاف الأنفاق العاملة بالخلفية</span></div>
-    <div class="cmd"><code>linko list</code> / <code>status</code>
+    <div class="cmd"><code>linko list &middot; linko status</code>
       <span data-en>What is published, and is it connected</span>
       <span data-ar>ما المنشور، وهل هو متصل</span></div>
     <div class="cmd"><code>linko remove crm</code>
@@ -632,6 +671,14 @@ html[lang="ar"] [data-ar]{display:revert}
   var browserAr = (navigator.language || '').slice(0, 2) === 'ar';
   setLang(savedLang || (browserAr ? 'ar' : 'en'));
   if (savedTheme) setTheme(savedTheme);
+
+  // The diagram's motion is decorative; stop it if the OS asks for less of it.
+  try {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      var dg = document.querySelector('.wiring');
+      if (dg && dg.pauseAnimations) dg.pauseAnimations();
+    }
+  } catch (e) {}
   else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) setTheme('light');
 })();
 </script>
