@@ -1,8 +1,8 @@
 platform: windows-latest
-commit:   17b296db677d6e031449e214c7b5d326408aac3a
+commit:   47c23c97833490a208164e1ea24caedc775b6d5d
 runner:   MINGW64_NT-10.0-26100 3.6.9-b4195d69.x86_64 x86_64
 go:       go version go1.26.5 windows/amd64
-date:     2026-07-29 05:15:54 UTC
+date:     2026-07-29 05:31:31 UTC
 
 =================== go mod tidy ===================
 [exit 0]
@@ -44,7 +44,7 @@ date:     2026-07-29 05:15:54 UTC
 --- PASS: TestTunnelHelpers (0.00s)
 --- PASS: TestTunnelCNAMETarget (0.00s)
 PASS
-ok  	github.com/Devehab/linko/cloudflare	0.056s
+ok  	github.com/Devehab/linko/cloudflare	0.067s
 --- PASS: TestRemoveRouteCleansUpEverything (0.00s)
 --- PASS: TestRemoveRouteLooksUpMissingRecordID (0.00s)
 --- PASS: TestRemoveRouteSkipsForeignDNSRecords (0.00s)
@@ -73,8 +73,8 @@ ok  	github.com/Devehab/linko/cloudflare	0.056s
 --- PASS: TestFirstLine (0.00s)
 --- PASS: TestPlural (0.00s)
 PASS
-ok  	github.com/Devehab/linko/cmd	0.028s
---- PASS: TestDirHonoursEnv (0.01s)
+ok  	github.com/Devehab/linko/cmd	0.073s
+--- PASS: TestDirHonoursEnv (0.00s)
 --- PASS: TestLoadWithoutConfig (0.00s)
 --- PASS: TestSaveLoadRoundTrip (0.00s)
     config_test.go:82: file modes differ on windows
@@ -85,7 +85,7 @@ ok  	github.com/Devehab/linko/cmd	0.028s
 --- PASS: TestUpsertAndRemoveRoute (0.00s)
 --- PASS: TestValidate (0.00s)
 PASS
-ok  	github.com/Devehab/linko/config	0.031s
+ok  	github.com/Devehab/linko/config	0.072s
 --- PASS: TestAssetNameKnownPlatforms (0.00s)
 --- PASS: TestAssetNameUnsupportedPlatform (0.00s)
 --- PASS: TestCurrentPlatformIsSupported (0.00s)
@@ -93,27 +93,27 @@ ok  	github.com/Devehab/linko/config	0.031s
 --- SKIP: TestLocateFindsLocalCopyFirst (0.00s)
     manager_test.go:75: executable bits differ on windows
 --- SKIP: TestLocateIgnoresNonExecutableFile (0.00s)
---- PASS: TestDownloadInstallsBinary (0.02s)
+--- PASS: TestDownloadInstallsBinary (0.01s)
 --- PASS: TestDownloadHTTPError (0.00s)
 --- PASS: TestBinaryFromTarball (0.00s)
 --- PASS: TestBinaryFromTarballMissingEntry (0.00s)
 --- PASS: TestCommandPassesTokenViaEnvironment (0.00s)
 --- PASS: TestCommandDefaultsLogLevel (0.00s)
 PASS
-ok  	github.com/Devehab/linko/internal/cloudflared	0.042s
+ok  	github.com/Devehab/linko/internal/cloudflared	0.118s
 --- PASS: TestRandomProducesValidLabels (0.00s)
 --- PASS: TestRandomDefaultsLength (0.00s)
 --- PASS: TestRandomExcludesConfusingCharacters (0.00s)
 --- PASS: TestValidateLabel (0.00s)
 --- PASS: TestValidateHostname (0.00s)
 PASS
-ok  	github.com/Devehab/linko/internal/naming	0.022s
+ok  	github.com/Devehab/linko/internal/naming	0.052s
 --- PASS: TestParseValid (0.00s)
 --- PASS: TestParseInvalid (0.00s)
 --- PASS: TestLooksRejectsSubcommands (0.00s)
 --- PASS: TestParseIPv6 (0.00s)
 PASS
-ok  	github.com/Devehab/linko/internal/target	0.029s
+ok  	github.com/Devehab/linko/internal/target	0.024s
 --- PASS: TestColourCanBeDisabled (0.00s)
 --- PASS: TestLinkWrapsInOSC8WhenSupported (0.00s)
 --- PASS: TestLinkIsPlainWhenUnsupported (0.00s)
@@ -147,16 +147,16 @@ Choose: ! enter a number between 1 and 2
 Choose: ! enter a number between 1 and 2
 --- PASS: TestChooseGivesUp (0.00s)
 PASS
-ok  	github.com/Devehab/linko/internal/ui	0.020s
+ok  	github.com/Devehab/linko/internal/ui	0.049s
 [exit 0]
 
 =================== go test (summary) =============
 ?   	github.com/Devehab/linko	[no test files]
-ok  	github.com/Devehab/linko/cloudflare	0.041s
-ok  	github.com/Devehab/linko/cmd	0.030s
-ok  	github.com/Devehab/linko/config	0.024s
-ok  	github.com/Devehab/linko/internal/cloudflared	0.035s
-ok  	github.com/Devehab/linko/internal/naming	0.030s
-ok  	github.com/Devehab/linko/internal/target	0.021s
-ok  	github.com/Devehab/linko/internal/ui	0.014s
+ok  	github.com/Devehab/linko/cloudflare	0.098s
+ok  	github.com/Devehab/linko/cmd	0.061s
+ok  	github.com/Devehab/linko/config	0.087s
+ok  	github.com/Devehab/linko/internal/cloudflared	0.065s
+ok  	github.com/Devehab/linko/internal/naming	0.047s
+ok  	github.com/Devehab/linko/internal/target	0.043s
+ok  	github.com/Devehab/linko/internal/ui	0.041s
 [exit 0]
