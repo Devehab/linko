@@ -49,7 +49,9 @@ html[lang="ar"]{--sans:var(--ar)}
 html[lang="en"] [data-ar],html[lang="en"] .ar{font-family:var(--ar)}
 
 *{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:88px;-webkit-text-size-adjust:100%}
+html{scroll-behavior:smooth;scroll-padding-top:88px;-webkit-text-size-adjust:100%;
+     overflow-x:clip}
+body,main{max-width:100%;overflow-x:clip}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);
      font-size:16.5px;line-height:1.7;-webkit-font-smoothing:antialiased}
 html[lang="ar"] body{line-height:1.95;font-size:17px}
@@ -110,7 +112,7 @@ h1 .g{background:linear-gradient(96deg,var(--brand),var(--brand2));
   background:var(--code);border:1px solid var(--line2);border-radius:12px;padding:12px 14px;
   direction:ltr;text-align:left;box-shadow:var(--shadow)}
 .oneliner code{font-family:var(--mono);font-size:13px;color:#dbe3ee;overflow-x:auto;
-  white-space:nowrap;flex:1;scrollbar-width:none}
+  white-space:nowrap;flex:1;min-width:0;scrollbar-width:none}
 .oneliner code::-webkit-scrollbar{display:none}
 .oneliner .p{color:var(--brand);user-select:none;font-family:var(--mono);font-size:13px}
 .oneliner button{flex-shrink:0;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
@@ -164,7 +166,11 @@ h3{font-size:19px;margin:30px 0 8px;font-weight:650}
 /* diagram */
 .diagram{background:var(--code);border:1px solid var(--line2);border-radius:var(--r);
   padding:20px 24px;overflow-x:auto;direction:ltr;margin-top:26px}
-.wiring{display:block;width:100%;min-width:660px;height:auto}
+.wiring{display:block;width:100%;height:auto}
+.wiring.desk{min-width:640px}
+.wiring.mob{display:none}
+@media(max-width:760px){.diagram{overflow-x:hidden;padding:16px 12px}
+  .wiring.desk{display:none}.wiring.mob{display:block;min-width:0}}
 .wiring .wire{fill:none;stroke:rgba(255,255,255,.15);stroke-width:1.6}
 .wiring .dash{stroke-dasharray:5 5}
 .wiring .head{fill:none;stroke:rgba(255,255,255,.3);stroke-width:1.8;
@@ -177,6 +183,7 @@ h3{font-size:19px;margin:30px 0 8px;font-weight:650}
 .wiring .lbl{font:600 15px var(--sans);fill:#f3f6fa}
 .wiring .sub{font:400 12.5px var(--sans);fill:#98a3b6}
 .wiring .pk{fill:var(--brand2);filter:drop-shadow(0 0 6px rgba(246,130,31,.75))}
+.wiring .pk.ret{fill:#63d9a5;filter:drop-shadow(0 0 6px rgba(99,217,165,.7))}
 .wiring .pk.up{fill:#7fb2ff;filter:drop-shadow(0 0 6px rgba(90,169,255,.7))}
 @keyframes breathe{0%,100%{opacity:.35}50%{opacity:1}}
 @media(prefers-reduced-motion:reduce){.wiring .halo{animation:none}}
@@ -233,7 +240,7 @@ html[lang="ar"] [data-ar]{display:revert}
 
 <header class="nav">
   <div class="nav-in">
-    <a class="brand" href="#top" aria-label="linko"><svg class="brand-logo" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="linko" viewBox="0 0 254 96" fill="none"><defs><linearGradient id="lkNav" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFB457"/><stop offset=".52" stop-color="#F6821F"/><stop offset="1" stop-color="#DE4E08"/></linearGradient></defs><g transform="translate(48.0 48.0) scale(0.7419)"><g transform="rotate(-45)"><g fill="none" stroke="url(#lkNav)" stroke-width="10.5" stroke-linecap="round"><path d="M-9.11 19.91 A20 20 0 0 1 -11.00 20.00 L-41.00 20.00 A20 20 0 0 1 -41.00 -20.00 L-11.00 -20.00 A20 20 0 0 1 6.54 9.60"/><path d="M-9.11 19.91 A20 20 0 0 1 -11.00 20.00 L-41.00 20.00 A20 20 0 0 1 -41.00 -20.00 L-11.00 -20.00 A20 20 0 0 1 6.54 9.60" transform="rotate(180)"/></g></g></g><g transform="translate(112 71.80) scale(0.68)"><g fill="none" stroke="currentColor" stroke-width="10.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0V-70 M26 0V-46 M52 0V-46 M52 -31A15 15 0 0 1 82 -31V0 M108 0V-70 M134 -46L110 -22 M117 -29L135 0"/><circle cx="171" cy="-23" r="24"/></g><circle cx="26" cy="-62" r="5.5" fill="currentColor"/></g></svg></a>
+    <a class="brand" href="#top" aria-label="linko"><svg class="brand-logo" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="linko" viewBox="0 0 254 96" width="254" height="96" fill="none"><defs><linearGradient id="lkNav" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFB457"/><stop offset=".52" stop-color="#F6821F"/><stop offset="1" stop-color="#DE4E08"/></linearGradient></defs><g transform="translate(48.0 48.0) scale(0.7419)"><g transform="rotate(-45)"><g fill="none" stroke="url(#lkNav)" stroke-width="10.5" stroke-linecap="round"><path d="M-9.11 19.91 A20 20 0 0 1 -11.00 20.00 L-41.00 20.00 A20 20 0 0 1 -41.00 -20.00 L-11.00 -20.00 A20 20 0 0 1 6.54 9.60"/><path d="M-9.11 19.91 A20 20 0 0 1 -11.00 20.00 L-41.00 20.00 A20 20 0 0 1 -41.00 -20.00 L-11.00 -20.00 A20 20 0 0 1 6.54 9.60" transform="rotate(180)"/></g></g></g><g transform="translate(112 71.80) scale(0.68)"><g fill="none" stroke="currentColor" stroke-width="10.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0V-70 M26 0V-46 M52 0V-46 M52 -31A15 15 0 0 1 82 -31V0 M108 0V-70 M134 -46L110 -22 M117 -29L135 0"/><circle cx="171" cy="-23" r="24"/></g><circle cx="26" cy="-62" r="5.5" fill="currentColor"/></g></svg></a>
     <nav>
       <a href="#why"><span data-en>Why</span><span data-ar>لماذا</span></a>
       <a href="#features"><span data-en>Features</span><span data-ar>المزايا</span></a>
@@ -442,33 +449,59 @@ html[lang="ar"] [data-ar]{display:revert}
   </p>
 
   <div class="diagram">
-    <svg viewBox="0 0 920 400" role="img" aria-labelledby="dgt" class="wiring">
-      <title id="dgt">Three hostnames enter one Cloudflare tunnel and leave to three local ports</title>
-
-      <path id="in0" class="wire" d="M204 64 C272 64 296 168 352 168"/><path id="out0" class="wire" d="M548 168 C604 168 628 64 700 64"/><path id="in1" class="wire" d="M204 168 H352"/><path id="out1" class="wire" d="M548 168 H700"/><path id="in2" class="wire" d="M204 272 C272 272 296 168 352 168"/><path id="out2" class="wire" d="M548 168 C604 168 628 272 700 272"/>
-      <path id="up" class="wire dash" d="M450 326 V218"/>
-
-      <rect class="node" x="8" y="45" width="196" height="38" rx="10"/><text class="mono" x="106" y="69" text-anchor="middle">crm.example.com</text><rect class="node" x="700" y="45" width="212" height="38" rx="10"/><text class="mono" x="806" y="69" text-anchor="middle">localhost:3000</text><rect class="node" x="8" y="149" width="196" height="38" rx="10"/><text class="mono" x="106" y="173" text-anchor="middle">api.example.com</text><rect class="node" x="700" y="149" width="212" height="38" rx="10"/><text class="mono" x="806" y="173" text-anchor="middle">localhost:8080</text><rect class="node" x="8" y="253" width="196" height="38" rx="10"/><text class="mono" x="106" y="277" text-anchor="middle">test.example.com</text><rect class="node" x="700" y="253" width="212" height="38" rx="10"/><text class="mono" x="806" y="277" text-anchor="middle">localhost:5173</text>
-
+<svg viewBox="0 0 920 400" class="wiring desk" role="img" aria-labelledby="dgd">
+      <title id="dgd">Three hostnames enter one Cloudflare tunnel and return from three local ports</title>
+      <path id="in0d" class="wire" d="M204 64 C271 64 300 168.0 352 168.0"/><path id="out0d" class="wire" d="M548 168.0 C601 168.0 632 64 700 64"/><path id="in1d" class="wire" d="M204 168 H352"/><path id="out1d" class="wire" d="M548 168 H700"/><path id="in2d" class="wire" d="M204 272 C271 272 300 168.0 352 168.0"/><path id="out2d" class="wire" d="M548 168.0 C601 168.0 632 272 700 272"/>
+      <path id="upd" class="wire dash" d="M450.0 326 V224"/>
+      <rect class="node" x="8" y="46" width="196" height="36" rx="10"/><text class="mono" x="106" y="68" text-anchor="middle" font-size="13">crm.example.com</text><rect class="node" x="700" y="46" width="212" height="36" rx="10"/><text class="mono" x="806" y="68" text-anchor="middle" font-size="13">localhost:3000</text><rect class="node" x="8" y="150" width="196" height="36" rx="10"/><text class="mono" x="106" y="172" text-anchor="middle" font-size="13">api.example.com</text><rect class="node" x="700" y="150" width="212" height="36" rx="10"/><text class="mono" x="806" y="172" text-anchor="middle" font-size="13">localhost:8080</text><rect class="node" x="8" y="254" width="196" height="36" rx="10"/><text class="mono" x="106" y="276" text-anchor="middle" font-size="13">test.example.com</text><rect class="node" x="700" y="254" width="212" height="36" rx="10"/><text class="mono" x="806" y="276" text-anchor="middle" font-size="13">localhost:5173</text>
       <g class="edge">
-        <rect class="halo" x="344" y="118" width="212" height="100" rx="20"/>
+        <rect class="halo" x="344" y="118" width="212" height="100" rx="22"/>
         <rect class="core" x="352" y="126" width="196" height="84" rx="16"/>
-        <text class="lbl" x="450" y="161" text-anchor="middle">Cloudflare Edge</text>
-        <text class="sub" x="450" y="185" text-anchor="middle" data-en="">one tunnel</text>
-        <text class="sub" x="450" y="185" text-anchor="middle" data-ar="">نفق واحد</text>
+        <text class="lbl" x="450.0" y="165" text-anchor="middle"
+              font-size="15">Cloudflare Edge</text>
+        <text class="sub" x="450.0" y="184" text-anchor="middle"
+              font-size="12.5" data-en="">one tunnel</text>
+        <text class="sub" x="450.0" y="184" text-anchor="middle"
+              font-size="12.5" data-ar="">نفق واحد</text>
       </g>
-
-      <path class="head" d="M444 226 L450 216 L456 226"/>
+      <path class="head" d="M444.0 232 L450.0 222 L456.0 232"/>
       <rect class="node" x="330" y="326" width="240" height="40" rx="11"/>
-      <text class="mono" x="450" y="351" text-anchor="middle">cloudflared</text>
-      <text class="sub" x="450" y="388" text-anchor="middle" data-en="">on your machine</text>
-      <text class="sub" x="450" y="388" text-anchor="middle" data-ar="">على جهازك</text>
-      <text class="note" x="478" y="300" data-en="">outbound connection only</text>
-      <text class="note" x="478" y="300" data-ar="">اتصال صادر فقط</text>
-
-      <circle class="pk" r="4.5"><animateMotion dur="1.7s" begin="0.00s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#in0"/></animateMotion></circle><circle class="pk" r="4.5"><animateMotion dur="1.7s" begin="1.70s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#out0"/></animateMotion></circle><circle class="pk" r="4.5"><animateMotion dur="1.7s" begin="0.34s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#in1"/></animateMotion></circle><circle class="pk" r="4.5"><animateMotion dur="1.7s" begin="2.04s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#out1"/></animateMotion></circle><circle class="pk" r="4.5"><animateMotion dur="1.7s" begin="0.68s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#in2"/></animateMotion></circle><circle class="pk" r="4.5"><animateMotion dur="1.7s" begin="2.38s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#out2"/></animateMotion></circle>
-      <circle class="pk up" r="4.5"><animateMotion dur="2.4s" repeatCount="indefinite"
-        keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#up"/></animateMotion></circle>
+      <text class="mono" x="450.0" y="350" text-anchor="middle"
+            font-size="13">cloudflared</text>
+      <text class="note" x="450.0" y="388" text-anchor="middle"
+            font-size="13" data-en="">outbound connection only</text>
+      <text class="note" x="450.0" y="388" text-anchor="middle"
+            font-size="13" data-ar="">اتصال صادر فقط</text>
+      <circle class="pk fwd" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="0.00s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.5;1"><mpath href="#in0d"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="0.00s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.49;0.5;1"/></circle><circle class="pk fwd" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="0.00s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1" keyTimes="0;0.5;1"><mpath href="#out0d"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="0.00s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.49;0.5;1"/></circle><circle class="pk ret" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="1.80s" repeatCount="indefinite" calcMode="linear" keyPoints="1;0;0" keyTimes="0;0.5;1"><mpath href="#out0d"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="1.80s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.49;0.5;1"/></circle><circle class="pk ret" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="1.80s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0" keyTimes="0;0.5;1"><mpath href="#in0d"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="1.80s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.49;0.5;1"/></circle><circle class="pk fwd" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="0.45s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.5;1"><mpath href="#in1d"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="0.45s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.49;0.5;1"/></circle><circle class="pk fwd" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="0.45s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1" keyTimes="0;0.5;1"><mpath href="#out1d"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="0.45s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.49;0.5;1"/></circle><circle class="pk ret" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="2.25s" repeatCount="indefinite" calcMode="linear" keyPoints="1;0;0" keyTimes="0;0.5;1"><mpath href="#out1d"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="2.25s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.49;0.5;1"/></circle><circle class="pk ret" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="2.25s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0" keyTimes="0;0.5;1"><mpath href="#in1d"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="2.25s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.49;0.5;1"/></circle><circle class="pk fwd" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="0.90s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.5;1"><mpath href="#in2d"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="0.90s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.49;0.5;1"/></circle><circle class="pk fwd" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="0.90s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1" keyTimes="0;0.5;1"><mpath href="#out2d"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="0.90s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.49;0.5;1"/></circle><circle class="pk ret" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="2.70s" repeatCount="indefinite" calcMode="linear" keyPoints="1;0;0" keyTimes="0;0.5;1"><mpath href="#out2d"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="2.70s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.49;0.5;1"/></circle><circle class="pk ret" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="2.70s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0" keyTimes="0;0.5;1"><mpath href="#in2d"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="2.70s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.49;0.5;1"/></circle>
+      <circle class="pk up" r="4"><animateMotion dur="2.6s" repeatCount="indefinite"
+        calcMode="linear" keyPoints="0;1" keyTimes="0;1"><mpath href="#upd"/></animateMotion></circle>
+    </svg>
+<svg viewBox="0 0 400 404" class="wiring mob" role="img" aria-labelledby="dgm">
+      <title id="dgm">Three hostnames enter one Cloudflare tunnel and return from three local ports</title>
+      <path id="in0m" class="wire" d="M122 44 C132 44 136 150.0 144 150.0"/><path id="out0m" class="wire" d="M256 150.0 C264 150.0 268 44 278 44"/><path id="in1m" class="wire" d="M122 150 H144"/><path id="out1m" class="wire" d="M256 150 H278"/><path id="in2m" class="wire" d="M122 256 C132 256 136 150.0 144 150.0"/><path id="out2m" class="wire" d="M256 150.0 C264 150.0 268 256 278 256"/>
+      <path id="upm" class="wire dash" d="M200.0 330 V194"/>
+      <rect class="node" x="0" y="26" width="122" height="36" rx="10"/><text class="mono" x="61" y="48" text-anchor="middle" font-size="10.5">crm.example.com</text><rect class="node" x="278" y="26" width="122" height="36" rx="10"/><text class="mono" x="339" y="48" text-anchor="middle" font-size="10.5">localhost:3000</text><rect class="node" x="0" y="132" width="122" height="36" rx="10"/><text class="mono" x="61" y="154" text-anchor="middle" font-size="10.5">api.example.com</text><rect class="node" x="278" y="132" width="122" height="36" rx="10"/><text class="mono" x="339" y="154" text-anchor="middle" font-size="10.5">localhost:8080</text><rect class="node" x="0" y="238" width="122" height="36" rx="10"/><text class="mono" x="61" y="260" text-anchor="middle" font-size="10.5">test.example.com</text><rect class="node" x="278" y="238" width="122" height="36" rx="10"/><text class="mono" x="339" y="260" text-anchor="middle" font-size="10.5">localhost:5173</text>
+      <g class="edge">
+        <rect class="halo" x="136" y="112" width="128" height="76" rx="22"/>
+        <rect class="core" x="144" y="120" width="112" height="60" rx="16"/>
+        <text class="lbl" x="200.0" y="147" text-anchor="middle"
+              font-size="10">Cloudflare Edge</text>
+        <text class="sub" x="200.0" y="166" text-anchor="middle"
+              font-size="8.5" data-en="">one tunnel</text>
+        <text class="sub" x="200.0" y="166" text-anchor="middle"
+              font-size="8.5" data-ar="">نفق واحد</text>
+      </g>
+      <path class="head" d="M194.0 202 L200.0 192 L206.0 202"/>
+      <rect class="node" x="140" y="330" width="120" height="34" rx="11"/>
+      <text class="mono" x="200.0" y="352" text-anchor="middle"
+            font-size="10.5">cloudflared</text>
+      <text class="note" x="200.0" y="386" text-anchor="middle"
+            font-size="9" data-en="">outbound connection only</text>
+      <text class="note" x="200.0" y="386" text-anchor="middle"
+            font-size="9" data-ar="">اتصال صادر فقط</text>
+      <circle class="pk fwd" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="0.00s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.5;1"><mpath href="#in0m"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="0.00s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.49;0.5;1"/></circle><circle class="pk fwd" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="0.00s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1" keyTimes="0;0.5;1"><mpath href="#out0m"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="0.00s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.49;0.5;1"/></circle><circle class="pk ret" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="1.80s" repeatCount="indefinite" calcMode="linear" keyPoints="1;0;0" keyTimes="0;0.5;1"><mpath href="#out0m"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="1.80s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.49;0.5;1"/></circle><circle class="pk ret" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="1.80s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0" keyTimes="0;0.5;1"><mpath href="#in0m"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="1.80s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.49;0.5;1"/></circle><circle class="pk fwd" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="0.45s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.5;1"><mpath href="#in1m"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="0.45s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.49;0.5;1"/></circle><circle class="pk fwd" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="0.45s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1" keyTimes="0;0.5;1"><mpath href="#out1m"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="0.45s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.49;0.5;1"/></circle><circle class="pk ret" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="2.25s" repeatCount="indefinite" calcMode="linear" keyPoints="1;0;0" keyTimes="0;0.5;1"><mpath href="#out1m"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="2.25s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.49;0.5;1"/></circle><circle class="pk ret" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="2.25s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0" keyTimes="0;0.5;1"><mpath href="#in1m"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="2.25s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.49;0.5;1"/></circle><circle class="pk fwd" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="0.90s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.5;1"><mpath href="#in2m"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="0.90s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.49;0.5;1"/></circle><circle class="pk fwd" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="0.90s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1" keyTimes="0;0.5;1"><mpath href="#out2m"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="0.90s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.49;0.5;1"/></circle><circle class="pk ret" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="2.70s" repeatCount="indefinite" calcMode="linear" keyPoints="1;0;0" keyTimes="0;0.5;1"><mpath href="#out2m"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="2.70s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.49;0.5;1"/></circle><circle class="pk ret" r="4.5" opacity="0"><animateMotion dur="3.6s" begin="2.70s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0" keyTimes="0;0.5;1"><mpath href="#in2m"/></animateMotion><animate attributeName="opacity" dur="3.6s" begin="2.70s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.49;0.5;1"/></circle>
+      <circle class="pk up" r="4"><animateMotion dur="2.6s" repeatCount="indefinite"
+        calcMode="linear" keyPoints="0;1" keyTimes="0;1"><mpath href="#upm"/></animateMotion></circle>
     </svg>
   </div>
 
@@ -676,8 +709,10 @@ html[lang="ar"] [data-ar]{display:revert}
   // The diagram's motion is decorative; stop it if the OS asks for less of it.
   try {
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      var dg = document.querySelector('.wiring');
-      if (dg && dg.pauseAnimations) dg.pauseAnimations();
+      var dgs = document.querySelectorAll('.wiring');
+      for (var i = 0; i < dgs.length; i++) {
+        if (dgs[i].pauseAnimations) dgs[i].pauseAnimations();
+      }
     }
   } catch (e) {}
 })();
