@@ -56,6 +56,13 @@ a:hover{text-decoration:underline}
 .brand-logo{height:29px;width:auto;display:block;color:var(--fg)}
 
 .nav .sp{margin-inline-start:auto}
+.toc-btn{display:none;align-items:center;justify-content:space-between;gap:10px;
+  width:100%;margin:18px 0 0;padding:11px 15px;border-radius:11px;
+  background:var(--panel);border:1px solid var(--line);color:var(--fg);
+  font:600 15px var(--sans);cursor:pointer;text-align:start}
+.toc-btn:hover{border-color:var(--line2)}
+.toc-btn svg{flex:none;transition:transform .18s}
+.toc-btn[aria-expanded="true"] svg{transform:rotate(180deg)}
 .nav a.plain{color:var(--fg2);font-size:14.5px;font-weight:500}
 .nav a.plain:hover{color:var(--fg);text-decoration:none}
 .tools{display:flex;gap:7px;margin-inline-start:14px}
@@ -156,9 +163,13 @@ html[lang="ar"] [data-en]{display:none}
 html[lang="ar"] [data-ar]{display:revert}
 
 @media(max-width:980px){
-  aside{display:none}
-  .wrap{gap:0}
-  article{padding-top:26px}
+  .wrap{gap:0;display:block}
+  .toc-btn{display:flex}
+  aside{display:none;position:static;width:auto;max-height:none;overflow:visible;
+        margin:0 0 8px;padding:10px 0 14px;border-bottom:1px solid var(--line)}
+  aside.open{display:block}
+  aside a{font-size:15.5px;padding:8px 12px}
+  article{padding-top:8px}
 }
 </style>
 </head>
@@ -178,7 +189,13 @@ html[lang="ar"] [data-ar]{display:revert}
 </header>
 
 <div class="wrap">
-<aside>
+<button class="toc-btn" id="toc" aria-expanded="false" aria-controls="toc-list">
+  <span><span data-en>On this page</span><span data-ar>محتويات الصفحة</span></span>
+  <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true" fill="none"
+       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 8l5 5 5-5"/></svg>
+</button>
+<aside id="toc-list">
   <div class="grp"><span data-en>Getting started</span><span data-ar>البداية</span></div>
   <a href="#what"><span data-en>What linko is</span><span data-ar>ما هو linko</span></a>
   <a href="#requirements"><span data-en>Requirements</span><span data-ar>المتطلبات</span></a>
@@ -254,6 +271,20 @@ $ linko 3000           <span class="c"># in another terminal</span>
 </ul>
 
 <!-- ═══════════════════ requirements ═══════════════════ -->
+<div class="note">
+  <b><span data-en>Running a home server with no public IP?</span>
+     <span data-ar>عندك خادم منزلي بلا IP عام؟</span></b>
+  <span data-en>That is the case this was built for. A machine behind CGNAT or a dynamic
+    address cannot accept an inbound connection at all — but linko never needs one.
+    <code>cloudflared</code> dials out from your side, so your Raspberry Pi, old laptop or NAS
+    gets a real HTTPS URL on your own domain without touching the router, and every project on
+    that machine joins the same tunnel.</span>
+  <span data-ar>هذه هي الحالة التي بُني لها. الجهاز خلف CGNAT أو عنوان متغيّر لا يستطيع قبول
+    أي اتصال وارد أصلًا — و<code>linko</code> لا يحتاج واحدًا. يتصل <code>cloudflared</code>
+    من جهتك إلى الخارج، فيحصل الـ Raspberry Pi أو اللابتوب القديم أو الـ NAS على رابط HTTPS
+    حقيقي على دومينك دون لمس الراوتر، وكل مشروع على ذلك الجهاز ينضم إلى النفق نفسه.</span>
+</div>
+
 <h2 id="requirements"><span data-en>Requirements</span><span data-ar>المتطلبات</span></h2>
 
 <div class="tw">
@@ -1145,7 +1176,21 @@ linko init</code></pre></div>
   else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) setTheme('light');
 
   // Highlight the section currently on screen in the sidebar.
+  var toc = document.getElementById('toc');
+  var tocList = document.getElementById('toc-list');
+  toc.addEventListener('click', function () {
+    var open = tocList.classList.toggle('open');
+    toc.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
   var links = Array.prototype.slice.call(document.querySelectorAll('aside a'));
+  // On a phone the list is a menu, so close it once you have chosen.
+  links.forEach(function (a) {
+    a.addEventListener('click', function () {
+      tocList.classList.remove('open');
+      toc.setAttribute('aria-expanded', 'false');
+    });
+  });
   var targets = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
   function spy() {
     var idx = 0;

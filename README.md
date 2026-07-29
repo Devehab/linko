@@ -67,6 +67,30 @@ webhooks and sharing.
 | **Runs anywhere** | Foreground, background, or started automatically at every boot. |
 | **Repairs itself** | A dead token or a deleted tunnel is explained and fixed, not just reported. |
 
+## Home servers, and anything without a public IP
+
+**This is the case linko was built for.** A home server sits behind CGNAT or a
+dynamic address: port forwarding is either blocked by the ISP or breaks the next
+time the lease renews. The Raspberry Pi in the corner, the old laptop, the NAS —
+none of them can be reached from outside, however good the domain you own.
+
+`linko` never asks for an inbound port. `cloudflared` dials **out** from your
+machine, so the only address the world ever sees is Cloudflare's. Your IP stays
+private and your router stays untouched.
+
+What that replaces, per project:
+
+| By hand | With linko |
+| --- | --- |
+| Create a Zero Trust tunnel and connect it | `linko 8096 --name media` |
+| Write ingress rules, keep the catch-all last | — |
+| Add a proxied `CNAME` to the right zone | — |
+| Sort out the certificate, then discover a two-level name is not covered | — |
+| Write a unit file so it survives a reboot | `linko service install` |
+
+Every other project on that machine joins the same tunnel — a hostname each,
+pointed at a different local port.
+
 ## Requirements
 
 | | Required | Notes |
