@@ -671,6 +671,7 @@ html[lang="ar"] [data-ar]{display:revert}
   var browserAr = (navigator.language || '').slice(0, 2) === 'ar';
   setLang(savedLang || (browserAr ? 'ar' : 'en'));
   if (savedTheme) setTheme(savedTheme);
+  else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) setTheme('light');
 
   // The diagram's motion is decorative; stop it if the OS asks for less of it.
   try {
@@ -679,7 +680,6 @@ html[lang="ar"] [data-ar]{display:revert}
       if (dg && dg.pauseAnimations) dg.pauseAnimations();
     }
   } catch (e) {}
-  else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) setTheme('light');
 })();
 </script>
 </body>

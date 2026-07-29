@@ -71,3 +71,14 @@ jobs:
             echo "==> $os/$arch"
             GOOS=$os GOARCH=$arch go build -trimpath -o /dev/null .
           done
+
+  docs:
+    name: docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Check the site's inline scripts and assets
+        run: node scripts/check-docs.mjs
