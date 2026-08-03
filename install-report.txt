@@ -1,17 +1,481 @@
 install one-liner test
-commit: 2d29cb7d18715f2b3662ed7aea6373f127378ff9
-run:    30330245819
-date:   2026-07-29 04:58:34 UTC
+commit: 47c23c97833490a208164e1ea24caedc775b6d5d
+date:   2026-08-03 09:39:32 UTC
 
 command under test:
   curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/install.sh | bash
 
-each job installs from the published release, then checks that
-linko runs, prints its version, shows help and docs, and points
-an unconfigured user at 'linko init'.
+hosts:      failure
+containers: failure
 
-hosts       (ubuntu 22/24, macos 13/14+, windows git-bash): failure
-containers  (debian, ubuntu, alpine, fedora, rocky, arch, suse): failure
+════════════════════ per platform ════════════════════
 
-RESULT: at least one platform failed — open the run for the matrix detail.
-        https://github.com/Devehab/linko/actions/runs/30330245819
+### PASS ──────── alpine:latest ────────
+    ──────── alpine:latest ────────
+    uname: Linux x86_64
+    shipped with:
+      sh    /bin/sh
+      bash  (absent)
+      curl  (absent)
+      tar   /bin/tar
+      go    (absent)
+    
+    adding bash/curl/tar/ca-certificates only:
+      go is still absent — good
+    
+    $ curl -fsSL .../install.sh | bash
+    curl: (23) Failure writing output to destination, passed 1370 returned 0
+    [2mInstalling linko v0.3.0 (linux_amd64)[0m
+    [32m✓ linko installed to /usr/local/bin/linko[0m
+    
+    Next step:
+      linko init
+    
+    Before that you need a Cloudflare API token with BOTH permissions:
+      Zone     ->  DNS                ->  Edit
+      Account  ->  Cloudflare Tunnel  ->  Edit
+      Create it at https://dash.cloudflare.com/profile/api-tokens
+    
+    Full guide (install, token, commands, troubleshooting):
+    [32m  https://github.com/Devehab/linko/blob/main/GUIDE.md[0m
+      or run:  linko docs
+    [install exit 0]
+    
+    $ command -v linko
+    /usr/local/bin/linko
+    [exit 0]
+    $ linko --version
+    linko 0.3.0
+    [exit 0]
+    $ linko --help
+    [exit 0]
+    $ linko docs
+    [exit 0]
+    $ linko list  (must steer an unconfigured user to init)
+
+### PASS ──────── archlinux:latest ────────
+    ──────── archlinux:latest ────────
+    uname: Linux x86_64
+    shipped with:
+      sh    /usr/sbin/sh
+      bash  /usr/sbin/bash
+      curl  /usr/sbin/curl
+      tar   /usr/sbin/tar
+      go    (absent)
+    
+    adding bash/curl/tar/ca-certificates only:
+      go is still absent — good
+    
+    $ curl -fsSL .../install.sh | bash
+    curl: (23) Failure writing output to destination, passed 1370 returned 684
+    [2mInstalling linko v0.3.0 (linux_amd64)[0m
+    [32m✓ linko installed to /usr/local/bin/linko[0m
+    
+    Next step:
+      linko init
+    
+    Before that you need a Cloudflare API token with BOTH permissions:
+      Zone     ->  DNS                ->  Edit
+      Account  ->  Cloudflare Tunnel  ->  Edit
+      Create it at https://dash.cloudflare.com/profile/api-tokens
+    
+    Full guide (install, token, commands, troubleshooting):
+    [32m  https://github.com/Devehab/linko/blob/main/GUIDE.md[0m
+      or run:  linko docs
+    [install exit 0]
+    
+    $ command -v linko
+    /usr/local/bin/linko
+    [exit 0]
+    $ linko --version
+    linko 0.3.0
+    [exit 0]
+    $ linko --help
+    [exit 0]
+    $ linko docs
+    [exit 0]
+    $ linko list  (must steer an unconfigured user to init)
+
+### PASS ──────── debian:11 ────────
+    ──────── debian:11 ────────
+    uname: Linux x86_64
+    shipped with:
+      sh    /bin/sh
+      bash  /bin/bash
+      curl  (absent)
+      tar   /bin/tar
+      go    (absent)
+    
+    adding bash/curl/tar/ca-certificates only:
+      go is still absent — good
+    
+    $ curl -fsSL .../install.sh | bash
+    curl: (23) Failure writing output to destination
+    [2mInstalling linko v0.3.0 (linux_amd64)[0m
+    [32m✓ linko installed to /usr/local/bin/linko[0m
+    
+    Next step:
+      linko init
+    
+    Before that you need a Cloudflare API token with BOTH permissions:
+      Zone     ->  DNS                ->  Edit
+      Account  ->  Cloudflare Tunnel  ->  Edit
+      Create it at https://dash.cloudflare.com/profile/api-tokens
+    
+    Full guide (install, token, commands, troubleshooting):
+    [32m  https://github.com/Devehab/linko/blob/main/GUIDE.md[0m
+      or run:  linko docs
+    [install exit 0]
+    
+    $ command -v linko
+    /usr/local/bin/linko
+    [exit 0]
+    $ linko --version
+    linko 0.3.0
+    [exit 0]
+    $ linko --help
+    [exit 0]
+    $ linko docs
+    [exit 0]
+    $ linko list  (must steer an unconfigured user to init)
+
+### PASS ──────── debian:12 ────────
+    ──────── debian:12 ────────
+    uname: Linux x86_64
+    shipped with:
+      sh    /usr/bin/sh
+      bash  /usr/bin/bash
+      curl  (absent)
+      tar   /usr/bin/tar
+      go    (absent)
+    
+    adding bash/curl/tar/ca-certificates only:
+      go is still absent — good
+    
+    $ curl -fsSL .../install.sh | bash
+    curl: (23) Failed writing body
+    [2mInstalling linko v0.3.0 (linux_amd64)[0m
+    [32m✓ linko installed to /usr/local/bin/linko[0m
+    
+    Next step:
+      linko init
+    
+    Before that you need a Cloudflare API token with BOTH permissions:
+      Zone     ->  DNS                ->  Edit
+      Account  ->  Cloudflare Tunnel  ->  Edit
+      Create it at https://dash.cloudflare.com/profile/api-tokens
+    
+    Full guide (install, token, commands, troubleshooting):
+    [32m  https://github.com/Devehab/linko/blob/main/GUIDE.md[0m
+      or run:  linko docs
+    [install exit 0]
+    
+    $ command -v linko
+    /usr/local/bin/linko
+    [exit 0]
+    $ linko --version
+    linko 0.3.0
+    [exit 0]
+    $ linko --help
+    [exit 0]
+    $ linko docs
+    [exit 0]
+    $ linko list  (must steer an unconfigured user to init)
+
+### PASS ──────── fedora:latest ────────
+    ──────── fedora:latest ────────
+    uname: Linux x86_64
+    shipped with:
+      sh    /usr/sbin/sh
+      bash  /usr/sbin/bash
+      curl  /usr/sbin/curl
+      tar   /usr/sbin/tar
+      go    (absent)
+    
+    adding bash/curl/tar/ca-certificates only:
+      go is still absent — good
+    
+    $ curl -fsSL .../install.sh | bash
+    curl: (23) Failure writing output to destination, passed 1370 returned 684
+    [2mInstalling linko v0.3.0 (linux_amd64)[0m
+    [32m✓ linko installed to /usr/local/bin/linko[0m
+    
+    Next step:
+      linko init
+    
+    Before that you need a Cloudflare API token with BOTH permissions:
+      Zone     ->  DNS                ->  Edit
+      Account  ->  Cloudflare Tunnel  ->  Edit
+      Create it at https://dash.cloudflare.com/profile/api-tokens
+    
+    Full guide (install, token, commands, troubleshooting):
+    [32m  https://github.com/Devehab/linko/blob/main/GUIDE.md[0m
+      or run:  linko docs
+    [install exit 0]
+    
+    $ command -v linko
+    /usr/local/bin/linko
+    [exit 0]
+    $ linko --version
+    linko 0.3.0
+    [exit 0]
+    $ linko --help
+    [exit 0]
+    $ linko docs
+    [exit 0]
+    $ linko list  (must steer an unconfigured user to init)
+
+### FAIL ──────── macos-latest ────────
+    ──────── macos-latest ────────
+    uname: Darwin arm64
+      curl  /usr/bin/curl
+      tar   /usr/bin/tar
+      bash  /bin/bash
+      go    (absent)
+    
+    $ curl -fsSL .../install.sh | bash
+    curl: (56) The requested URL returned error: 403
+    [31merror: could not determine the latest version — set LINKO_VERSION[0m
+    [install exit 1]
+    
+    $ command -v linko
+    [exit 1]
+    $ linko --version
+    /Users/runner/work/_temp/b79a67eb-891d-477d-908f-d9bb724b36d8.sh: line 20: linko: command not found
+    [exit 127]
+    $ linko --help
+    /Users/runner/work/_temp/b79a67eb-891d-477d-908f-d9bb724b36d8.sh: line 21: linko: command not found
+    [exit 127]
+    $ linko docs
+    /Users/runner/work/_temp/b79a67eb-891d-477d-908f-d9bb724b36d8.sh: line 22: linko: command not found
+    [exit 127]
+    $ linko list  (must steer an unconfigured user to init)
+    /Users/runner/work/_temp/b79a67eb-891d-477d-908f-d9bb724b36d8.sh: line 27: linko: command not found
+    [exit 1]
+
+### PASS ──────── opensuse/leap:latest ────────
+    ──────── opensuse/leap:latest ────────
+    uname: Linux x86_64
+    shipped with:
+      sh    /usr/bin/sh
+      bash  /usr/bin/bash
+      curl  /usr/bin/curl
+      tar   /usr/bin/tar
+      go    (absent)
+    
+    adding bash/curl/tar/ca-certificates only:
+      go is still absent — good
+    
+    $ curl -fsSL .../install.sh | bash
+    curl: (23) Failure writing output to destination, passed 1370 returned 1114
+    [2mInstalling linko v0.3.0 (linux_amd64)[0m
+    [32m✓ linko installed to /usr/local/bin/linko[0m
+    
+    Next step:
+      linko init
+    
+    Before that you need a Cloudflare API token with BOTH permissions:
+      Zone     ->  DNS                ->  Edit
+      Account  ->  Cloudflare Tunnel  ->  Edit
+      Create it at https://dash.cloudflare.com/profile/api-tokens
+    
+    Full guide (install, token, commands, troubleshooting):
+    [32m  https://github.com/Devehab/linko/blob/main/GUIDE.md[0m
+      or run:  linko docs
+    [install exit 0]
+    
+    $ command -v linko
+    /usr/local/bin/linko
+    [exit 0]
+    $ linko --version
+    linko 0.3.0
+    [exit 0]
+    $ linko --help
+    [exit 0]
+    $ linko docs
+    [exit 0]
+    $ linko list  (must steer an unconfigured user to init)
+
+### PASS ──────── rockylinux/rockylinux:9 ────────
+    ──────── rockylinux/rockylinux:9 ────────
+    uname: Linux x86_64
+    shipped with:
+      sh    /usr/bin/sh
+      bash  /usr/bin/bash
+      curl  /usr/bin/curl
+      tar   /usr/bin/tar
+      go    (absent)
+    
+    adding bash/curl/tar/ca-certificates only:
+
+### PASS ──────── ubuntu:22.04 ────────
+    ──────── ubuntu:22.04 ────────
+    uname: Linux x86_64
+    shipped with:
+      sh    /usr/bin/sh
+      bash  /usr/bin/bash
+      curl  (absent)
+      tar   /usr/bin/tar
+      go    (absent)
+    
+    adding bash/curl/tar/ca-certificates only:
+      go is still absent — good
+    
+    $ curl -fsSL .../install.sh | bash
+    curl: (23) Failure writing output to destination
+    [2mInstalling linko v0.3.0 (linux_amd64)[0m
+    [32m✓ linko installed to /usr/local/bin/linko[0m
+    
+    Next step:
+      linko init
+    
+    Before that you need a Cloudflare API token with BOTH permissions:
+      Zone     ->  DNS                ->  Edit
+      Account  ->  Cloudflare Tunnel  ->  Edit
+      Create it at https://dash.cloudflare.com/profile/api-tokens
+    
+    Full guide (install, token, commands, troubleshooting):
+    [32m  https://github.com/Devehab/linko/blob/main/GUIDE.md[0m
+      or run:  linko docs
+    [install exit 0]
+    
+    $ command -v linko
+    /usr/local/bin/linko
+    [exit 0]
+    $ linko --version
+    linko 0.3.0
+    [exit 0]
+    $ linko --help
+    [exit 0]
+    $ linko docs
+    [exit 0]
+    $ linko list  (must steer an unconfigured user to init)
+
+### PASS ──────── ubuntu:24.04 ────────
+    ──────── ubuntu:24.04 ────────
+    uname: Linux x86_64
+    shipped with:
+      sh    /usr/bin/sh
+      bash  /usr/bin/bash
+      curl  (absent)
+      tar   /usr/bin/tar
+      go    (absent)
+    
+    adding bash/curl/tar/ca-certificates only:
+      go is still absent — good
+    
+    $ curl -fsSL .../install.sh | bash
+    [2mInstalling linko v0.3.0 (linux_amd64)[0m
+    [32m✓ linko installed to /usr/local/bin/linko[0m
+    
+    Next step:
+      linko init
+    
+    Before that you need a Cloudflare API token with BOTH permissions:
+      Zone     ->  DNS                ->  Edit
+      Account  ->  Cloudflare Tunnel  ->  Edit
+      Create it at https://dash.cloudflare.com/profile/api-tokens
+    
+    Full guide (install, token, commands, troubleshooting):
+    [32m  https://github.com/Devehab/linko/blob/main/GUIDE.md[0m
+      or run:  linko docs
+    [install exit 0]
+    
+    $ command -v linko
+    /usr/local/bin/linko
+    [exit 0]
+    $ linko --version
+    linko 0.3.0
+    [exit 0]
+    $ linko --help
+    [exit 0]
+    $ linko docs
+    [exit 0]
+    $ linko list  (must steer an unconfigured user to init)
+
+### PASS ──────── ubuntu-latest ────────
+    ──────── ubuntu-latest ────────
+    uname: Linux x86_64
+      curl  /usr/bin/curl
+      tar   /usr/bin/tar
+      bash  /usr/bin/bash
+      go    /usr/bin/go
+    
+    $ curl -fsSL .../install.sh | bash
+    curl: (23) Failure writing output to destination
+    [2mInstalling linko v0.3.0 (linux_amd64)[0m
+    [32m✓ linko installed to /usr/local/bin/linko[0m
+    
+    Next step:
+      linko init
+    
+    Before that you need a Cloudflare API token with BOTH permissions:
+      Zone     ->  DNS                ->  Edit
+      Account  ->  Cloudflare Tunnel  ->  Edit
+      Create it at https://dash.cloudflare.com/profile/api-tokens
+    
+    Full guide (install, token, commands, troubleshooting):
+    [32m  https://github.com/Devehab/linko/blob/main/GUIDE.md[0m
+      or run:  linko docs
+    [install exit 0]
+    
+    $ command -v linko
+    /usr/local/bin/linko
+    [exit 0]
+    $ linko --version
+    linko 0.3.0
+    [exit 0]
+    $ linko --help
+    [exit 0]
+    $ linko docs
+    [exit 0]
+    $ linko list  (must steer an unconfigured user to init)
+    
+    Error: linko is not set up yet — run `linko init` first
+    
+    [exit 0]
+
+### PASS ──────── windows-latest ────────
+    ──────── windows-latest ────────
+    uname: MINGW64_NT-10.0-26100 x86_64
+      curl  /mingw64/bin/curl
+      tar   /usr/bin/tar
+      bash  /usr/bin/bash
+      go    /c/hostedtoolcache/windows/go/1.24.13/x64/bin/go
+    
+    $ curl -fsSL .../install.sh | bash
+    curl: Failed writing body
+    [2mInstalling linko v0.3.0 (windows_amd64)[0m
+    [32m✓ linko installed to /c/Users/runneradmin/.local/bin/linko.exe[0m
+    
+    [2mcreated .bashrc with /c/Users/runneradmin/.local/bin on PATH[0m
+    
+    Next steps:
+      exec $SHELL       # reload your shell once
+      linko init
+    
+    Before that you need a Cloudflare API token with BOTH permissions:
+      Zone     ->  DNS                ->  Edit
+      Account  ->  Cloudflare Tunnel  ->  Edit
+      Create it at https://dash.cloudflare.com/profile/api-tokens
+    
+    Full guide (install, token, commands, troubleshooting):
+    [32m  https://github.com/Devehab/linko/blob/main/GUIDE.md[0m
+      or run:  linko docs
+    [install exit 0]
+    
+    $ command -v linko
+    /c/Users/runneradmin/.local/bin/linko
+    [exit 0]
+    $ linko --version
+    linko 0.3.0
+    [exit 0]
+    $ linko --help
+    [exit 0]
+    $ linko docs
+    [exit 0]
+    $ linko list  (must steer an unconfigured user to init)
+    
+    Error: linko is not set up yet — run `linko init` first
+    
+    [exit 0]
