@@ -1,11 +1,11 @@
 install one-liner test
 commit: 47c23c97833490a208164e1ea24caedc775b6d5d
-date:   2026-08-03 09:39:32 UTC
+date:   2026-08-10 07:27:33 UTC
 
 command under test:
   curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/install.sh | bash
 
-hosts:      failure
+hosts:      success
 containers: failure
 
 ════════════════════ per platform ════════════════════
@@ -67,7 +67,7 @@ containers: failure
       go is still absent — good
     
     $ curl -fsSL .../install.sh | bash
-    curl: (23) Failure writing output to destination, passed 1370 returned 684
+    curl: (23) Failure writing output to destination, passed 1370 returned 697
     [2mInstalling linko v0.3.0 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
@@ -225,7 +225,7 @@ containers: failure
     [exit 0]
     $ linko list  (must steer an unconfigured user to init)
 
-### FAIL ──────── macos-latest ────────
+### PASS ──────── macos-latest ────────
     ──────── macos-latest ────────
     uname: Darwin arm64
       curl  /usr/bin/curl
@@ -234,24 +234,37 @@ containers: failure
       go    (absent)
     
     $ curl -fsSL .../install.sh | bash
-    curl: (56) The requested URL returned error: 403
-    [31merror: could not determine the latest version — set LINKO_VERSION[0m
-    [install exit 1]
+    [2mInstalling linko v0.3.0 (darwin_arm64)[0m
+    [32m✓ linko installed to /opt/homebrew/bin/linko[0m
+    
+    Next step:
+      linko init
+    
+    Before that you need a Cloudflare API token with BOTH permissions:
+      Zone     ->  DNS                ->  Edit
+      Account  ->  Cloudflare Tunnel  ->  Edit
+      Create it at https://dash.cloudflare.com/profile/api-tokens
+    
+    Full guide (install, token, commands, troubleshooting):
+    [32m  https://github.com/Devehab/linko/blob/main/GUIDE.md[0m
+      or run:  linko docs
+    [install exit 0]
     
     $ command -v linko
-    [exit 1]
+    /opt/homebrew/bin/linko
+    [exit 0]
     $ linko --version
-    /Users/runner/work/_temp/b79a67eb-891d-477d-908f-d9bb724b36d8.sh: line 20: linko: command not found
-    [exit 127]
+    linko 0.3.0
+    [exit 0]
     $ linko --help
-    /Users/runner/work/_temp/b79a67eb-891d-477d-908f-d9bb724b36d8.sh: line 21: linko: command not found
-    [exit 127]
+    [exit 0]
     $ linko docs
-    /Users/runner/work/_temp/b79a67eb-891d-477d-908f-d9bb724b36d8.sh: line 22: linko: command not found
-    [exit 127]
+    [exit 0]
     $ linko list  (must steer an unconfigured user to init)
-    /Users/runner/work/_temp/b79a67eb-891d-477d-908f-d9bb724b36d8.sh: line 27: linko: command not found
-    [exit 1]
+    
+    Error: linko is not set up yet — run `linko init` first
+    
+    [exit 0]
 
 ### PASS ──────── opensuse/leap:latest ────────
     ──────── opensuse/leap:latest ────────
@@ -267,7 +280,6 @@ containers: failure
       go is still absent — good
     
     $ curl -fsSL .../install.sh | bash
-    curl: (23) Failure writing output to destination, passed 1370 returned 1114
     [2mInstalling linko v0.3.0 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
@@ -444,7 +456,7 @@ containers: failure
       go    /c/hostedtoolcache/windows/go/1.24.13/x64/bin/go
     
     $ curl -fsSL .../install.sh | bash
-    curl: Failed writing body
+    curl: (23) Failure writing output to destination, passed 4290 returned 688
     [2mInstalling linko v0.3.0 (windows_amd64)[0m
     [32m✓ linko installed to /c/Users/runneradmin/.local/bin/linko.exe[0m
     
