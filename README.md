@@ -724,6 +724,23 @@ linko init
 To remove the tool itself — background tunnels, login services, URLs, tunnel and
 binary — use `linko uninstall`.
 
+## Using linko from an AI agent
+
+Coding agents get this wrong in predictable ways: `linko 3000` blocks forever
+without `-d`, `~/.linko/config.json` holds live credentials next to the data you
+want, and a command exiting 0 is not proof the URL answers. So there is a skill
+that says all of that up front.
+
+```bash
+# Claude Code / Cowork
+mkdir -p ~/.claude/skills && cp -r skills/linko ~/.claude/skills/
+
+# Codex, Cursor, Windsurf, Aider — append it to the agent's instruction file
+curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/skills/linko/SKILL.md >> AGENTS.md
+```
+
+[`skills/linko/SKILL.md`](skills/linko/SKILL.md) · [how to install it](skills/README.md)
+
 ## Security
 
 - **Published URLs are public.** Anyone with the link reaches your local

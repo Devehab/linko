@@ -2,7 +2,7 @@
 // inline <script> takes the whole page down silently: no language toggle, no
 // theme switch, no copy buttons, and no error anywhere a visitor would see.
 // This catches exactly that, plus the two markup slips that have bitten us.
-import { readFileSync, writeFileSync, mkdtempSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdtempSync, readdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -48,4 +48,31 @@ for (const page of pages) {
   }
   console.log('  ✓ controls, language rules and brand assets present');
 }
+// ── the agent skill must not drift from the CLI ─────────────────────────
+console.log('skills/linko/SKILL.md');
+const skill = readFileSync('skills/linko/SKILL.md', 'utf8');
+const fm = skill.match(/^---\n([\s\S]*?)\n---\n/);
+if (!fm) fail('no YAML frontmatter — it will not load as a skill');
+else {
+  if (!/^name:\s*\S/m.test(fm[1])) fail('frontmatter has no name');
+  if (!/^description:\s*\S/m.test(fm[1])) fail('frontmatter has no description');
+  else console.log('  ✓ frontmatter');
+}
+
+// every command in the reference table has to exist in cmd/
+const go = readdirSync('cmd').filter((f) => f.endsWith('.go'))
+  .map((f) => readFileSync(join('cmd', f), 'utf8')).join('\n');
+const registered = new Set([
+  ...[...go.matchAll(/Use:\s*"([a-z-]+)/g)].map((m) => m[1]),
+  ...[...go.matchAll(/Aliases:\s*\[\]string\{([^}]*)\}/g)]
+      .flatMap((m) => [...m[1].matchAll(/"([a-z-]+)"/g)].map((x) => x[1])),
+]);
+const table = skill.slice(skill.indexOf('## Command reference'));
+const cited = [...table.matchAll(/\| `linko ([a-z-]+)/g)].map((m) => m[1]);
+if (!cited.length) fail('the command reference table went missing');
+for (const c of new Set(cited)) {
+  if (!registered.has(c)) fail(`SKILL.md documents "linko ${c}", which cmd/ does not register`);
+}
+console.log(`  ✓ ${new Set(cited).size} documented commands all exist`);
+
 process.exit(failed);

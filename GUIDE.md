@@ -740,6 +740,22 @@ linko init
 ولإزالة الأداة نفسها بالكامل — بالخلفية والخدمات والروابط والنفق والملف
 التنفيذي — استخدم `linko uninstall`.
 
+## استخدام linko من وكيل ذكاء اصطناعي
+
+وكلاء البرمجة يخطئون هنا بطرق متوقعة: `linko 3000` يتوقف إلى الأبد بلا `-d`،
+و`~/.linko/config.json` يحمل توكنات حيّة بجانب البيانات التي تريدها، وخروج الأمر
+بصفر ليس دليلًا على أن الرابط يستجيب. لذلك هناك skill يقول هذا كله من البداية.
+
+```bash
+# Claude Code / Cowork
+mkdir -p ~/.claude/skills && cp -r skills/linko ~/.claude/skills/
+
+# Codex أو Cursor أو Windsurf أو Aider — أضِفه إلى ملف تعليمات الوكيل
+curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/skills/linko/SKILL.md >> AGENTS.md
+```
+
+‏[`skills/linko/SKILL.md`](skills/linko/SKILL.md) · [طريقة التثبيت](skills/README.md)
+
 ## الأمان
 
 - **الروابط المنشورة عامة.** أي شخص يملك الرابط يصل إلى مشروعك. لا تنشر بيانات

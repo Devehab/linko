@@ -291,6 +291,7 @@ html[lang="ar"] [data-ar]{display:revert}
       <a href="#features"><span data-en>Features</span><span data-ar>المزايا</span></a>
       <a href="#how"><span data-en>How it works</span><span data-ar>كيف يعمل</span></a>
       <a href="#commands"><span data-en>Commands</span><span data-ar>الأوامر</span></a>
+      <a href="#agents"><span data-en>AI agents</span><span data-ar>الوكلاء</span></a>
       <a href="guide.html"><span data-en>Docs</span><span data-ar>التوثيق</span></a>
       <a href="https://github.com/Devehab/linko" target="_blank" rel="noopener">GitHub</a>
     </nav>
@@ -657,6 +658,57 @@ html[lang="ar"] [data-ar]{display:revert}
     <div class="cmd"><span class="k"><code>linko uninstall</code><button class="cpy" type="button" aria-label="Copy command"><svg class="box" viewBox="0 0 20 20" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="2.5"/><path d="M13 4.5H5.5A1.5 1.5 0 0 0 4 6v7.5"/></svg><svg class="tick" viewBox="0 0 20 20" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 10.5l3.5 3.5 7.5-8"/></svg></button></span><span class="t" data-en>Remove linko and its Cloudflare traces</span>
       <span class="t" data-ar>إزالة linko وآثاره من Cloudflare</span></div>
   </div>
+</section>
+
+<!-- ══════════════════════════════ agents ══════════════════════════════ -->
+<section id="agents">
+  <div class="eyebrow"><span data-en>For AI agents</span><span data-ar>لوكلاء الذكاء الاصطناعي</span></div>
+  <h2><span data-en>Your agent can drive it too</span>
+      <span data-ar>وكيلك يستطيع تشغيلها أيضًا</span></h2>
+  <p class="lead">
+    <span data-en>Ask Claude Code, Codex or Cursor to "put this on a public URL so I can
+      check it from my phone" — and it will, correctly, if it has the skill.</span>
+    <span data-ar>اطلب من Claude Code أو Codex أو Cursor أن «يضع هذا على رابط عام لأشوفه من
+      تلفوني» — وسيفعلها بشكل صحيح، إن كان لديه الـ skill.</span>
+  </p>
+
+  <div class="g2" style="margin-top:26px">
+    <div class="card">
+      <h4><span data-en>Why a skill and not just the README</span>
+          <span data-ar>لماذا skill وليس README فقط</span></h4>
+      <p><span data-en>Agents fail here in predictable ways: <code>linko 3000</code> blocks
+         forever without <code>-d</code>, <code>~/.linko/config.json</code> holds live
+         credentials beside the data they want, and a command exiting 0 is no proof the URL
+         answers. The skill states each of those before it can happen.</span>
+         <span data-ar>يفشل الوكلاء هنا بطرق متوقعة: <code>linko 3000</code> يتوقف إلى الأبد
+         بلا <code>-d</code>، و<code>~/.linko/config.json</code> يحمل توكنات حيّة بجانب
+         البيانات المطلوبة، وخروج الأمر بصفر ليس دليلًا على أن الرابط يستجيب. الـ skill
+         يقول كل واحدة منها قبل أن تحدث.</span></p>
+    </div>
+    <div class="card">
+      <h4><span data-en>It asks before it exposes anything</span>
+          <span data-ar>يسأل قبل أن ينشر أي شيء</span></h4>
+      <p><span data-en>A published URL is reachable by anyone holding it. The skill requires
+         the agent to confirm what it is about to expose, refuses databases and admin panels
+         outright, and cleans up when the task ends.</span>
+         <span data-ar>الرابط المنشور يصل إليه أي شخص يملكه. يفرض الـ skill على الوكيل أن
+         يؤكّد ما سينشره، ويرفض قواعد البيانات ولوحات الإدارة رفضًا صريحًا، وينظّف بعد
+         انتهاء المهمة.</span></p>
+    </div>
+  </div>
+
+  <div class="oneliner" style="margin-top:26px">
+    <span class="p">$</span>
+    <code id="skillcmd">mkdir -p ~/.claude/skills &amp;&amp; cp -r skills/linko ~/.claude/skills/</code>
+    <button data-copy="#skillcmd"><span data-en>copy</span><span data-ar>نسخ</span></button>
+  </div>
+  <p style="text-align:center;margin-top:-24px">
+    <a href="https://github.com/Devehab/linko/blob/main/skills/linko/SKILL.md" target="_blank" rel="noopener">
+      <span data-en>Read the skill</span><span data-ar>اقرأ الـ skill</span></a>
+    <span style="color:var(--fg3)"> · </span>
+    <a href="https://github.com/Devehab/linko/blob/main/skills/README.md" target="_blank" rel="noopener">
+      <span data-en>Other agents</span><span data-ar>وكلاء آخرون</span></a>
+  </p>
 </section>
 
 <!-- ══════════════════════════════ trust ══════════════════════════════ -->

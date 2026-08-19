@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign Language Plugin — live demo</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0B0E14;--bg2:#11151F;--bg3:#161B26;--line:#232A38;--line2:#2E3748;
+  --tx:#E6EAF2;--tx2:#9BA6BC;--tx3:#6B7688;--ac:#5B8DEF;--ac2:#7BB4FF;
+  --ok:#3DD68C;--warn:#F5A524;--err:#F2555A;--pur:#A78BFA;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font:16px/1.75 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+header{padding:64px 0 40px;border-bottom:1px solid var(--line);
+  background:radial-gradient(900px 420px at 78% -20%,rgba(91,141,239,.14),transparent 60%)}
+.tag{display:inline-flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--line2);
+  border-radius:999px;padding:6px 15px;font-size:12.5px;color:var(--tx2);margin-bottom:22px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 10px var(--ok)}
+h1{font-size:clamp(28px,4.6vw,44px);font-weight:700;line-height:1.25;letter-spacing:-.5px}
+h1 em{font-style:normal;background:linear-gradient(100deg,var(--ac),var(--pur));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{color:var(--tx2);font-size:17.5px;max-width:720px;margin-top:18px}
+
+.rtl{direction:rtl;text-align:right;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif}
+.howto{background:var(--bg2);border:1px solid var(--line);border-left:3px solid var(--ac);
+  border-radius:12px;padding:20px 24px;margin:32px 0}
+.howto.rtl{border-left:1px solid var(--line);border-right:3px solid var(--ac)}
+.howto h3{font-size:16px;margin-bottom:10px}
+.howto ol{margin:0;padding-inline-start:20px;color:var(--tx2);font-size:14.5px}
+.howto li{margin:6px 0}
+
+section{padding:52px 0;border-bottom:1px solid var(--line)}
+h2{font-size:24px;font-weight:700;margin-bottom:8px}
+.kicker{font-family:var(--mono);font-size:11.5px;color:var(--ac);letter-spacing:2px;margin-bottom:10px}
+p{color:var(--tx2);max-width:780px}
+p+p{margin-top:14px}
+article p{font-size:17px;line-height:1.85}
+
+.chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:20px}
+.chip{background:var(--bg2);border:1px solid var(--line2);border-radius:10px;padding:9px 15px;
+  font-size:14.5px;cursor:pointer;transition:.15s;color:var(--tx)}
+.chip:hover{border-color:var(--ac);background:rgba(91,141,239,.1);transform:translateY(-1px)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:24px}
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:20px}
+.card h4{font-size:14.5px;margin-bottom:8px}
+.card p{font-size:13.5px;line-height:1.7}
+.card .n{font-family:var(--mono);font-size:22px;color:var(--ac2);display:block;margin-bottom:4px}
+
+pre{background:#080A0F;border:1px solid var(--line);border-radius:12px;padding:18px;
+  overflow-x:auto;margin:18px 0}
+pre code{font-family:var(--mono);font-size:13px;line-height:1.7;color:#C9D3E6}
+.c-k{color:#C792EA}.c-s{color:#C3E88D}.c-n{color:#F78C6C}.c-c{color:#5C6B84;font-style:italic}
+.c-f{color:#82AAFF}.c-p{color:#89DDFF}
+code.inl{font-family:var(--mono);font-size:.88em;background:var(--bg3);border:1px solid var(--line);
+  border-radius:6px;padding:2px 7px;color:var(--ac2)}
+
+#probe{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:18px;margin-top:20px}
+#probe textarea{width:100%;min-height:74px;background:#080A0F;border:1px solid var(--line2);
+  border-radius:9px;color:var(--tx);padding:11px;font:14.5px Inter,sans-serif;resize:vertical}
+#probe .row{display:flex;gap:10px;margin-top:11px;flex-wrap:wrap}
+button.go{background:var(--ac);color:#0B0E14;border:none;border-radius:9px;padding:9px 20px;
+  font-weight:600;font-size:14px;cursor:pointer}
+button.go:hover{background:var(--ac2)}
+button.ghost{background:transparent;color:var(--tx2);border:1px solid var(--line2);
+  border-radius:9px;padding:9px 16px;font-size:14px;cursor:pointer}
+button.ghost:hover{color:var(--tx);border-color:var(--ac)}
+#out{margin-top:14px;font-family:var(--mono);font-size:12.5px;white-space:pre-wrap;
+  color:var(--tx2);background:#080A0F;border:1px solid var(--line);border-radius:9px;
+  padding:13px;max-height:280px;overflow:auto;display:none}
+.gl{display:inline-block;border-radius:6px;padding:2px 8px;margin:2px;font-size:12px}
+.gl.sign{background:rgba(61,214,140,.16);color:#7BE8B4;border:1px solid rgba(61,214,140,.35)}
+.gl.fs{background:rgba(245,165,36,.16);color:#F7C46C;border:1px solid rgba(245,165,36,.35)}
+.gl.drop{background:rgba(107,118,136,.16);color:var(--tx3);border:1px solid var(--line2);
+  text-decoration:line-through}
+.status{font-family:var(--mono);font-size:11.5px;color:var(--tx3);margin-top:10px}
+
+footer{padding:44px 0;color:var(--tx3);font-size:13.5px}
+</style>
+</head>
+<body>
+
+<header><div class="wrap">
+  <div class="tag"><span class="dot"></span><span id="hp">checking backend…</span></div>
+  <h1>A working <em>sign language</em> plugin<br>— built from first principles</h1>
+  <p class="lede">
+    Original 50-bone avatar, an ASL fingerspelling alphabet derived from handshape
+    descriptions, a rule-based English→ASL gloss engine, and the same compressed
+    animation wire format the reference implementation uses. Click anything on this
+    page to see it signed.
+  </p>
+
+  <div class="howto rtl">
+    <h3>كيف تجرّب</h3>
+    <ol>
+      <li>اضغط على الزر الأزرق أسفل يمين الشاشة لتشغيل المترجم (هنا فقط يُحمَّل محرك 3D).</li>
+      <li>بعد ظهور الأفاتار، انقر على <strong>أي نص</strong> في الصفحة — سيُترجم فورًا إلى لغة الإشارة.</li>
+      <li>أيقونة المؤشر في الأعلى تبدّل بين وضع <strong>النقر</strong> ووضع <strong>تحديد النص</strong>.</li>
+      <li>أيقونة الألوان تغيّر <strong>لون البشرة والملابس</strong> للأفاتار.</li>
+      <li>جرّب كلمة غير موجودة في القاموس مثل <code class="inl">Ehab</code> — ستُهجّأ حرفًا بحرف.</li>
+    </ol>
+  </div>
+</div></header>
+
+<section><div class="wrap">
+  <div class="kicker">TRY IT</div>
+  <h2>Phrases the dictionary knows</h2>
+  <p>These map onto authored word signs. Click one.</p>
+  <div class="chips" id="chips"></div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="kicker">PIPELINE INSPECTOR</div>
+  <h2>See what the translator actually decides</h2>
+  <p>
+    The same request the plugin makes, but asking for <code class="inl">format=json</code> so
+    you can read the glosses. Watch which words get dropped — ASL has no articles and
+    no copula, so <em>is</em>, <em>the</em> and <em>of</em> are consumed and not signed.
+    That is grammar, not a gap.
+  </p>
+  <div id="probe">
+    <textarea id="q">What is your name?</textarea>
+    <div class="row">
+      <button class="go" id="run">Analyse</button>
+      <button class="ghost" id="sign">Analyse &amp; sign it</button>
+      <button class="ghost" id="stress">Stress test (long text)</button>
+    </div>
+    <div id="out"></div>
+    <div class="status" id="st"></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="kicker">CONTENT</div>
+  <h2>Why non-manual markers are not decoration</h2>
+  <article>
+    <p>
+      Sign languages are natural languages with their own grammar. American Sign Language
+      is not a manual code for English: it has its own word order, its own morphology, and
+      it uses the space in front of the signer to mark reference and agreement.
+    </p>
+    <p>
+      A large part of that grammar lives on the face. Raised eyebrows turn a clause into a
+      yes-or-no question. Lowered eyebrows mark a wh-question. A headshake carries negation
+      across the whole phrase it accompanies. An avatar that moves only its hands is not
+      signing with an accent — it is producing sentences whose grammatical marking has been
+      deleted.
+    </p>
+    <p>
+      That is why this rig spends 16 morph targets on brows, eyes and mouth, and why the
+      compiler treats them as part of the sign rather than as polish added afterwards.
+      Click this paragraph and watch the face, not just the hands.
+    </p>
+  </article>
+  <div class="grid" id="stats"></div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="kicker">INTEGRATION</div>
+  <h2>What a host page has to add</h2>
+  <pre><code><span class="c-p">&lt;script</span> <span class="c-f">defer src</span>=<span class="c-s">"/sla-plugin.js"</span><span class="c-p">&gt;&lt;/script&gt;</span>
+<span class="c-p">&lt;script&gt;</span>
+  <span class="c-k">window</span>.onload = () =&gt; {
+    <span class="c-k">window</span>.sla = <span class="c-k">new</span> <span class="c-f">SignPlugin</span>({
+      token: <span class="c-s">'demo_2f6a91c4e7b3'</span>,
+      language: <span class="c-s">'ase'</span>,
+      avatar: <span class="c-s">'NOOR'</span>
+    });
+  };
+<span class="c-p">&lt;/script&gt;</span></code></pre>
+  <p>
+    Everything else — colours, side, capture mode, exception selectors — comes from
+    <code class="inl">/v1/config/&lt;token&gt;.json</code>, so a customer changes their setup
+    without touching their own code.
+  </p>
+</div></section>
+
+<footer><div class="wrap">
+  <p>
+    Avatar, rig, animation data, wire format, backend and plugin are all generated by the
+    tools in <code class="inl">impl/tools</code> and <code class="inl">impl/server</code>.
+    No third-party model or motion data is used.
+  </p>
+</div></footer>
+
+<!-- ══ the integration, exactly as documented ══ -->
+<script defer src="/sla-plugin.js"></script>
+<script>
+const API = '';
+const TOKEN = 'demo_2f6a91c4e7b3';
+
+const PHRASES = ['Hello world', 'Thank you', 'What is your name?', 'I love sign language',
+  'Please help me', 'Where is the plugin?', 'Sorry, I do not understand',
+  'You are welcome', 'Good morning', 'Deaf people sign', 'My name is Ehab'];
+
+const $ = (s) => document.querySelector(s);
+
+document.getElementById('chips').innerHTML =
+  PHRASES.map((p) => `<span class="chip">${p}</span>`).join('');
+
+window.addEventListener('load', () => {
+  window.sla = new SignPlugin({
+    token: TOKEN,
+    apiEndpoint: API,
+    language: 'ase',
+    avatar: 'NOOR',
+    onStatus: (s) => { $('#st').textContent = 'plugin status: ' + s; },
+  });
+});
+
+/* ── backend probe ────────────────────────────────────────────────────── */
+fetch(API + '/v1/health').then((r) => r.json()).then((h) => {
+  $('#hp').textContent = `backend up · ${h.signs} signs · ${h.glosses} glosses · ${h.languages.join(', ')}`;
+  $('#stats').innerHTML = [
+    ['50', 'bones in the rig', '32 of them (64%) in the hands, where sign language lives'],
+    ['16', 'facial morph targets', 'brows, eyes and mouth — the grammatical layer'],
+    [h.signs, 'compiled signs', 'alphabet, digits, punctuation and authored word signs'],
+    ['7.9 KB', 'plugin shell, gzipped', 'the 3D engine loads only on first activation'],
+  ].map(([n, t, d]) => `<div class="card"><span class="n">${n}</span><h4>${t}</h4><p>${d}</p></div>`).join('');
+}).catch(() => { $('#hp').textContent = 'backend unreachable — run: node server/server.js'; });
+
+/* ── inspector ────────────────────────────────────────────────────────── */
+async function analyse(text) {
+  const t0 = performance.now();
+  const r = await fetch(API + '/v1/sign/translate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Api-Key': 'sla_pub_9f2c41d7e8b64a05' },
+    body: JSON.stringify({ q: text, lang: 'ase', token: TOKEN, format: 'json' }),
+  });
+  const j = await r.json();
+  const ms = (performance.now() - t0).toFixed(0);
+  if (!r.ok) { $('#out').style.display = 'block'; $('#out').textContent = JSON.stringify(j, null, 2); return; }
+
+  const html = j.sentences.map((s) => {
+    const nmm = s.nmm ? `  <span style="color:#A78BFA">[non-manual: ${s.nmm}]</span>` : '';
+    const gl = s.glosses.map((g) => {
+      if (g.type === 'dropped') return `<span class="gl drop">${g.source}</span>`;
+      if (g.type === 'sign') return `<span class="gl sign">${g.gloss}</span>`;
+      return `<span class="gl fs">${g.ids.map((i) => i.slice(1)).join('-')}</span>`;
+    }).join(' ');
+    return `<div style="margin-bottom:10px">"${s.source}"${nmm}<br>${gl}</div>`;
+  }).join('');
+
+  $('#out').style.display = 'block';
+  $('#out').innerHTML = html +
+    `<div style="color:#6B7688;margin-top:8px">engine ${j.meta.engine} · server ${j.meta.latencyMs} ms · ` +
+    `round trip ${ms} ms · cache ${j.meta.cacheHit ? 'HIT' : 'miss'}` +
+    (j.meta.missing.length ? ` · missing: ${j.meta.missing.join(', ')}` : '') + '</div>';
+}
+
+$('#run').onclick = () => analyse($('#q').value);
+$('#sign').onclick = () => { analyse($('#q').value); window.sla && window.sla.translate($('#q').value); };
+$('#stress').onclick = () => {
+  $('#q').value = 'Hello and welcome to the world of sign language. '
+    + 'My name is Noor and I am a signing avatar. '
+    + 'What is your name? Where do you learn to sign? '
+    + 'Please help me understand. Thank you very much.';
+  analyse($('#q').value);
+};
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) $('#run').click();
+});
+</script>
+</body>
+</html>

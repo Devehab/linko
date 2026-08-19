@@ -1,0 +1,265 @@
+{
+  "rigVersion": "noor-rig-v1",
+  "fps": 24,
+  "angleDivisor": 2.7,
+  "letters": {
+    "a": {
+      "id": "@a",
+      "bytes": 1291
+    },
+    "b": {
+      "id": "@b",
+      "bytes": 1251
+    },
+    "c": {
+      "id": "@c",
+      "bytes": 1281
+    },
+    "d": {
+      "id": "@d",
+      "bytes": 1279
+    },
+    "e": {
+      "id": "@e",
+      "bytes": 1299
+    },
+    "f": {
+      "id": "@f",
+      "bytes": 1263
+    },
+    "g": {
+      "id": "@g",
+      "bytes": 1275
+    },
+    "h": {
+      "id": "@h",
+      "bytes": 1271
+    },
+    "i": {
+      "id": "@i",
+      "bytes": 1287
+    },
+    "j": {
+      "id": "@j",
+      "bytes": 1613
+    },
+    "k": {
+      "id": "@k",
+      "bytes": 1273
+    },
+    "l": {
+      "id": "@l",
+      "bytes": 1275
+    },
+    "m": {
+      "id": "@m",
+      "bytes": 1299
+    },
+    "n": {
+      "id": "@n",
+      "bytes": 1299
+    },
+    "o": {
+      "id": "@o",
+      "bytes": 1293
+    },
+    "p": {
+      "id": "@p",
+      "bytes": 1271
+    },
+    "q": {
+      "id": "@q",
+      "bytes": 1275
+    },
+    "r": {
+      "id": "@r",
+      "bytes": 1277
+    },
+    "s": {
+      "id": "@s",
+      "bytes": 1297
+    },
+    "t": {
+      "id": "@t",
+      "bytes": 1291
+    },
+    "u": {
+      "id": "@u",
+      "bytes": 1275
+    },
+    "v": {
+      "id": "@v",
+      "bytes": 1279
+    },
+    "w": {
+      "id": "@w",
+      "bytes": 1267
+    },
+    "x": {
+      "id": "@x",
+      "bytes": 1295
+    },
+    "y": {
+      "id": "@y",
+      "bytes": 1275
+    },
+    "z": {
+      "id": "@z",
+      "bytes": 1921
+    },
+    "0": {
+      "id": "@0",
+      "bytes": 1293
+    },
+    "1": {
+      "id": "@1",
+      "bytes": 1287
+    },
+    "2": {
+      "id": "@2",
+      "bytes": 1279
+    },
+    "3": {
+      "id": "@3",
+      "bytes": 1269
+    },
+    "4": {
+      "id": "@4",
+      "bytes": 1253
+    },
+    "5": {
+      "id": "@5",
+      "bytes": 1247
+    },
+    "6": {
+      "id": "@6",
+      "bytes": 1259
+    },
+    "7": {
+      "id": "@7",
+      "bytes": 1259
+    },
+    "8": {
+      "id": "@8",
+      "bytes": 1259
+    },
+    "9": {
+      "id": "@9",
+      "bytes": 1263
+    },
+    "space": {
+      "id": "@space",
+      "bytes": 1275
+    },
+    "period": {
+      "id": "@period",
+      "bytes": 1297
+    },
+    "question": {
+      "id": "@question",
+      "bytes": 1287
+    },
+    "exclamation": {
+      "id": "@exclamation",
+      "bytes": 1287
+    },
+    "at": {
+      "id": "@at",
+      "bytes": 1281
+    },
+    "rest": {
+      "id": "@rest",
+      "bytes": 673
+    }
+  },
+  "words": {
+    "HELLO": {
+      "bytes": 1301,
+      "durationMs": 666
+    },
+    "THANK-YOU": {
+      "bytes": 1355,
+      "durationMs": 708
+    },
+    "YES": {
+      "bytes": 2047,
+      "durationMs": 750
+    },
+    "NO": {
+      "bytes": 1710,
+      "durationMs": 708
+    },
+    "PLEASE": {
+      "bytes": 1621,
+      "durationMs": 833
+    },
+    "SORRY": {
+      "bytes": 1758,
+      "durationMs": 833
+    },
+    "NAME": {
+      "bytes": 1589,
+      "durationMs": 750
+    },
+    "LEARN": {
+      "bytes": 1289,
+      "durationMs": 666
+    },
+    "SIGN": {
+      "bytes": 1965,
+      "durationMs": 875
+    },
+    "HELP": {
+      "bytes": 1281,
+      "durationMs": 666
+    },
+    "GOOD": {
+      "bytes": 1280,
+      "durationMs": 625
+    },
+    "BAD": {
+      "bytes": 1352,
+      "durationMs": 625
+    },
+    "LOVE": {
+      "bytes": 1409,
+      "durationMs": 791
+    },
+    "YOU": {
+      "bytes": 1291,
+      "durationMs": 541
+    },
+    "ME": {
+      "bytes": 1295,
+      "durationMs": 541
+    },
+    "WHAT": {
+      "bytes": 1317,
+      "durationMs": 666
+    },
+    "WHERE": {
+      "bytes": 2007,
+      "durationMs": 750
+    },
+    "DEAF": {
+      "bytes": 1324,
+      "durationMs": 666
+    },
+    "UNDERSTAND": {
+      "bytes": 1372,
+      "durationMs": 583
+    },
+    "WELCOME": {
+      "bytes": 1302,
+      "durationMs": 708
+    },
+    "WORLD": {
+      "bytes": 1286,
+      "durationMs": 666
+    },
+    "QUESTION": {
+      "bytes": 1418,
+      "durationMs": 666
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "sign-language-plugin",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Embeddable sign-language translation plugin: original rigged avatar, compressed animation wire format, rule-based English to ASL gloss engine.",
+  "scripts": {
+    "build:avatar": "python3 tools/build_avatar.py",
+    "build:signs": "python3 tools/build_signs.py",
+    "build:core": "esbuild web/src/core.js --bundle --format=iife --minify --target=es2020 --outfile=web/sla-core.js",
+    "build": "npm run build:avatar && npm run build:signs && npm run build:core",
+    "reference": "python3 tests/dump_reference.py",
+    "test": "npm run reference && node tests/test.js",
+    "start": "node server/server.js",
+    "dev": "node server/server.js --port 8787",
+    "preview": "python3 tools/preview.py --contact-sheet data/signs/ase --view bust -o /tmp/signs.png"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "gltf-validator": "^2.0.0-dev.3.9",
+    "three": "^0.180.0"
+  }
+}
