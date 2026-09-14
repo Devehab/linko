@@ -1,6 +1,6 @@
 install one-liner test
 commit: 78cf7d08ee8e7757928900c58e1ededbf4a0f2f8
-date:   2026-09-07 11:34:15 UTC
+date:   2026-09-14 11:45:58 UTC
 
 command under test:
   curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/install.sh | bash
@@ -67,7 +67,7 @@ containers: failure
       go is still absent — good
     
     $ curl -fsSL .../install.sh | bash
-    curl: Failed writing body
+    curl: (23) Failure writing output to destination, passed 1370 returned 1114
     [2mInstalling linko v0.3.0 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
@@ -196,7 +196,7 @@ containers: failure
       go is still absent — good
     
     $ curl -fsSL .../install.sh | bash
-    curl: (23) Failure writing output to destination, passed 1370 returned 1112
+    curl: Failed writing body
     [2mInstalling linko v0.3.0 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
@@ -280,7 +280,6 @@ containers: failure
       go is still absent — good
     
     $ curl -fsSL .../install.sh | bash
-    curl: (23) Failure writing output to destination, passed 1370 returned 684
     [2mInstalling linko v0.3.0 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
@@ -335,34 +334,8 @@ containers: failure
       go is still absent — good
     
     $ curl -fsSL .../install.sh | bash
-    curl: (23) Failure writing output to destination
-    [2mInstalling linko v0.3.0 (linux_amd64)[0m
-    [32m✓ linko installed to /usr/local/bin/linko[0m
-    
-    Next step:
-      linko init
-    
-    Before that you need a Cloudflare API token with BOTH permissions:
-      Zone     ->  DNS                ->  Edit
-      Account  ->  Cloudflare Tunnel  ->  Edit
-      Create it at https://dash.cloudflare.com/profile/api-tokens
-    
-    Full guide (install, token, commands, troubleshooting):
-    [32m  https://github.com/Devehab/linko/blob/main/GUIDE.md[0m
-      or run:  linko docs
-    [install exit 0]
-    
-    $ command -v linko
-    /usr/local/bin/linko
-    [exit 0]
-    $ linko --version
-    linko 0.3.0
-    [exit 0]
-    $ linko --help
-    [exit 0]
-    $ linko docs
-    [exit 0]
-    $ linko list  (must steer an unconfigured user to init)
+    curl: (22) The requested URL returned error: 403
+    [31merror: could not determine the latest version — set LINKO_VERSION[0m
 
 ### PASS ──────── ubuntu:24.04 ────────
     ──────── ubuntu:24.04 ────────
@@ -378,7 +351,6 @@ containers: failure
       go is still absent — good
     
     $ curl -fsSL .../install.sh | bash
-    curl: (23) Failure writing output to destination
     [2mInstalling linko v0.3.0 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
@@ -416,7 +388,6 @@ containers: failure
       go    /usr/bin/go
     
     $ curl -fsSL .../install.sh | bash
-    curl: (23) Failure writing output to destination
     [2mInstalling linko v0.3.0 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
@@ -458,7 +429,7 @@ containers: failure
       go    /c/hostedtoolcache/windows/go/1.24.13/x64/bin/go
     
     $ curl -fsSL .../install.sh | bash
-    curl: (23) Failure writing output to destination, passed 4278 returned 675
+    curl: Failed writing body
     [2mInstalling linko v0.3.0 (windows_amd64)[0m
     [32m✓ linko installed to /c/Users/runneradmin/.local/bin/linko.exe[0m
     
