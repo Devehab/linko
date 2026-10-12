@@ -1,6 +1,6 @@
 install one-liner test
 commit: 78cf7d08ee8e7757928900c58e1ededbf4a0f2f8
-date:   2026-10-05 13:34:53 UTC
+date:   2026-10-12 14:24:21 UTC
 
 command under test:
   curl -fsSL https://raw.githubusercontent.com/Devehab/linko/main/install.sh | bash
@@ -67,7 +67,7 @@ containers: failure
       go is still absent — good
     
     $ curl -fsSL .../install.sh | bash
-    curl: (23) Failure writing output to destination, passed 1361 returned 1179
+    curl: Failed writing body
     [2mInstalling linko v0.3.0 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
@@ -122,7 +122,7 @@ containers: failure
       go is still absent — good
     
     $ curl -fsSL .../install.sh | bash
-    curl: (23) Failed writing body
+    curl: (23) Failure writing output to destination
     [2mInstalling linko v0.3.0 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
@@ -249,6 +249,7 @@ containers: failure
       go is still absent — good
     
     $ curl -fsSL .../install.sh | bash
+    curl: (23) Failure writing output to destination, passed 1370 returned 684
     [2mInstalling linko v0.3.0 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
@@ -303,7 +304,7 @@ containers: failure
       go is still absent — good
     
     $ curl -fsSL .../install.sh | bash
-    curl: (23) Failed writing body
+    curl: (23) Failure writing output to destination
     [2mInstalling linko v0.3.0 (linux_amd64)[0m
     [32m✓ linko installed to /usr/local/bin/linko[0m
     
@@ -425,7 +426,7 @@ containers: failure
       go    /c/hostedtoolcache/windows/go/1.24.13/x64/bin/go
     
     $ curl -fsSL .../install.sh | bash
-    curl: (23) Failure writing output to destination, passed 4279 returned 675
+    curl: Failed writing body
     [2mInstalling linko v0.3.0 (windows_amd64)[0m
     [32m✓ linko installed to /c/Users/runneradmin/.local/bin/linko.exe[0m
     
